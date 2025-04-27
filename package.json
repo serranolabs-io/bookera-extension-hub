@@ -1,12 +1,11 @@
 {
-  "name": "bookera-extension-hub",
-  "private": true,
+  "name": "bookera-hub",
+  "version": "0.0.1",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "lint": "turbo run lint -- --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "prettier": "^3.5.3",
@@ -18,7 +17,13 @@
   },
   "packageManager": "bun@1.2.10",
   "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+    "examples/*",
+    "packages/modules/*",
+    "packages/extensions/*",
+    "packages/shared",
+    "packages/typescript-config"
+  ],
+  "dependencies": {
+    "@changesets/cli": "^2.29.2"
+  }
 }
