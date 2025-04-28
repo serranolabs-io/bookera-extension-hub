@@ -1,0 +1,177 @@
+* {
+  transition: color .2s;
+  transition: background-color .2s;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+:root {
+  --primary-25: rgb(255, 184, 126, 0.25);
+  --primary-50: rgb(255, 184, 126, 0.5);
+  --primary-75: rgb(255, 184, 126, 0.75);
+  --primary-50: #ffdcbf;
+  --primary-100: #ffd4b2;
+  --primary-200: #ffcda5;
+  --primary-300: #ffc698;
+  --primary-400: #ffbf8b;
+  --primary: #ffb87e;
+  --primary-500: var(--primary);
+  --primary-600: #e6a671;
+  --primary-700: #cc9365;
+  --primary-800: #b38158;
+  --primary-900: #996e4c;
+  --primary-950: #805c3f;
+
+  --secondary-50: #e6f2f2;
+  --secondary-100: #cce6e6;
+  --secondary-200: #b3d9d9;
+  --secondary-300: #99cccc;
+  --secondary-400: #80bfbf;
+  --secondary: #4c9999;
+  --secondary-500: var(--secondary);
+  --secondary-600: #458a8a;
+  --secondary-700: #3d7a7a;
+  --secondary-800: #366b6b;
+  --secondary-900: #2e5c5c;
+  --secondary-950: #264d4d;
+
+  --sl-color-primary-50: var(--primary-50);
+  --sl-color-primary-100: var(--primary-100);
+  --sl-color-primary-200: var(--primary-200);
+  --sl-color-primary-300: var(--primary-300);
+  --sl-color-primary-400: var(--primary-400);
+  --sl-color-primary-500: var(--primary-500);
+  --sl-color-primary-600: var(--primary-600);
+  --sl-color-primary-700: var(--primary-700);
+  --sl-color-primary-800: var(--primary-800);
+  --sl-color-primary-900: var(--primary-900);
+  --sl-color-primary-950: var(--primary-950);
+
+  --spacingXXSmall: 0.25rem;
+  --spacingXSmall: 0.5rem;
+  --spacingSmall: calc(1 * var(--spacingXSmall));
+  --spacing: calc(2 * var(--spacingXSmall));
+  --spacingMedium: calc(4 * var(--spacingXSmall));
+  --spacingLarge: calc(8 * var(--spacingXSmall));
+  --spacingXLarge: calc(12 * var(--spacingXSmall));
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  --zIndex-handles: 5;
+  --zIndex-nav: 10;
+
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+  --success-800: #166534;
+  --success-900: #14532d;
+  --success-950: #052e16;
+
+  --info-500: #3b82f6;
+
+  --warning-500: #eab308;
+
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  /* Gray */
+  --sl-color-gray-50: var(--slate-50);
+  --sl-color-gray-100: var(--slate-100);
+  --sl-color-gray-200: var(--slate-200);
+  --sl-color-gray-300: var(--slate-300);
+  --sl-color-gray-400: var(--slate-400);
+  --sl-color-gray-500: var(--slate-500);
+  --sl-color-gray-600: var(--slate-600);
+  --sl-color-gray-700: var(--slate-700);
+  --sl-color-gray-800: var(--slate-800);
+  --sl-color-gray-900: var(--slate-900);
+
+  --sl-color-neutral-0: var(--slate-50);
+  --sl-color-neutral-1000: var(--slate-900);
+  --sl-input-color: var(--slate-700);
+
+  --purple-500: #a855f7;
+  --fuschia-500: #d946ef;
+
+  --error-50: #ef4444;
+  --error-100: #ef4444;
+  --error-200: #ef4444;
+  --error-300: #ef4444;
+  --error-400: #ef4444;
+  --error-500: #ef4444;
+  --error-600: #ef4444;
+  --error-700: #ef4444;
+  --error-800: #ef4444;
+  --error-900: #ef4444;
+}
+
+*::-webkit-scrollbar {
+width: 6px;
+}
+
+/* Track */
+*::-webkit-scrollbar-track {
+background: transparent;
+}
+
+/* Handle */
+*::-webkit-scrollbar-thumb {
+background: var(--slate-400);
+border-radius: 20px;
+}
+
+
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "Fragment Mono";
+}
+
+.dragged-element {
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: none !important;
+}
+
+.dragged-panel-tab {
+  height: 1rem;
+  color: green;
+  background-color: red;
+}
+
+.hover-container {
+  position: absolute;
+  background-color: var(--slate-950);
+  opacity: 0.75;
+  transition: all 1s;
+  user-select: none;
+  pointer-events: none;
+}
