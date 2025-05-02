@@ -9,7 +9,7 @@ import {
   ColorPalettesSingleton,
   SystemColorPalette,
 } from './stateful';
-import baseCss from 'shared/base';
+import baseCss from '@serranolabs.io/shared/base';
 
 @customElement('dark-mode')
 export class DarkMode extends LitElement {

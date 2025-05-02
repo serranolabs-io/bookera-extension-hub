@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "type": "module",
   "private": false,
   "scripts": {
@@ -13,13 +13,34 @@
     "dist"
   ],
   "exports": {
-    "./base": "./src/base.css.ts",
-    "./root": "./src/root.css",
-    "./util": "./src/model/util.ts",
-    "./lit": "./src/model/lit.ts",
-    "./module/module": "./src/module/module.ts",
-    "./module/tab": "./src/module/tab.ts",
-    "./module/module-element": "./src/module/module-element.ts"
+      "./base": {
+        "import": "./dist/base.css.js",
+        "require": "./src/base.css.ts"
+      },
+      "./root": {
+        "import": "./dist/root.css",
+        "require": "./src/root.css"
+      },
+      "./util": {
+        "import": "./dist/model/util.js",
+        "require": "./src/model/util.ts"
+      },
+      "./lit": {
+        "import": "./dist/model/lit.js",
+        "require": "./src/model/lit.ts"
+      },
+      "./module": {
+        "import": "./dist/module/module.js",
+        "require": "./src/module/module.ts"
+      },
+      "./tab": {
+        "import": "./dist/module/tab.js",
+        "require": "./src/module/tab.ts"
+      },
+      "./module-element": {
+        "import": "./dist/module/module-element.js",
+        "require": "./src/module/module-element.ts"
+      }
   },
   "devDependencies": {
     "@serranolabs.io/typescript-config": "*",

@@ -1,5 +1,5 @@
-import { BookeraModule } from 'module/module';
-import type { TabPosition } from 'module/tab';
+import { BookeraModule } from '../module/module';
+import { TabPosition } from '../module/tab';
 
 export const CLOSE_PANEL_EVENT = 'close-panel-event';
 export const SPLIT_PANEL_EVENT = 'split-panel-event';
@@ -42,6 +42,10 @@ export enum PanelDrop {
   Right = 'Right',
   Center = 'Center',
 }
+
+// ! please please redefine them lmao
+interface PanelTab {}
+interface PanelElement {}
 
 export interface IsDraggingTabEvent {
   tab: PanelTab;

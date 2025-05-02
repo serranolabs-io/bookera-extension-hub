@@ -2,17 +2,17 @@ import { LitElement, html, css, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import {
   BookeraModule,
-  RenderMode,
   RequestUpdateEvent,
   RequestUpdateEventType,
   UPDATE_BookeraModule_EVENT,
   UPDATE_BookeraModule_EVENT_TYPE,
 } from './module';
+import type { RenderMode } from './module';
 import { Tab } from './tab';
 import { sendEvent } from '../model/util';
 import { notify } from '../model/lit';
 
-customElement('module-element');
+customElement('bookera-module-element');
 /**
  * The `ModuleElement` class serves as an abstract base class for creating custom module elements
  * in the application. It extends the `LitElement` class and provides a structure for managing
@@ -39,7 +39,7 @@ customElement('module-element');
  * @method renderInSettings - Abstract method to define rendering logic for the main panel.
  * @method render - Abstract method to define the overall rendering logic for the module element.
  */
-export abstract class ModuleElement extends LitElement {
+export abstract class BookeraModuleElement extends LitElement {
   @state()
   module!: BookeraModule;
 
@@ -190,12 +190,14 @@ export abstract class ModuleElement extends LitElement {
 
   protected abstract renderInSettings(): TemplateResult;
 
+  protected abstract renderInModuleDaemon(): TemplateResult;
+
   abstract render(): TemplateResult;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'module-element': ModuleElement;
+    'bookera-module-element': BookeraModuleElement;
   }
 }
 

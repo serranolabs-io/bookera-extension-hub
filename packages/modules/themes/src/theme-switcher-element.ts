@@ -33,15 +33,12 @@ import {
 import './dark-mode';
 import { DarkMode } from './dark-mode';
 import { DarkModeKey } from './dark-mode-state';
-import baseCss from '@serranolabs.io/shared/base';
+import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
 import {
-  ModuleElement,
+  BookeraModuleElement,
   moduleElementStyles,
-} from '@serranolabs.io/shared/module/module-element';
-import {
-  BookeraModule,
-  RenderMode,
-} from '@serranolabs.io/shared/module/module';
+} from '@serranolabs.io/shared/module-element';
+import baseCss from '@serranolabs.io/shared/base';
 // you need to rethink how dark theme works.
 // when applying dark theme, you are swapping the colors. It breaks switching data-themes.
 
@@ -59,7 +56,7 @@ type CustomColorStep = keyof typeof CustomColorStepMode;
 // the theme switcher should always have the same ID no matter what, across every single app
 // the tab will follow
 @customElement('themes-element')
-export class ThemesElement extends ModuleElement {
+export class ThemesElement extends BookeraModuleElement {
   static styles = [themeSwitcherElementStyles, baseCss, moduleElementStyles];
 
   @query('#color-selector') colorSelect!: SlSelect;
@@ -439,11 +436,13 @@ export class ThemesElement extends ModuleElement {
   }
 
   render() {
+    console.log(this.renderMode);
     switch (this.renderMode) {
       case 'renderInSettings':
         return this.renderInSettings();
       case 'renderInSidePanel':
         return this.renderInSidePanel();
+      case 'renderInDaemon':
     }
 
     return html``;

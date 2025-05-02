@@ -16,7 +16,11 @@ export const BookeraModuleRegistryClasses: Record<
   new (renderMode: RenderMode, module: BookeraModule) => object
 > = {};
 
-export type RenderMode = 'renderInSettings' | 'renderInSidePanel';
+export type RenderMode =
+  | 'renderInSettings'
+  | 'renderInSidePanel'
+  | 'renderInDaemon';
+
 // extensions are just extended functionality from the core system, BookeraModules
 export class BookeraModule {
   version?: string;

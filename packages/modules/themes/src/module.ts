@@ -1,7 +1,7 @@
-import { BookeraModule, DEFAULT_VERSION } from 'shared/module/module';
+import { BookeraModule, DEFAULT_VERSION } from '@serranolabs.io/shared/module';
 import { ThemesElement } from './theme-switcher-element';
-import { Tab } from 'shared/module/tab';
-import { genShortID } from 'shared/util';
+import { Tab } from '@serranolabs.io/shared/tab';
+import { genShortID } from '@serranolabs.io/shared/util';
 
 export const themeSwitcherModule = new BookeraModule(
   DEFAULT_VERSION,

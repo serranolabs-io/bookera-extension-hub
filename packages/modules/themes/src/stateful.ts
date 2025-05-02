@@ -10,7 +10,7 @@ import {
 } from './color-sets';
 import { html } from 'lit';
 import { ColorMode } from './theme-switcher-element';
-import { genShortID } from 'shared/util';
+import { genShortID } from '@serranolabs.io/shared/util';
 
 export class ColorPalette {
   id?: string;
