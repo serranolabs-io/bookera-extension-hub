@@ -33,12 +33,12 @@ import {
 import './dark-mode';
 import { DarkMode } from './dark-mode';
 import { DarkModeKey } from './dark-mode-state';
-import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
 import {
   BookeraModuleElement,
   moduleElementStyles,
 } from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
+import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
 // you need to rethink how dark theme works.
 // when applying dark theme, you are swapping the colors. It breaks switching data-themes.
 
@@ -435,14 +435,20 @@ export class ThemesElement extends BookeraModuleElement {
     `;
   }
 
+  protected renderInModuleDaemon() {
+    return html` <dark-mode></dark-mode>
+      <code>${this.selectedColorPalette?.name}</code>`;
+  }
+
   render() {
-    console.log(this.renderMode);
+    console.log('my balls from bookera-extension-hub');
     switch (this.renderMode) {
       case 'renderInSettings':
         return this.renderInSettings();
       case 'renderInSidePanel':
         return this.renderInSidePanel();
       case 'renderInDaemon':
+        return this.renderInModuleDaemon();
     }
 
     return html``;

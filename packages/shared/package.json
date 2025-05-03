@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.11",
+  "version": "0.0.15",
   "type": "module",
   "private": false,
   "scripts": {
@@ -14,32 +14,53 @@
   ],
   "exports": {
       "./base": {
-        "import": "./dist/base.css.js",
-        "require": "./src/base.css.ts"
+        "import": "./src/base.css.ts",
+        "production": {
+          "import": "./dist/base.js",
+          "types": "./dist/base.css.d.ts"
+        }
       },
       "./root": {
-        "import": "./dist/root.css",
-        "require": "./src/root.css"
+        "import": "./src/root.css.ts",
+        "production": {
+          "import": "./dist/root.css",
+          "types": "./dist/root.css.d.ts"
+        }
       },
       "./util": {
-        "import": "./dist/model/util.js",
-        "require": "./src/model/util.ts"
+        "import": "./src/model/util.ts",
+        "production": {
+          "import": "./dist/util.js",
+          "types": "./dist/model/util.d.ts"
+        }
       },
       "./lit": {
-        "import": "./dist/model/lit.js",
-        "require": "./src/model/lit.ts"
+        "import": "./src/model/lit.ts",
+        "production": {
+          "import": "./dist/lit.js",
+          "types": "./dist/model/lit.d.ts"
+        }
       },
       "./module": {
-        "import": "./dist/module/module.js",
-        "require": "./src/module/module.ts"
+        "import": "./src/module/module.ts",
+        "production": {
+          "import": "./dist/module/module.js",
+          "types": "./dist/module/module.d.ts"
+        }
       },
       "./tab": {
-        "import": "./dist/module/tab.js",
-        "require": "./src/module/tab.ts"
+        "import": "./src/module/tab.ts",
+        "production": {
+          "import": "./dist/module/tab.js",
+          "types": "./dist/module/tab.d.ts"
+        }
       },
       "./module-element": {
-        "import": "./dist/module/module-element.js",
-        "require": "./src/module/module-element.ts"
+        "import": "./src/module/module-element.ts",
+        "production": {
+          "import": "./dist/module/module-element.js",
+          "types": "./dist/module/module-element.d.ts"
+        }
       }
   },
   "devDependencies": {

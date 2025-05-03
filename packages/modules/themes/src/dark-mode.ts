@@ -1,14 +1,9 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ColorMode } from './theme-switcher-element';
-import { ColorSet } from './color-sets';
 import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
 import { DarkModeKey, DarkModeSingleton } from './dark-mode-state';
-import {
-  ColorPalette,
-  ColorPalettesSingleton,
-  SystemColorPalette,
-} from './stateful';
+import { ColorPalette, ColorPalettesSingleton } from './stateful';
 import baseCss from '@serranolabs.io/shared/base';
 
 @customElement('dark-mode')

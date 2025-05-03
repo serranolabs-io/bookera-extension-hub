@@ -21,6 +21,9 @@ export default defineConfig({
   ],
   build: {
       minify: true,
+      resolve: {
+        conditions: ['production']
+      },
       lib: {
           entry: {
             'base': resolve(__dirname, 'src/base.css.ts'),
@@ -31,9 +34,10 @@ export default defineConfig({
             'module/tab': resolve(__dirname, 'src/module/tab.ts'),
             'module/module-element': resolve(__dirname, 'src/module/module-element.ts'),
           },
-          name: 'bookera-themes',
+          name: 'shared',
           formats: ['es'],
           terserOptions: {
+            // this is why we need to use rollup instead of esbuild
             keep_classnames: true,
           },
       },
