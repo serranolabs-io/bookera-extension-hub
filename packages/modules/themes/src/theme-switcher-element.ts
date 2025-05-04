@@ -1,4 +1,4 @@
-import { html, PropertyValues } from 'lit';
+import { html, PropertyValues, TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import themeSwitcherElementStyles from './theme-switcher-element.styles';
 
@@ -178,10 +178,7 @@ export class ThemesElement extends BookeraModuleElement {
     // create name
     let newName = '';
     if (ColorSet.FixProperty(name) === 'slate') {
-      newName =
-        baseColorNames[index] !== ''
-          ? baseColorNames[index]
-          : `Shade ${name}-${shade}`;
+      newName = baseColorNames[index] !== '';
     } else {
       newName =
         primaryColorName[index] !== ''
@@ -266,7 +263,7 @@ export class ThemesElement extends BookeraModuleElement {
                 (style: string, i: number) => {
                   return this.renderShades(
                     PrimaryColor,
-                    shadePercents[i],
+                    shadePercents[i]!,
                     i,
                     style,
                     'Light'
@@ -279,7 +276,7 @@ export class ThemesElement extends BookeraModuleElement {
               ${this.lightMode.baseColors?.map((style: string, i: number) => {
                 return this.renderShades(
                   BaseColor,
-                  shadePercents[i],
+                  shadePercents[i]!,
                   i,
                   style,
                   'Light'
@@ -298,7 +295,7 @@ export class ThemesElement extends BookeraModuleElement {
                 (style: string, i: number) => {
                   return this.renderShades(
                     PrimaryColor,
-                    shadePercents[i],
+                    shadePercents[i]!,
                     i,
                     style,
                     'Dark'
@@ -312,7 +309,7 @@ export class ThemesElement extends BookeraModuleElement {
               ${this.lightMode.baseColors?.map((style: string, i: number) => {
                 return this.renderShades(
                   BaseColor,
-                  shadePercents[i],
+                  shadePercents[i]!,
                   i,
                   style,
                   'Dark'
@@ -398,60 +395,44 @@ export class ThemesElement extends BookeraModuleElement {
 
   protected renderInSettings() {
     return html`
-      <div class="panel-container">
-        ${this.renderTitleSection()}
-        ${this.createSection(
-          'System Color Palettes',
-          'Create from a system color palette',
-          this.renderSystemColorPaletteSection.bind(this)
-        )}
-        ${this.createSection(
-          'Custom Palettes',
-          'Create your own color palette & share with others!',
-          this.renderCustomPaletteSection.bind(this)
-        )}
-        ${this.createSection(
-          'Select Color Palettes!',
-          'These are your color palettes!',
-          this.renderSelectedColorPalettes.bind(this)
-        )}
-      </div>
+      ${this.renderTitleSection()}
+      ${this.createSection(
+        'System Color Palettes',
+        'Create from a system color palette',
+        this.renderSystemColorPaletteSection.bind(this)
+      )}
+      ${this.createSection(
+        'Custom Palettes',
+        'Create your own color palette & share with others!',
+        this.renderCustomPaletteSection.bind(this)
+      )}
+      ${this.createSection(
+        'Select Color Palettes!',
+        'These are your color palettes!',
+        this.renderSelectedColorPalettes.bind(this)
+      )}
     `;
   }
 
   protected renderInSidePanel() {
     return html`
-      <div class="side-panel">
-        ${this.renderSidePanelTitleSection()}
-        <div class="center dark-mode-padding">
-          <dark-mode></dark-mode>
-        </div>
-        ${this.createSidePanelSection(
-          'Your Color Palettes!',
-          '',
-          this.renderSelectedColorPalettes.bind(this)
-        )}
+      ${this.renderSidePanelTitleSection()}
+      <div class="center dark-mode-padding">
+        <dark-mode></dark-mode>
       </div>
+      ${this.createSidePanelSection(
+        'Your Color Palettes!',
+        '',
+        this.renderSelectedColorPalettes.bind(this)
+      )}
     `;
   }
 
   protected renderInModuleDaemon() {
-    return html` <dark-mode></dark-mode>
-      <code>${this.selectedColorPalette?.name}</code>`;
-  }
-
-  render() {
-    console.log('my balls from bookera-extension-hub');
-    switch (this.renderMode) {
-      case 'renderInSettings':
-        return this.renderInSettings();
-      case 'renderInSidePanel':
-        return this.renderInSidePanel();
-      case 'renderInDaemon':
-        return this.renderInModuleDaemon();
-    }
-
-    return html``;
+    return html`
+      <dark-mode daemon></dark-mode>
+      <code>${this.selectedColorPalette?.name}</code>
+    `;
   }
 }
 

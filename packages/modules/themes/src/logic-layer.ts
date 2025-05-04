@@ -18,6 +18,7 @@ import {
 import { ThemesElement } from './theme-switcher-element';
 import { BagManager, CreateBagManager } from '@pb33f/saddlebag';
 import { notify } from '@serranolabs.io/shared/lit';
+import { doesClickContainElement } from '@serranolabs.io/shared/util';
 
 export function switchCustomPaletteStep(this: ThemesElement) {
   this.customPaletteStep =

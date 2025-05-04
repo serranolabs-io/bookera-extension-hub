@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "publish": "turbo build && changeset version && changeset publish",
     "lint": "turbo run lint -- --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

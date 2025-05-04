@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ColorMode } from './theme-switcher-element';
 import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
@@ -17,9 +17,21 @@ export class DarkMode extends LitElement {
         padding: 0;
         padding-right: var(--spacingSmall);
       }
+      :host {
+        display: flex;
+        align-items: center;
+      }
+
+      .daemon {
+        font-size: 16px;
+        color: var(--slate-300);
+      }
     `,
     baseCss,
   ];
+
+  @property({ type: Boolean })
+  daemon: boolean = false;
 
   @state()
   bagManager!: BagManager;
@@ -104,6 +116,7 @@ export class DarkMode extends LitElement {
   render() {
     return html`
       <sl-icon-button
+        class="${this.daemon ? 'daemon' : ''}"
         name=${DarkMode.SetIconFromColorMode(this.colorMode)}
         @click=${this._switchColorMode}
       >

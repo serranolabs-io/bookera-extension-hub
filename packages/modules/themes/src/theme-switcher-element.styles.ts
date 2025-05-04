@@ -6,6 +6,10 @@ export default css`
     width: 100%;
     position: relative;
   }
+  .daemon {
+    display: flex;
+    align-items: center;
+  }
 
   .dark-mode-padding {
     padding: var(--spacingSmall) 0;

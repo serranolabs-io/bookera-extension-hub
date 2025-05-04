@@ -67,7 +67,6 @@ export abstract class BookeraModuleElement extends LitElement {
 
   private listenToUpdates(e: CustomEvent<RequestUpdateEventType>) {
     if (e.detail.moduleId === this.module.id) {
-      console.log('update');
       this.requestUpdate();
     }
   }
@@ -186,13 +185,38 @@ export abstract class BookeraModuleElement extends LitElement {
     </div>`;
   }
 
+  protected renderDaemonWrapper() {
+    return html`
+      <sl-tooltip content=${this.module.title}>
+        <div class="daemon">${this.renderInModuleDaemon()}</div>
+      </sl-tooltip>
+    `;
+  }
+
+  protected renderSidePanelWrapper() {
+    return html` <div class="side-panel">${this.renderInSidePanel()}</div> `;
+  }
+
+  protected renderSettingsWrapper() {
+    return html` <div class="panel-container">${this.renderInSettings()}</div>`;
+  }
+
   protected abstract renderInSidePanel(): TemplateResult;
 
   protected abstract renderInSettings(): TemplateResult;
 
   protected abstract renderInModuleDaemon(): TemplateResult;
 
-  abstract render(): TemplateResult;
+  render() {
+    switch (this.renderMode) {
+      case 'renderInSettings':
+        return this.renderSettingsWrapper();
+      case 'renderInSidePanel':
+        return this.renderSidePanelWrapper();
+      case 'renderInDaemon':
+        return this.renderDaemonWrapper();
+    }
+  }
 }
 
 declare global {

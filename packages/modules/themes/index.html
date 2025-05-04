@@ -15,18 +15,34 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu/menu.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-item/menu-item.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/alert/alert.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js"></script> 
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js"></script>
 
     <script type="module" >
       import {ThemesElement} from '/src/theme-switcher-element.ts';
       import {themeSwitcherModule} from '/src/module.ts';
 
-      const themesElement = new ThemesElement("renderInSettings", themeSwitcherModule);
+      let separator = document.createElement("p");
 
+      separator.innerText = "end renderInSettings ----------------------------------------";
+      
+      let themesElement = new ThemesElement("renderInSettings", themeSwitcherModule);
       document.body.appendChild(themesElement);
+      document.body.appendChild(separator.cloneNode(true));
+      
+      separator.innerText = "end renderInDaemon ----------------------------------------";
+      themesElement = new ThemesElement("renderInDaemon", themeSwitcherModule);
+      document.body.appendChild(themesElement);
+      document.body.appendChild(separator.cloneNode(true));
+      
+      separator.innerText = "end renderInSidePanel ----------------------------------------";
+      themesElement = new ThemesElement("renderInSidePanel", themeSwitcherModule);
+      document.body.appendChild(themesElement);
+      document.body.appendChild(separator.cloneNode(true));
 
     </script>
   </head>
   <body>
-    fyi, this demo does not work
+    <h1>Themes Module Demo</h1>
   </body>
 </html>

@@ -1,10 +1,10 @@
 {
   "name": "@serranolabs.io/bookera-themes",
-  "version": "0.0.13",
+  "version": "0.0.16",
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
+    "dev": " vite",
     "preview": "vite preview"
   },
   "files": [
