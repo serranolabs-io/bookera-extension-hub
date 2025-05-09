@@ -24,6 +24,7 @@ import {
   getShadeVariable,
   Mode,
   SelectedColorPaletteKey,
+  SystemColorPalette,
 } from './stateful';
 import {
   enableCreateColorPaletteMode,
@@ -62,12 +63,13 @@ const CustomColorStepMode = {
 
 type CustomColorStep = keyof typeof CustomColorStepMode;
 
-export const savingKeys = {
+export const systemKeys = {
   systemColorPaletteMode: false,
   primaryColor: '',
   backgroundColor: SystemColorSets.Slate,
   systemName: '',
-  // custom
+};
+export const customKeys = {
   customName: '',
   lightMode: new Mode(
     'Light',
@@ -82,16 +84,30 @@ export const savingKeys = {
   createColorPaletteMode: false,
 };
 
-export const savingProperties = {
+export const savingKeys = {
+  ...systemKeys,
+  ...customKeys,
+  // custom
+};
+
+export const systemProperties = {
   systemColorPaletteMode: 'systemColorPaletteMode',
-  createColorPaletteMode: 'createColorPaletteMode',
   primaryColor: 'primaryColor',
   backgroundColor: 'backgroundColor',
   systemName: 'systemName',
-  // custom
+};
+
+export const customProperties = {
   customName: 'customName',
+  createColorPaletteMode: 'createColorPaletteMode',
   lightMode: 'lightMode',
   darkMode: 'darkMode',
+};
+
+export const savingProperties = {
+  ...systemProperties,
+  ...customProperties,
+  // custom
 };
 
 // the theme switcher should always have the same ID no matter what, across every single app
@@ -161,6 +177,13 @@ export class ThemesElement extends BookeraModuleElement {
   @state()
   hasFirstUpdated: boolean = false;
 
+  @state()
+  private _hasAppliedChanges: boolean = false;
+
+  @state()
+  private _isSystemDirty = false;
+  private _isCustomDirty = false;
+
   constructor(
     renderMode: RenderMode,
     module: BookeraModule,
@@ -174,15 +197,61 @@ export class ThemesElement extends BookeraModuleElement {
 
     this._kickOffLocalFlow();
   }
+
+  private _runDirtyValidation(
+    key: string,
+    newValue: any,
+    isOnChanges: boolean
+  ) {
+    if (
+      key === savingProperties.lightMode ||
+      key === savingProperties.darkMode
+    ) {
+      this[key] = new Mode(
+        this[key].mode,
+        this[key].primaryColors,
+        this[key].baseColors
+      );
+      newValue = new Mode(
+        newValue.mode,
+        newValue.primaryColors,
+        newValue.baseColors
+      );
+    }
+
+    if (
+      ((key === savingProperties.lightMode ||
+        key === savingProperties.darkMode) &&
+        !this[key].areModesEqual(newValue)) ||
+      (this[key] !== newValue &&
+        !(
+          key === savingProperties.lightMode ||
+          key === savingProperties.darkMode
+        ))
+    ) {
+      if (Object.keys(systemProperties).includes(key)) {
+        this._isSystemDirty = true;
+      } else {
+        this._isCustomDirty = true;
+      }
+
+      if (!isOnChanges) {
+        this._isInstanceDirty = true;
+      }
+    }
+  }
+
   private async _kickOffLocalFlow() {
     await this._runLocalFlow(this._setDefaults.bind(this));
 
     if (!this._bag) return;
 
+    this._bag.onAllChanges((key) => {
+      this._runDirtyValidation(key, savingKeys[key], true);
+    });
+
     Array.from(this._bag?.export().entries()).forEach(([key, newValue]) => {
-      if (this[key] !== newValue) {
-        this._isInstanceDirty = true;
-      }
+      this._runDirtyValidation(key, newValue, false);
 
       this[key] = newValue;
 
@@ -196,6 +265,9 @@ export class ThemesElement extends BookeraModuleElement {
       this[key] = value;
       this._savePanelTabState(key, value);
     });
+    this._isCustomDirty = false;
+    this._isSystemDirty = false;
+    this._isInstanceDirty = false;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -278,8 +350,6 @@ export class ThemesElement extends BookeraModuleElement {
 
     const indexes = getIndexes.bind(this)(name, index, colorMode);
 
-    console.log(this[indexes.modeIndex][indexes.propertyIndex][indexes.index]);
-
     return html`
       <div class="shade-group space-between">
         <label>${newName}</label>
@@ -344,7 +414,19 @@ export class ThemesElement extends BookeraModuleElement {
       <form @submit=${handleCustomPaletteForm.bind(this)}>
         <div class="color-palette-name">
           <label>Color Palette Name</label>
-          <sl-input id="color-palette-name"></sl-input>
+          <sl-input
+            id="color-palette-name"
+            value=${this.customName}
+            @sl-input=${(e: any) => {
+              const newValue: string = e.target.value;
+              this.customName = newValue;
+
+              this._savePanelTabState(
+                savingProperties.customName,
+                this.customName
+              );
+            }}
+          ></sl-input>
           <p>
             ${this.customPaletteStep === 'LightMode'
               ? 'Light Mode'
@@ -504,38 +586,68 @@ export class ThemesElement extends BookeraModuleElement {
   }
 
   private _renderApplyChangesButton() {
-    if (!this._isInstanceDirty) {
+    if (!this._isInstanceDirty || this._hasAppliedChanges) {
       return html``;
     }
 
     return html`<sl-button
       @click=${() => {
-        const np = new CustomColorPalette(
-          this.lightMode,
-          this.darkMode,
-          this._currentColorMode,
-          genShortID(8)
-        );
+        if (this._isCustomDirty) {
+          const np = new CustomColorPalette(
+            this.lightMode,
+            this.darkMode,
+            this._currentColorMode,
+            genShortID(8)
+          );
+          CustomColorPalette.SetColorMode(np, this._currentColorMode);
+        }
+        if (this._isSystemDirty) {
+          const np = new SystemColorPalette(
+            this.backgroundColor,
+            this.primaryColor,
+            genShortID(6)
+          );
 
-        CustomColorPalette.SetColorMode(np, this._currentColorMode);
+          SystemColorPalette.SelectColorPalette(np, this._currentColorMode);
+        }
+
+        this._hasAppliedChanges = true;
       }}
       >Apply changes</sl-button
     >`;
   }
 
+  private _renderCurrentSection() {
+    let sections = [];
+
+    if (this._isSystemDirty || (!this._isSystemDirty && !this._isCustomDirty)) {
+      sections.push(html`
+        ${this.createSection(
+          'System Color Palettes',
+          'Create from a system color palette',
+          this.renderSystemColorPaletteSection.bind(this)
+        )}
+      `);
+    }
+    if (this._isCustomDirty || (!this._isSystemDirty && !this._isCustomDirty)) {
+      sections.push(
+        html`${this.createSection(
+          'Custom Palettes',
+          'Create your own color palette & share with others!',
+          this.renderCustomPaletteSection.bind(this)
+        )}`
+      );
+    }
+
+    return html`${sections.map((section) => {
+      return section;
+    })}`;
+  }
+
   protected renderInSettings() {
     return html`
       ${this.renderTitleSection()} ${this._renderApplyChangesButton()}
-      ${this.createSection(
-        'System Color Palettes',
-        'Create from a system color palette',
-        this.renderSystemColorPaletteSection.bind(this)
-      )}
-      ${this.createSection(
-        'Custom Palettes',
-        'Create your own color palette & share with others!',
-        this.renderCustomPaletteSection.bind(this)
-      )}
+      ${this._renderCurrentSection()}
       ${this.createSection(
         'Select Color Palettes!',
         'These are your color palettes!',

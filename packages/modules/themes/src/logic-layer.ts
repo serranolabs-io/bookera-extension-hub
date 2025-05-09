@@ -126,6 +126,8 @@ export function handleCustomPaletteForm(this: ThemesElement, e: Event) {
   this.colorPalettes.push(this.selectedColorPalette);
   this.requestUpdate();
   ColorPalettesSingleton.NewColorPaletteAndSelect(this.bagManager, newPalette);
+
+  this._setDefaults();
 }
 
 function _handleSelectInternals(
@@ -137,6 +139,8 @@ function _handleSelectInternals(
 
   // set state
   ColorPalettesSingleton.SetSelectedColorPalette(bagManager, colorPalette);
+
+  console.log('4 my sweetheart <3', colorPalette);
 }
 
 export function handleSelectColorPaletteFromId(id: string) {

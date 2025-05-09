@@ -110,6 +110,22 @@ export class Mode {
     this.primaryColors = primaryColors;
     this.baseColors = baseColors;
   }
+
+  areModesEqual(otherMode: Mode) {
+    if (
+      this.mode === otherMode.mode &&
+      this.primaryColors?.every(
+        (color, index) => color === otherMode.primaryColors![index]
+      ) &&
+      this.baseColors?.every(
+        (color, index) => color === otherMode.baseColors![index]
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 export function getIndexes(

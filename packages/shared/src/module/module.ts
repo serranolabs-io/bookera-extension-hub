@@ -30,6 +30,7 @@ export type RenderMode =
 export class BookeraModule {
   version?: string;
   title?: string;
+  description?: string;
   tab?: Tab;
   id?: string;
   hasSettings?: boolean;
@@ -37,6 +38,7 @@ export class BookeraModule {
   constructor(
     version?: string,
     title?: string,
+    description?: string,
     tab?: Tab,
     id?: string,
     hasSettings?: boolean,
@@ -48,6 +50,10 @@ export class BookeraModule {
     if (title) {
       this.title = title;
     }
+    if (description) {
+      this.description = description;
+    }
+
     if (constructorType) {
       const constructorTypeName = this.getConstructorTypeName();
       if (constructorTypeName) {
