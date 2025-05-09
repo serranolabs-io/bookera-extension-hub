@@ -225,11 +225,14 @@ export abstract class BookeraModuleElement extends LitElement {
   }
 
   protected renderTitleSection() {
-    return html` <div class="title-box">
-      ${this.renderThemeButton()}
-      <h4>${this.title}</h4>
-      ${this.handleTab()}
-    </div>`;
+    return html`
+      <div class="title-box">
+        ${this.renderThemeButton()}
+        <h4>${this.title}</h4>
+        ${this.handleTab()}
+      </div>
+      <p class="title-description">${this.module.description}</p>
+    `;
   }
 
   protected renderSidePanelTitleSection() {
@@ -287,6 +290,14 @@ declare global {
 }
 
 export const moduleElementStyles = css`
+  .title-box {
+    margin-bottom: var(--spacingSmall);
+  }
+
+  .title-description {
+    margin-bottom: var(--spacing);
+  }
+
   .panel-container {
     padding: var(--spacing);
   }

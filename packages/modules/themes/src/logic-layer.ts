@@ -159,8 +159,6 @@ export function handleSelectColorPalette(this: ThemesElement, e: Event) {
 
   const id = el.value;
   if (this.selectedColorPalette?.id === id) {
-    notify('Resetting color palette to default', 'neutral', '');
-    this.selectedColorPalette = null;
   } else {
     this.selectedColorPalette = this.colorPalettes.find(
       (colorPalette: ColorPalette) => colorPalette.id === id
