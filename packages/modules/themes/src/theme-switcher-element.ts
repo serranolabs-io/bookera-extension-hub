@@ -7,13 +7,14 @@ import {
   ColorSet,
   ColorSets,
   PrimaryColor,
+  SystemColorSets,
   baseColorNames,
   primaryColorName,
   shadePercents,
 } from './color-sets';
 
 import { SlColorPicker, SlSelect } from '@shoelace-style/shoelace';
-import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
+import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import {
   ColorPalette,
   ColorPalettesKey,
@@ -39,6 +40,8 @@ import {
 } from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
 import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
+import { key } from 'localforage';
+import { loadConfigFromFile } from 'vite';
 // you need to rethink how dark theme works.
 // when applying dark theme, you are swapping the colors. It breaks switching data-themes.
 
@@ -53,6 +56,21 @@ const CustomColorStepMode = {
 } as const;
 
 type CustomColorStep = keyof typeof CustomColorStepMode;
+
+export const savingKeys = {
+  systemColorPaletteMode: false,
+  primaryColor: '',
+  backgroundColor: SystemColorSets.Slate,
+  systemName: '',
+};
+
+export const savingProperties = {
+  systemColorPaletteMode: 'systemColorPaletteMode',
+  primaryColor: 'primaryColor',
+  backgroundColor: 'backgroundColor',
+  systemName: 'systemName',
+};
+
 // the theme switcher should always have the same ID no matter what, across every single app
 // the tab will follow
 @customElement('themes-element')
@@ -66,9 +84,6 @@ export class ThemesElement extends BookeraModuleElement {
   @property()
   bagManager: BagManager = CreateBagManager(true);
 
-  @property()
-  primaryColor: string;
-
   @state()
   createColorPaletteMode: boolean = false;
 
@@ -76,8 +91,19 @@ export class ThemesElement extends BookeraModuleElement {
   @state()
   colorPalettes: ColorPalette[] = [];
 
+  // system color palette mode
   @state()
-  systemColorPaletteMode: boolean = false;
+  systemName: string = savingKeys.systemName;
+
+  @state()
+  systemColorPaletteMode: boolean = savingKeys.systemColorPaletteMode;
+
+  @state()
+  primaryColor: string = savingKeys.primaryColor;
+
+  @state()
+  backgroundColor: SystemColorSets = savingKeys.backgroundColor;
+  // end system color palette mode
 
   @state()
   colorPalettesBag!: Bag<ColorPalette>;
@@ -106,12 +132,42 @@ export class ThemesElement extends BookeraModuleElement {
   @state()
   hasFirstUpdated: boolean = false;
 
-  constructor(renderMode: RenderMode, module: BookeraModule) {
-    super(renderMode, module);
+  constructor(
+    renderMode: RenderMode,
+    module: BookeraModule,
+    _panelTabId?: string
+  ) {
+    super(renderMode, module, _panelTabId);
 
-    this.primaryColor = getComputedStyle(document.body).getPropertyValue(
+    savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue(
       '--primary'
     );
+
+    this._kickOffLocalFlow();
+  }
+  private async _kickOffLocalFlow() {
+    await this._runLocalFlow(this._setDefaults.bind(this));
+
+    if (!this._bag) return;
+
+    Array.from(this._bag?.export().entries()).forEach(([key, newValue]) => {
+      if (this[key] !== newValue) {
+        this._isInstanceDirty = true;
+      }
+
+      this[key] = newValue;
+    });
+  }
+
+  private _setDefaults() {
+    this._setSystemDefaults();
+  }
+
+  protected _setSystemDefaults() {
+    Object.entries(savingKeys).forEach(([key, value]) => {
+      this._bag?.set(key, value);
+      this[key] = value;
+    });
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -166,6 +222,10 @@ export class ThemesElement extends BookeraModuleElement {
 
     // ! tab has to render before we update it! maybe we should ask for it
     this.requestUpdate();
+  }
+
+  protected renderInPanel() {
+    return html``;
   }
 
   private renderShades(
@@ -357,6 +417,7 @@ export class ThemesElement extends BookeraModuleElement {
               id="color-selector"
               name="system-colors"
               @sl-change=${selectSystemColor.bind(this)}
+              value=${this.backgroundColor}
             >
               ${Array.from(ColorSets.values()).map((colorSet: ColorSet) => {
                 return html`<sl-option value="${colorSet.name}"
@@ -384,7 +445,19 @@ export class ThemesElement extends BookeraModuleElement {
           ? html`
               <div class="name-color-palette">
                 <label>Name your palette</label>
-                <sl-input name="name"></sl-input>
+                <sl-input
+                  name="name"
+                  value=${this.systemName}
+                  @sl-change=${(e) => {
+                    const newValue: string = e.target.value;
+                    this.systemName = newValue;
+
+                    this._savePanelTabState(
+                      savingProperties.systemName,
+                      this.systemName
+                    );
+                  }}
+                ></sl-input>
               </div>
               <sl-button type="submit" class="button-hundred">Save</sl-button>
             `

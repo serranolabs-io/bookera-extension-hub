@@ -11,15 +11,20 @@ export interface RequestUpdateEventType {
 
 export const DEFAULT_VERSION = '0.0.1';
 
-export const BookeraModuleRegistryClasses: Record<
-  string,
-  new (renderMode: RenderMode, module: BookeraModule) => object
-> = {};
+export type BookeraModuleClass = new (
+  renderMode: RenderMode,
+  module: BookeraModule,
+  _panelTabId: string
+) => object;
+
+export const BookeraModuleRegistryClasses: Record<string, BookeraModuleClass> =
+  {};
 
 export type RenderMode =
   | 'renderInSettings'
   | 'renderInSidePanel'
-  | 'renderInDaemon';
+  | 'renderInDaemon'
+  | 'renderInPanel';
 
 // extensions are just extended functionality from the core system, BookeraModules
 export class BookeraModule {
@@ -35,10 +40,7 @@ export class BookeraModule {
     tab?: Tab,
     id?: string,
     hasSettings?: boolean,
-    constructorType?: new (
-      renderMode: RenderMode,
-      module: BookeraModule
-    ) => object
+    constructorType?: BookeraModuleClass
   ) {
     if (version) {
       this.version = version;

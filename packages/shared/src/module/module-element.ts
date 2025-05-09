@@ -11,6 +11,8 @@ import type { RenderMode } from './module';
 import { Tab } from './tab';
 import { sendEvent } from '../model/util';
 import { notify } from '../model/lit';
+import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
+import localforage from 'localforage';
 
 customElement('bookera-module-element');
 /**
@@ -51,18 +53,69 @@ export abstract class BookeraModuleElement extends LitElement {
   @state()
   u: boolean = false;
 
-  constructor(renderMode: RenderMode, module: BookeraModule) {
+  private _panelTabId: string | undefined;
+
+  @state()
+  instanceId: string | undefined;
+
+  @state()
+  protected _isInstanceDirty: boolean = false;
+
+  private _bagManager: BagManager | undefined;
+  protected _bag: Bag | undefined;
+
+  constructor(
+    renderMode: RenderMode,
+    module: BookeraModule,
+    _panelTabId?: string
+  ) {
     super();
     this.renderMode = renderMode;
     this.module = module;
     this.module.tab = Object.assign(new Tab(), this.module.tab);
     this.title = this.module.title!;
+    if (_panelTabId) {
+      this._panelTabId = _panelTabId;
+      this.instanceId = this.module.id! + this._panelTabId;
+      this._bagManager = CreateBagManager();
+      this._bag = CreateBag(this.instanceId);
+    }
 
     // @ts-expect-error addEventListener sucks
     document.addEventListener(
       RequestUpdateEvent,
       this.listenToUpdates.bind(this)
     );
+  }
+
+  protected findKey(savingKeys, index) {
+    Object.keys(savingKeys).find(
+      (key) => savingKeys[key as keyof typeof savingKeys] === index
+    );
+  }
+
+  protected _savePanelTabState(key: string, value: any) {
+    this._bag?.set(key, value);
+
+    localforage.setItem(
+      this.instanceId!,
+      this._bag?.export() as Map<string, any>
+    );
+  }
+
+  protected async _getLocalForage(): Promise<Map<string, any> | null> {
+    return await localforage.getItem(this.instanceId!);
+  }
+
+  protected async _runLocalFlow(defaultsFunction: () => void) {
+    const contents = await this._getLocalForage();
+
+    if (!contents) {
+      defaultsFunction();
+      return;
+    }
+
+    this._bag?.populate(contents);
   }
 
   private listenToUpdates(e: CustomEvent<RequestUpdateEventType>) {
@@ -201,11 +254,17 @@ export abstract class BookeraModuleElement extends LitElement {
     return html` <div class="panel-container">${this.renderInSettings()}</div>`;
   }
 
+  protected renderInPanelWrapper() {
+    return html` <div class="panel-container">${this.renderInPanel()}</div>`;
+  }
+
   protected abstract renderInSidePanel(): TemplateResult;
 
   protected abstract renderInSettings(): TemplateResult;
 
   protected abstract renderInModuleDaemon(): TemplateResult;
+
+  protected abstract renderInPanel(): TemplateResult;
 
   render() {
     switch (this.renderMode) {
@@ -215,6 +274,8 @@ export abstract class BookeraModuleElement extends LitElement {
         return this.renderSidePanelWrapper();
       case 'renderInDaemon':
         return this.renderDaemonWrapper();
+      case 'renderInPanel':
+        return this.renderInPanelWrapper();
     }
   }
 }

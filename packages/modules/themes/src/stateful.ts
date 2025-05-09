@@ -241,3 +241,5 @@ export class ColorPalettesSingleton {
 
 export const ColorPalettesKey = 'color-palettes-key';
 export const SelectedColorPaletteKey = 'selected-color-palette-key';
+
+export class InstanceManager {}

@@ -15,7 +15,11 @@ import {
   ColorPalette,
   SystemColorPalette,
 } from './stateful';
-import { ThemesElement } from './theme-switcher-element';
+import {
+  savingKeys,
+  savingProperties,
+  ThemesElement,
+} from './theme-switcher-element';
 import { BagManager, CreateBagManager } from '@pb33f/saddlebag';
 import { notify } from '@serranolabs.io/shared/lit';
 import { doesClickContainElement } from '@serranolabs.io/shared/util';
@@ -177,11 +181,27 @@ export function selectSystemColor(this: ThemesElement) {
     DarkMode.GetColorMode()
   );
   this.systemColorPaletteMode = true;
+  this.backgroundColor = val as SystemColorSets;
+  this._savePanelTabState(
+    savingProperties.backgroundColor,
+    this.backgroundColor
+  );
+
+  this._savePanelTabState(
+    savingProperties.systemColorPaletteMode,
+    this.systemColorPaletteMode
+  );
 }
 
 export function selectPrimaryColor(this: ThemesElement) {
   this.systemColorPaletteMode = true;
-  ColorSet.SetPrimaryColor(this.primaryColorPicker.value);
+  this._savePanelTabState(
+    savingProperties.systemColorPaletteMode,
+    this.systemColorPaletteMode
+  );
+  this.primaryColor = this.primaryColorPicker.value;
+  ColorSet.SetPrimaryColor(this.primaryColor);
+  this._savePanelTabState(savingProperties.primaryColor, this.primaryColor);
 }
 
 export function handleSubmitSystemColorPalette(
@@ -205,4 +225,6 @@ export function handleSubmitSystemColorPalette(
   this.colorPalettes.push(this.selectedColorPalette);
   ColorPalettesSingleton.NewColorPaletteAndSelect(this.bagManager, newPalette);
   this.systemColorPaletteMode = false;
+
+  this._setSystemDefaults();
 }

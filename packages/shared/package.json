@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.21",
+  "version": "0.0.30",
   "type": "module",
   "private": false,
   "scripts": {
@@ -13,6 +13,19 @@
     "dist"
   ],
   "exports": {
+    "./panel": {
+      "default": {
+        "import": "./dist/panel.js",
+        "types": "./dist/model/panel.d.ts"
+      },
+      "development": {
+        "import": "./src/model/panel.ts"
+      },
+      "production": {
+        "import": "./dist/panel.js",
+        "types": "./dist/model/panel.d.ts"
+      }
+    },
     "./base": {
       "development": {
         "import": "./src/base.css.ts"
@@ -118,6 +131,7 @@
     "@pb33f/saddlebag": "^0.2.2",
     "@shoelace-style/shoelace": "^2.20.1",
     "lit": "^3.2.1",
+    "localforage": "^1.01.0",
     "shoelace": "^0.1.1",
     "vite-plugin-dts": "^4.5.3"
   },

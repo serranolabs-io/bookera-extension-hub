@@ -14,7 +14,7 @@
     },
     "packages/modules/themes": {
       "name": "@serranolabs.io/bookera-themes",
-      "version": "0.0.15",
+      "version": "0.0.16",
       "dependencies": {
         "@babel/plugin-proposal-decorators": "^7.25.9",
         "@pb33f/saddlebag": "^0.2.2",
@@ -33,11 +33,12 @@
     },
     "packages/shared": {
       "name": "@serranolabs.io/shared",
-      "version": "0.0.19",
+      "version": "0.0.29",
       "dependencies": {
         "@pb33f/saddlebag": "^0.2.2",
         "@shoelace-style/shoelace": "^2.20.1",
         "lit": "^3.2.1",
+        "localforage": "^1.01.0",
         "shoelace": "^0.1.1",
         "vite-plugin-dts": "^4.5.3",
       },
