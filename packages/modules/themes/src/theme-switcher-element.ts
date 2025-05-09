@@ -19,11 +19,15 @@ import {
   ColorPalette,
   ColorPalettesKey,
   ColorPalettesSingleton,
+  CustomColorPalette,
+  getIndexes,
+  getShadeVariable,
   Mode,
   SelectedColorPaletteKey,
 } from './stateful';
 import {
   enableCreateColorPaletteMode,
+  fillShadeStyle,
   handleCustomPaletteForm,
   handleSelectColorPalette,
   handleSubmitSystemColorPalette,
@@ -42,6 +46,7 @@ import baseCss from '@serranolabs.io/shared/base';
 import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
 import { key } from 'localforage';
 import { loadConfigFromFile } from 'vite';
+import { genShortID } from '@serranolabs.io/shared/util';
 // you need to rethink how dark theme works.
 // when applying dark theme, you are swapping the colors. It breaks switching data-themes.
 
@@ -62,13 +67,31 @@ export const savingKeys = {
   primaryColor: '',
   backgroundColor: SystemColorSets.Slate,
   systemName: '',
+  // custom
+  customName: '',
+  lightMode: new Mode(
+    'Light',
+    fillShadeStyle(PrimaryColor, false),
+    fillShadeStyle(BaseColor, false)
+  ),
+  darkMode: new Mode(
+    'Dark',
+    fillShadeStyle(PrimaryColor, false),
+    fillShadeStyle(BaseColor, false)
+  ),
+  createColorPaletteMode: false,
 };
 
 export const savingProperties = {
   systemColorPaletteMode: 'systemColorPaletteMode',
+  createColorPaletteMode: 'createColorPaletteMode',
   primaryColor: 'primaryColor',
   backgroundColor: 'backgroundColor',
   systemName: 'systemName',
+  // custom
+  customName: 'customName',
+  lightMode: 'lightMode',
+  darkMode: 'darkMode',
 };
 
 // the theme switcher should always have the same ID no matter what, across every single app
@@ -85,7 +108,7 @@ export class ThemesElement extends BookeraModuleElement {
   bagManager: BagManager = CreateBagManager(true);
 
   @state()
-  createColorPaletteMode: boolean = false;
+  createColorPaletteMode: boolean = savingKeys.createColorPaletteMode;
 
   // only consume what I want from the singleton
   @state()
@@ -105,6 +128,18 @@ export class ThemesElement extends BookeraModuleElement {
   backgroundColor: SystemColorSets = savingKeys.backgroundColor;
   // end system color palette mode
 
+  // begin custom color palettes
+  @state()
+  lightMode: Mode = savingKeys.lightMode;
+
+  @state()
+  darkMode: Mode = savingKeys.darkMode;
+
+  @state()
+  customName: string = savingKeys.customName;
+
+  // end custom color palettes
+
   @state()
   colorPalettesBag!: Bag<ColorPalette>;
 
@@ -113,12 +148,6 @@ export class ThemesElement extends BookeraModuleElement {
 
   @state()
   customPaletteStep: CustomColorStep = 'LightMode';
-
-  @state()
-  lightMode!: Mode;
-
-  @state()
-  darkMode!: Mode;
 
   @state()
   darkModeElement!: DarkMode;
@@ -156,17 +185,16 @@ export class ThemesElement extends BookeraModuleElement {
       }
 
       this[key] = newValue;
+
+      this.requestUpdate();
     });
   }
 
-  private _setDefaults() {
-    this._setSystemDefaults();
-  }
-
-  protected _setSystemDefaults() {
+  protected _setDefaults() {
     Object.entries(savingKeys).forEach(([key, value]) => {
       this._bag?.set(key, value);
       this[key] = value;
+      this._savePanelTabState(key, value);
     });
   }
 
@@ -232,19 +260,25 @@ export class ThemesElement extends BookeraModuleElement {
     name: string,
     shade: number,
     index: number,
-    style: string,
     colorMode: ColorMode
   ) {
     // create name
     let newName = '';
     if (ColorSet.FixProperty(name) === 'slate') {
-      newName = baseColorNames[index] !== '';
+      newName =
+        baseColorNames[index] !== ''
+          ? baseColorNames[index]
+          : `Shade ${name}-${shade}`;
     } else {
       newName =
         primaryColorName[index] !== ''
           ? primaryColorName[index]
           : `Shade ${name}-${shade}`;
     }
+
+    const indexes = getIndexes.bind(this)(name, index, colorMode);
+
+    console.log(this[indexes.modeIndex][indexes.propertyIndex][indexes.index]);
 
     return html`
       <div class="shade-group space-between">
@@ -253,11 +287,18 @@ export class ThemesElement extends BookeraModuleElement {
           class="${name}-picker"
           data-theme=${colorMode}
           label="Select a color"
-          value=${style}
+          value=${this[indexes.modeIndex][indexes.propertyIndex][indexes.index]}
           @sl-change=${(e: any) => {
             const value = e.target!.value;
 
             ColorSet.SetStyle(name, shade, value);
+            this[indexes.modeIndex][indexes.propertyIndex][indexes.index] =
+              value;
+
+            this._savePanelTabState(
+              savingProperties[indexes.modeIndex],
+              this[indexes.modeIndex]
+            );
           }}
         ></sl-color-picker>
       </div>
@@ -325,7 +366,6 @@ export class ThemesElement extends BookeraModuleElement {
                     PrimaryColor,
                     shadePercents[i]!,
                     i,
-                    style,
                     'Light'
                   );
                 }
@@ -338,7 +378,6 @@ export class ThemesElement extends BookeraModuleElement {
                   BaseColor,
                   shadePercents[i]!,
                   i,
-                  style,
                   'Light'
                 );
               })}
@@ -357,7 +396,6 @@ export class ThemesElement extends BookeraModuleElement {
                     PrimaryColor,
                     shadePercents[i]!,
                     i,
-                    style,
                     'Dark'
                   );
                 }
@@ -371,7 +409,6 @@ export class ThemesElement extends BookeraModuleElement {
                   BaseColor,
                   shadePercents[i]!,
                   i,
-                  style,
                   'Dark'
                 );
               })}
@@ -466,9 +503,29 @@ export class ThemesElement extends BookeraModuleElement {
     `;
   }
 
+  private _renderApplyChangesButton() {
+    if (!this._isInstanceDirty) {
+      return html``;
+    }
+
+    return html`<sl-button
+      @click=${() => {
+        const np = new CustomColorPalette(
+          this.lightMode,
+          this.darkMode,
+          this._currentColorMode,
+          genShortID(8)
+        );
+
+        CustomColorPalette.SetColorMode(np, this._currentColorMode);
+      }}
+      >Apply changes</sl-button
+    >`;
+  }
+
   protected renderInSettings() {
     return html`
-      ${this.renderTitleSection()}
+      ${this.renderTitleSection()} ${this._renderApplyChangesButton()}
       ${this.createSection(
         'System Color Palettes',
         'Create from a system color palette',

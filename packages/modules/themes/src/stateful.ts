@@ -9,7 +9,7 @@ import {
   shadePercents,
 } from './color-sets';
 import { html } from 'lit';
-import { ColorMode } from './theme-switcher-element';
+import { ColorMode, ThemesElement } from './theme-switcher-element';
 import { genShortID } from '@serranolabs.io/shared/util';
 
 export class ColorPalette {
@@ -112,6 +112,39 @@ export class Mode {
   }
 }
 
+export function getIndexes(
+  this: ThemesElement,
+  name: string,
+  index: number,
+  colorMode: ColorMode
+): { modeIndex: string; propertyIndex: string; index: number } {
+  const property = name.toLocaleLowerCase() + 'Colors';
+  const theme = colorMode === 'Dark' ? 'darkMode' : 'lightMode';
+
+  return {
+    modeIndex: theme,
+    propertyIndex: property,
+    index: index,
+  };
+}
+
+export function getShadeVariable(
+  this: ThemesElement,
+  name: string,
+  index: number,
+  colorMode: ColorMode,
+  newValue?: string
+): string | undefined {
+  const property = name.toLocaleLowerCase() + 'Colors';
+  const theme = colorMode === 'Dark' ? 'darkMode' : 'lightMode';
+
+  if (newValue) {
+    this[theme][property][index] = newValue;
+  }
+
+  return this[theme][property][index];
+}
+
 export class CustomColorPalette extends ColorPalette {
   darkMode?: Mode;
   lightMode?: Mode;
@@ -127,7 +160,7 @@ export class CustomColorPalette extends ColorPalette {
     CustomColorPalette.SetColorMode(this, colorMode);
   }
 
-  private static SetColorMode(cp: CustomColorPalette, colorMode: ColorMode) {
+  static SetColorMode(cp: CustomColorPalette, colorMode: ColorMode) {
     let primaryColors: string[];
     let baseColors: string[];
     switch (colorMode) {

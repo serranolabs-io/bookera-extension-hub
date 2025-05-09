@@ -31,7 +31,7 @@ export function switchCustomPaletteStep(this: ThemesElement) {
   this.requestUpdate();
 }
 
-function fillShadeStyle(name: string, reverse: boolean): string[] {
+export function fillShadeStyle(name: string, reverse: boolean): string[] {
   const shades: string[] = [];
   if (!reverse) {
     shadePercents.forEach((shade: number) => {
@@ -56,16 +56,9 @@ function fillShadeStyle(name: string, reverse: boolean): string[] {
 
 export function enableCreateColorPaletteMode(this: ThemesElement) {
   this.createColorPaletteMode = true;
-
-  this.lightMode = new Mode(
-    'Light',
-    fillShadeStyle(PrimaryColor, false),
-    fillShadeStyle(BaseColor, false)
-  );
-  this.darkMode = new Mode(
-    'Dark',
-    fillShadeStyle(PrimaryColor, true),
-    fillShadeStyle(BaseColor, true)
+  this._savePanelTabState(
+    savingProperties.createColorPaletteMode,
+    this.createColorPaletteMode
   );
 }
 
@@ -225,6 +218,10 @@ export function handleSubmitSystemColorPalette(
   this.colorPalettes.push(this.selectedColorPalette);
   ColorPalettesSingleton.NewColorPaletteAndSelect(this.bagManager, newPalette);
   this.systemColorPaletteMode = false;
+  this._savePanelTabState(
+    savingProperties.systemColorPaletteMode,
+    this.systemColorPaletteMode
+  );
 
-  this._setSystemDefaults();
+  this._setDefaults();
 }
