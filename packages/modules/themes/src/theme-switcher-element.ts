@@ -45,14 +45,7 @@ import {
 } from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
 import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
-import { key } from 'localforage';
-import { loadConfigFromFile } from 'vite';
 import { genShortID } from '@serranolabs.io/shared/util';
-// you need to rethink how dark theme works.
-// when applying dark theme, you are swapping the colors. It breaks switching data-themes.
-
-// I think I can get all of the colors in their palettes as code.
-// all I have to do is apply the swap version of the Colors
 
 export type ColorMode = 'Light' | 'Dark';
 
@@ -87,7 +80,6 @@ export const customKeys = {
 export const savingKeys = {
   ...systemKeys,
   ...customKeys,
-  // custom
 };
 
 export const systemProperties = {
