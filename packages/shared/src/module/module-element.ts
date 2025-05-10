@@ -64,6 +64,10 @@ export abstract class BookeraModuleElement extends LitElement {
   private _bagManager: BagManager | undefined;
   protected _bag: Bag | undefined;
 
+  private _formInstanceId() {
+    return this.module.id! + this._panelTabId;
+  }
+
   constructor(
     renderMode: RenderMode,
     module: BookeraModule,
@@ -76,7 +80,7 @@ export abstract class BookeraModuleElement extends LitElement {
     this.title = this.module.title!;
     if (_panelTabId) {
       this._panelTabId = _panelTabId;
-      this.instanceId = this.module.id! + this._panelTabId;
+      this.instanceId = this._formInstanceId();
       this._bagManager = CreateBagManager();
       this._bag = CreateBag(this.instanceId);
     }
@@ -231,7 +235,7 @@ export abstract class BookeraModuleElement extends LitElement {
         <h4>${this.title}</h4>
         ${this.handleTab()}
       </div>
-      <p class="title-description">${this.module.description}</p>
+      <p class="title-description lead">${this.module.description}</p>
     `;
   }
 
@@ -296,6 +300,7 @@ export const moduleElementStyles = css`
 
   .title-description {
     margin-bottom: var(--spacing);
+    font-size: var(--fontSizeSmall);
   }
 
   .panel-container {

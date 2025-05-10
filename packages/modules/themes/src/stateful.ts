@@ -11,6 +11,7 @@ import {
 import { html } from 'lit';
 import { ColorMode, ThemesElement } from './theme-switcher-element';
 import { genShortID } from '@serranolabs.io/shared/util';
+import palettes from './palettes.json';
 
 export class ColorPalette {
   id?: string;
@@ -217,6 +218,7 @@ export class ColorPalettesSingleton {
     'default',
     genShortID(6)
   );
+  static defaultColorPalettes: ColorPalette[] = palettes;
 
   static selectedColorPalette: ColorPalette;
 
@@ -276,6 +278,9 @@ export class ColorPalettesSingleton {
         ColorPalettesSingleton.defaultColorPalette;
 
       // putting default in the main bag
+      ColorPalettesSingleton.defaultColorPalettes.forEach((cp) => {
+        ColorPalettesSingleton.NewColorPaletteAndSelect(bagManager, cp);
+      });
       ColorPalettesSingleton.NewColorPaletteAndSelect(
         bagManager,
         ColorPalettesSingleton.defaultColorPalette
