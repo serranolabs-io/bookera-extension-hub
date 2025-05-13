@@ -102,8 +102,14 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     return html``;
   }
 
+  private _openKeyboardShortcutsPanel(): TemplateResult {
+    return html` <sl-button>Open In Panel</sl-button> `;
+  }
+
   protected renderInSettings(): TemplateResult {
-    return html``;
+    return html`
+      ${this.renderTitleSection()} ${this._openKeyboardShortcutsPanel()}
+    `;
   }
 
   protected renderInSidePanel(): TemplateResult {
