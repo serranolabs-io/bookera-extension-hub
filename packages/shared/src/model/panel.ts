@@ -64,7 +64,6 @@ export class PanelTab {
   name?: string;
   type?: PanelTabType;
   id?: string;
-  _panelContentElement?: any;
 
   constructor(name?: string, type?: PanelTabType, id?: string) {
     this.name = name;
@@ -76,21 +75,18 @@ export class PanelTab {
     }
   }
 
-  static NewPanelTab(
-    panelTab: PanelTab,
-    panelContentElement: new () => object
-  ): PanelTab {
+  static NewPanelTab(panelTab: PanelTab): PanelTab {
     const pt = new PanelTab(panelTab.name, panelTab.type, panelTab.id);
-
-    pt._panelContentElement = panelContentElement;
 
     return pt;
   }
 
-  renderPanelContents(): TemplateResult {
+  renderPanelContents(
+    panelContentElement: new (panelTabType: PanelTabType, id: string) => object
+  ): TemplateResult {
     if (!this.id) return html``;
 
-    const panelContent = new this._panelContentElement(
+    const panelContent = new panelContentElement(
       this.type as PanelTabType,
       this.id
     );
