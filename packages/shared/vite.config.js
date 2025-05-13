@@ -30,6 +30,7 @@ export default defineConfig({
             'root': resolve(__dirname, 'src/root.css'),
             'util': resolve(__dirname, 'src/model/util.ts'),
             'lit': resolve(__dirname, 'src/model/lit.ts'),
+            'panel': resolve(__dirname, 'src/model/panel.ts'),
             'module/module': resolve(__dirname, 'src/module/module.ts'),
             'module/tab': resolve(__dirname, 'src/module/tab.ts'),
             'module/module-element': resolve(__dirname, 'src/module/module-element.ts'),

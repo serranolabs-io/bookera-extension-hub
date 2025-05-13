@@ -18,6 +18,7 @@ import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/compone
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
+import { elementName } from './module';
 
 export interface AssignKeybindingDialog {
   isOpened: boolean;
@@ -33,7 +34,7 @@ export const ASSIGN_KEYBINDING_DIALOG_DEFAULTS = {
 
 export const SUBMIT_FORM_EVENT = 'submit-form-event-key';
 
-@customElement('keyboard-shortcuts-element')
+@customElement(elementName)
 export class KeyboardShortcutsElement extends BookeraModuleElement {
   static styles = [keyboardShortcutsStyle, moduleElementStyles, baseCss];
 
@@ -103,7 +104,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   private _openKeyboardShortcutsPanel(): TemplateResult {
-    return html` <sl-button>Open In Panel</sl-button> `;
+    return html` <sl-button @click=${() => {}}>Open In Panel</sl-button> `;
   }
 
   protected renderInSettings(): TemplateResult {
@@ -176,6 +177,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'keyboard-shortcuts-element': KeyboardShortcutsElement;
+    [elementName]: KeyboardShortcutsElement;
   }
 }

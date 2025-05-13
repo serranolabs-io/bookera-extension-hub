@@ -7,17 +7,13 @@ const description = 'Manage all the keyboard shortcuts';
 
 const title = 'Keyboard Shortcuts';
 
+export const elementName = 'keyboard-shortcuts-element';
+
 export const keyboardShortcutsModule = new BookeraModule(
   DEFAULT_VERSION,
   title,
   description,
-  new Tab(
-    title,
-    'command',
-    '',
-    'keyboard-shortcuts-element',
-    'left'
-  ).removeTab(),
+  new Tab(title, 'command', '', elementName, 'left').removeTab(),
   genShortID(10),
   true,
   KeyboardShortcutsElement
