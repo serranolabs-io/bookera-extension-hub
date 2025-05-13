@@ -14,7 +14,7 @@ export const CLOSE_SIDE_PANEL_EVENT = 'close-side-panel-event';
 
 export interface NewPanelEventType {
   tab: PanelTab;
-  moduleId: string;
+  moduleId?: string;
 }
 
 export interface NewPanelEventType {
@@ -40,6 +40,7 @@ export interface SplitPanelEventType {
   panelID: string;
   tab: PanelTab;
   side: PanelDrop;
+  moduleId?: string;
 }
 
 export enum PanelDrop {
