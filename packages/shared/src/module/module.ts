@@ -14,7 +14,7 @@ export const DEFAULT_VERSION = '0.0.1';
 export type BookeraModuleClass = new (
   renderMode: RenderMode,
   module: BookeraModule,
-  _panelTabId: string
+  _panelTabId?: string
 ) => object;
 
 export const BookeraModuleRegistryClasses: Record<string, BookeraModuleClass> =
