@@ -1,5 +1,7 @@
-import { BookeraModule } from '../module/module';
+import { html, type TemplateResult } from 'lit';
+import { BookeraModule, type BookeraModuleClass } from '../module/module';
 import type { TabPosition } from '../module/tab';
+import { genShortID } from './util';
 
 export const CLOSE_PANEL_EVENT = 'close-panel-event';
 export const SPLIT_PANEL_EVENT = 'split-panel-event';
@@ -50,7 +52,47 @@ export enum PanelDrop {
 }
 
 // ! please please redefine them lmao
-interface PanelTab {}
+export const PanelTabs = {
+  Settings: 'Settings',
+  New: 'New',
+  Module: 'Module',
+  Undefined: 'Undefined',
+} as const;
+export type PanelTabType = keyof typeof PanelTabs;
+
+export class PanelTab {
+  name?: string;
+  type?: PanelTabType;
+  id?: string;
+  _panelContentElement?: any;
+
+  constructor(
+    name?: string,
+    type?: PanelTabType,
+    id?: string,
+    _panelContentElement: any
+  ) {
+    this.name = name;
+    this.type = type;
+    if (id) {
+      this.id = id;
+    } else {
+      this.id = genShortID(6);
+    }
+    this._panelContentElement = _panelContentElement;
+  }
+
+  renderPanelContents(): TemplateResult {
+    if (!this.id) return html``;
+
+    const panelContent = new this._panelContentElement(
+      this.type as PanelTabType,
+      this.id
+    );
+
+    return html`${panelContent}`;
+  }
+}
 interface PanelElement {}
 
 export interface IsDraggingTabEvent {
