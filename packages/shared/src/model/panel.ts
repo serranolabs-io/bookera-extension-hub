@@ -12,8 +12,13 @@ export const TOGGLE_SIDE_PANEL_EVENT = 'toggle-side-panel-event';
 export const SWITCH_TOGGLE_SIDE_PANEL_EVENT = 'switch-toggle-side-panel-event';
 export const CLOSE_SIDE_PANEL_EVENT = 'close-side-panel-event';
 
-export interface NewPanelTabEventType {
-  panelID: string;
+export interface NewPanelEventType {
+  tab: PanelTab;
+  moduleId: string;
+}
+
+export interface NewPanelEventType {
+  tab: PanelTab;
 }
 
 export interface OpenSidePanelEventTYpe {
