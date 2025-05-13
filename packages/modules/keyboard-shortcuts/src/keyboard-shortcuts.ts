@@ -13,12 +13,21 @@ import {
   KeyboardShortcut,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
-import { doesClickContainElement } from '@serranolabs.io/shared/util';
+import {
+  doesClickContainElement,
+  sendEvent,
+  sendGlobalEvent,
+} from '@serranolabs.io/shared/util';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
 import { elementName } from './module';
+import {
+  NEW_PANEL_EVENT,
+  NewPanelEventType,
+  PanelTab,
+} from '@serranolabs.io/shared/panel';
 
 export interface AssignKeybindingDialog {
   isOpened: boolean;
@@ -104,7 +113,17 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   private _openKeyboardShortcutsPanel(): TemplateResult {
-    return html` <sl-button @click=${() => {}}>Open In Panel</sl-button> `;
+    return html`
+      <sl-button
+        @click=${() => {
+          sendEvent<NewPanelEventType>(this, NEW_PANEL_EVENT, {
+            tab: new PanelTab(this.module.title, 'Module'),
+            moduleId: this.module.id,
+          });
+        }}
+        >Open In Panel</sl-button
+      >
+    `;
   }
 
   protected renderInSettings(): TemplateResult {
