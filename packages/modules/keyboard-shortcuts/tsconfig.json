@@ -1,0 +1,9 @@
+{
+  "extends": "@serranolabs.io/typescript-config/base",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+  },
+  "include": ["src", "../../shared/src/model/keyboard-shortcuts/model.ts", "../../shared/src/model/keyboard-shortcuts/keyboard-event-key-type.ts"],
+  "exclude": ["node_modules", "dist"],
+}

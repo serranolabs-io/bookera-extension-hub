@@ -52,6 +52,19 @@
         "types": "./dist/root.css.d.ts"
       }
     },
+    "./keyboard-shortcuts": {
+      "default": {
+        "import": "./dist/keyboard-shortcuts.js",
+        "types": "./dist/model/keyboard-shortcuts/model.d.ts"
+      },
+      "development": {
+        "import": "./src/model/keyboard-shortcuts/model.ts"
+      },
+      "production": {
+        "import": "./dist/keyboard-shortcuts.js",
+        "types": "./dist/model/keyboard-shortcuts/model.d.ts"
+      }
+    },
     "./util": {
       "default": {
         "import": "./dist/util.js",

@@ -61,7 +61,7 @@ export abstract class BookeraModuleElement extends LitElement {
   @state()
   protected _isInstanceDirty: boolean = false;
 
-  private _bagManager: BagManager | undefined;
+  protected _bagManager: BagManager;
   protected _bag: Bag | undefined;
 
   private _formInstanceId() {
@@ -78,10 +78,11 @@ export abstract class BookeraModuleElement extends LitElement {
     this.module = module;
     this.module.tab = Object.assign(new Tab(), this.module.tab);
     this.title = this.module.title!;
+    this._bagManager = CreateBagManager();
+
     if (_panelTabId) {
       this._panelTabId = _panelTabId;
       this.instanceId = this._formInstanceId();
-      this._bagManager = CreateBagManager();
       this._bag = CreateBag(this.instanceId);
     }
 

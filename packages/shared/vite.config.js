@@ -33,6 +33,7 @@ export default defineConfig({
             'module/module': resolve(__dirname, 'src/module/module.ts'),
             'module/tab': resolve(__dirname, 'src/module/tab.ts'),
             'module/module-element': resolve(__dirname, 'src/module/module-element.ts'),
+            'keyboard-shortcuts': resolve(__dirname, 'src/model/keyboard-shortcuts/model.ts'),
           },
           name: 'shared',
           formats: ['es'],

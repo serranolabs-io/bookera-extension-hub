@@ -26,6 +26,10 @@ export type RenderMode =
   | 'renderInDaemon'
   | 'renderInPanel';
 
+export type RenderModeArray = Array<RenderMode>;
+
+const renderMode: RenderModeArray = ['renderInDaemon', 'renderInPanel'];
+
 // extensions are just extended functionality from the core system, BookeraModules
 export class BookeraModule {
   version?: string;
