@@ -45,6 +45,7 @@ import {
 } from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
 import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
+
 import { genShortID } from '@serranolabs.io/shared/util';
 
 export type ColorMode = 'Light' | 'Dark';

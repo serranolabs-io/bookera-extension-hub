@@ -348,10 +348,10 @@ export const moduleElementStyles = css`
 
   sl-icon-button {
     font-size: 20px;
+    margin-right: var(--spacingSmall);
   }
   sl-icon-button::part(base) {
     padding: 0;
-    padding-right: var(--spacingSmall);
   }
 
   p {

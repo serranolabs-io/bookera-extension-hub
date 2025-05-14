@@ -1,2 +1,2 @@
-export * from './keyboard-shortcuts';
 export * from './module';
+export * from './keyboard-shortcuts';

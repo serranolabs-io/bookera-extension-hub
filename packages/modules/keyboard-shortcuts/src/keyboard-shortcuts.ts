@@ -16,18 +16,14 @@ import {
 import {
   doesClickContainElement,
   sendEvent,
-  sendGlobalEvent,
 } from '@serranolabs.io/shared/util';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
-import { elementName } from './module';
-import {
-  NEW_PANEL_EVENT,
-  NewPanelEventType,
-  PanelTab,
-} from '@serranolabs.io/shared/panel';
+import { NEW_PANEL_EVENT, PanelTab } from '@serranolabs.io/shared/panel';
+
+export const elementName = 'keyboard-shortcuts-element';
 
 export interface AssignKeybindingDialog {
   isOpened: boolean;

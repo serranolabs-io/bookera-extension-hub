@@ -21,6 +21,14 @@ export default css`
     background: transparent;
   }
 
+  sl-icon-button[name='command'] {
+    transition: transform 1s ease-in-out;
+    transform-origin: center;
+  }
+  sl-icon-button[name='command']:hover {
+    transform: rotate(360deg);
+  }
+
   th::before,
   td::before {
     content: '';

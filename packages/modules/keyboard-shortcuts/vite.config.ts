@@ -19,9 +19,6 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: {
-    conditions: ['development', 'default'],
-  },
   build: {
     minify: 'terser',
     lib: {
