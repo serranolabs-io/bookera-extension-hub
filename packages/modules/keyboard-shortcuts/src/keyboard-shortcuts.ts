@@ -86,6 +86,22 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     this._keyboardShortcuts = Array.from(
       this._shortcutsBag.export().values()
     ).map((shortcut: KeyboardShortcut) => KeyboardShortcut.fromJSON(shortcut));
+
+    this._shortcutsBag.onAllChanges(this._listenToAllChanges.bind(this));
+  }
+
+  private _listenToAllChanges(changed: string) {
+    const changedCommand = KeyboardShortcut.fromJSON(
+      this._shortcutsBag.get(changed)!
+    );
+
+    for (let i = 0; i < this._keyboardShortcuts.length; i++) {
+      if (this._keyboardShortcuts[i].command === changedCommand.command) {
+        this._keyboardShortcuts[i] = changedCommand;
+      }
+    }
+
+    this.requestUpdate();
   }
 
   private _listToAssignNewKeysEvent(e: CustomEvent<Keybinding>) {
