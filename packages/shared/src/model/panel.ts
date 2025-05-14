@@ -64,6 +64,7 @@ export class PanelTab {
   name?: string;
   type?: PanelTabType;
   id?: string;
+  moduleId?: string;
 
   constructor(name?: string, type?: PanelTabType, id?: string) {
     this.name = name;
@@ -75,6 +76,10 @@ export class PanelTab {
     }
   }
 
+  setModuleId(moduleId: string) {
+    this.moduleId = moduleId;
+  }
+
   static NewPanelTab(panelTab: PanelTab): PanelTab {
     const pt = new PanelTab(panelTab.name, panelTab.type, panelTab.id);
 
@@ -82,14 +87,27 @@ export class PanelTab {
   }
 
   renderPanelContents(
-    panelContentElement: new (panelTabType: PanelTabType, id: string) => object
+    panelContentElement: new (
+      panelTabType: PanelTabType,
+      id: string,
+      moduleId?: string
+    ) => object
   ): TemplateResult {
     if (!this.id) return html``;
 
-    const panelContent = new panelContentElement(
-      this.type as PanelTabType,
-      this.id
-    );
+    let panelContent: object;
+    if (this.moduleId) {
+      panelContent = new panelContentElement(
+        this.type as PanelTabType,
+        this.id,
+        this.moduleId
+      );
+    } else {
+      panelContent = new panelContentElement(
+        this.type as PanelTabType,
+        this.id
+      );
+    }
 
     return html`${panelContent}`;
   }
