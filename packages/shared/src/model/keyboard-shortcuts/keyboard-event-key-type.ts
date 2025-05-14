@@ -1,4 +1,4 @@
-type NumericKeypadKeys =
+export type NumericKeypadKeys =
   | 'Decimal'
   | 'Key11'
   | 'Key12'
@@ -18,7 +18,7 @@ type NumericKeypadKeys =
   | '7'
   | '8'
   | '9';
-type UpperAlpha =
+export type UpperAlpha =
   | 'A'
   | 'B'
   | 'C'
@@ -45,7 +45,7 @@ type UpperAlpha =
   | 'X'
   | 'Y'
   | 'Z';
-type LowerAlpha =
+export type LowerAlpha =
   | 'a'
   | 'b'
   | 'c'
@@ -92,7 +92,7 @@ export const modifierKeys = [
 
 export type ModifierKeys = (typeof modifierKeys)[number];
 
-type NavigationKeys =
+export type NavigationKeys =
   | 'ArrowDown'
   | 'ArrowLeft'
   | 'ArrowRight'
@@ -102,7 +102,7 @@ type NavigationKeys =
   | 'PageDown'
   | 'PageUp';
 
-type EditingKeys =
+export type EditingKeys =
   | 'Backspace'
   | 'Clear'
   | 'Copy'
@@ -115,7 +115,7 @@ type EditingKeys =
   | 'Paste'
   | 'Redo'
   | 'Undo';
-type UIKeys =
+export type UIKeys =
   | 'Accept'
   | 'Again'
   | 'Attn'
@@ -132,7 +132,7 @@ type UIKeys =
   | 'Select'
   | 'ZoomIn'
   | 'ZoomOut';
-type DeviceKeys =
+export type DeviceKeys =
   | 'BrightnessDown'
   | 'BrightnessUp'
   | 'Eject'
@@ -143,7 +143,7 @@ type DeviceKeys =
   | 'Hibernate'
   | 'Standby'
   | 'WakeUp';
-type IMECompositionKeys =
+export type IMECompositionKeys =
   | 'AllCandidates'
   | 'Alphanumeric'
   | 'CodeInput'
@@ -161,7 +161,7 @@ type IMECompositionKeys =
   | 'PreviousCandidate'
   | 'Process'
   | 'SingleCandidate';
-type LinuxDeadKeys =
+export type LinuxDeadKeys =
   | 'GDK_KEY_dead_grave'
   | 'GDK_KEY_dead_acute'
   | 'GDK_KEY_dead_circumflex'
@@ -210,7 +210,7 @@ type LinuxDeadKeys =
   | 'GDK_KEY_dead_small_schwa'
   | 'GDK_KEY_dead_capital_schwa'
   | 'GDK_KEY_dead_greek';
-type FunctionKeys =
+export type FunctionKeys =
   | 'F1'
   | 'F2'
   | 'F3'
@@ -235,7 +235,7 @@ type FunctionKeys =
   | 'Soft2'
   | 'Soft3'
   | 'Soft4';
-type PhoneKeys =
+export type PhoneKeys =
   | 'AppSwitch'
   | 'Call'
   | 'Camera'
@@ -248,7 +248,7 @@ type PhoneKeys =
   | 'Notification'
   | 'MannerMode'
   | 'VoiceDial';
-type MultimediaKeys =
+export type MultimediaKeys =
   | 'ChannelDown'
   | 'ChannelUp'
   | 'MediaFastForward'
@@ -260,7 +260,7 @@ type MultimediaKeys =
   | 'MediaStop'
   | 'MediaTrackNext'
   | 'MediaTrackPrevious';
-type TVControlKeys =
+export type TVControlKeys =
   | 'TV'
   | 'TV3DMode'
   | 'TVAntennaCable'
@@ -291,7 +291,7 @@ type TVControlKeys =
   | 'TVTerrestrialAnalog'
   | 'TVTerrestrialDigital'
   | 'TVTimer';
-type MediaControllerKeys =
+export type MediaControllerKeys =
   | 'AVRInput'
   | 'AVRPower'
   | 'ColorF0Red'
@@ -364,8 +364,10 @@ type MediaControllerKeys =
   | 'VideoModeNext'
   | 'Wink'
   | 'ZoomToggle';
-type SpeechRecognitionKeys = 'SpeechCorrectionList' | 'SpeechInputToggle';
-type DocumentKeys =
+export type SpeechRecognitionKeys =
+  | 'SpeechCorrectionList'
+  | 'SpeechInputToggle';
+export type DocumentKeys =
   | 'Close'
   | 'New'
   | 'Open'
@@ -375,7 +377,7 @@ type DocumentKeys =
   | 'MailForward'
   | 'MailReply'
   | 'MailSend';
-type ApplicationSelectorKeys =
+export type ApplicationSelectorKeys =
   | 'LaunchCalculator'
   | 'LaunchCalendar'
   | 'LaunchContacts'
@@ -405,7 +407,7 @@ type ApplicationSelectorKeys =
   | 'LaunchApplication14'
   | 'LaunchApplication15'
   | 'LaunchApplication16';
-type BrowserControlKeys =
+export type BrowserControlKeys =
   | 'BrowserBack'
   | 'BrowserFavorites'
   | 'BrowserForward'
@@ -413,14 +415,14 @@ type BrowserControlKeys =
   | 'BrowserRefresh'
   | 'BrowserSearch'
   | 'BrowserStop';
-type KoreanKeyboardsOnly = 'HangulMode' | 'HanjaMode' | 'JunjaMode';
-type WhitespaceKeys = 'Enter' | 'Tab' | ' ';
+export type KoreanKeyboardsOnly = 'HangulMode' | 'HanjaMode' | 'JunjaMode';
+export type WhitespaceKeys = 'Enter' | 'Tab' | ' ';
 
 /**
  * @deprecated use " " instead
  */
-type DeprecatedWhitespaceKey = 'Spacebar';
-type SpecialValueKey = 'Unidentified';
+export type DeprecatedWhitespaceKey = 'Spacebar';
+export type SpecialValueKey = 'Unidentified';
 
 /**
  * @link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values#editing_keys

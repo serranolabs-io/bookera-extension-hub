@@ -8,14 +8,14 @@ import {
   SUBMIT_FORM_EVENT,
   type AssignKeybindingDialog,
 } from './keyboard-shortcuts';
-import {
-  modifierKeys,
-  type KeyboardEventKey,
-  type ModifierKeys,
-} from '../../../shared/src/model/keyboard-shortcuts/keyboard-event-key-type';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/input/input.js';
 import { sendEvent } from '@serranolabs.io/shared/util';
-import { Keybinding } from '@serranolabs.io/shared/keyboard-shortcuts';
+import {
+  Keybinding,
+  KeyboardEventKey,
+  modifierKeys,
+  ModifierKeys,
+} from '@serranolabs.io/shared/keyboard-shortcuts';
 
 const KEYBINDINGS_INPUT_ID = 'keybindings-input';
 

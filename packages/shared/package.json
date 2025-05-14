@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "type": "module",
   "private": false,
   "scripts": {
@@ -50,6 +50,17 @@
       "production": {
         "import": "./dist/root.css",
         "types": "./dist/root.css.d.ts"
+      }
+    },
+    "./shortcuts-list": {
+      "default": {
+        "import": "./dist/shortcuts-list.js"
+      },
+      "development": {
+        "import": "./src/model/keyboard-shortcuts/shortcuts.json"
+      },
+      "production": {
+        "import": "./dist/shortcuts-list.js"
       }
     },
     "./keyboard-shortcuts": {

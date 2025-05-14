@@ -1,0 +1,106 @@
+[
+  {
+    "command": "workbench.action.previousPanelTab",
+    "keybinding": {
+      "keys": [["h"]]
+    },
+    "when": {
+      "condition": ["panelTabsFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.nextPanelTab",
+    "keybinding": {
+      "keys": [["l"]]
+    },
+    "when": {
+      "condition": ["panelTabsFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.leavePanelTabs",
+    "keybinding": {
+      "keys": [["j"]]
+    },
+    "when": {
+      "condition": ["panelTabsFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.enterPanelTabs",
+    "keybinding": {
+      "keys": [["k"]]
+    },
+    "when": {
+      "condition": ["panelFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.previousPanelTab",
+    "keybinding": {
+      "keys": [["ctrl", "h"]]
+    },
+    "when": {
+      "condition": ["panelFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.nextPanelTab",
+    "keybinding": {
+      "keys": [["ctrl", "l"]]
+    },
+    "when": {
+      "condition": ["panelFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.nextPanelView",
+    "keybinding": {
+      "keys": [["l"]]
+    },
+    "when": {
+      "condition": ["panelFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  },
+  {
+    "command": "workbench.action.previousPanelView",
+    "keybinding": {
+      "keys": [["h"]]
+    },
+    "when": {
+      "condition": ["panelFocus"]
+    },
+    "source": {
+      "name": "default",
+      "link": "https://example.com/shortcuts"
+    }
+  }
+]

@@ -96,7 +96,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     );
 
     for (let i = 0; i < this._keyboardShortcuts.length; i++) {
-      if (this._keyboardShortcuts[i].command === changedCommand.command) {
+      if (this._keyboardShortcuts[i].id === changedCommand.id) {
         this._keyboardShortcuts[i] = changedCommand;
       }
     }
@@ -173,7 +173,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
             this.assignKeybindingDialogState = {
               isOpened: true,
               index: Number(index),
-              command: el.dataset.command!,
+              command: el.dataset.id!,
             };
 
             this.requestUpdate();
@@ -181,7 +181,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         >
           ${this._keyboardShortcuts.map(
             (shortcut, index: number) => html`
-              <tr data-index=${index} data-command="${shortcut.command}">
+              <tr data-index=${index} data-command="${shortcut.id}">
                 <td>
                   <sl-icon class="edit-icon" name="pencil"></sl-icon>
                   ${shortcut.command}

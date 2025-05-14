@@ -1,7 +1,8 @@
+import { genShortID } from '../util';
 import type { KeyboardEventKey } from './keyboard-event-key-type';
 import { html, type TemplateResult } from 'lit';
 
-export type { KeyboardEventKey } from './keyboard-event-key-type';
+export * from './keyboard-event-key-type';
 
 export class Keybinding {
   keys: KeyboardEventKey[][];
@@ -70,29 +71,29 @@ export class Source {
   }
 }
 
-export interface KeyboardShortcutI {
+export class KeyboardShortcut {
   command: string;
   keybinding: Keybinding;
   when: When;
   source: Source;
-}
-
-export class KeyboardShortcut implements KeyboardShortcutI {
-  command: string;
-  keybinding: Keybinding;
-  when: When;
-  source: Source;
+  id: string;
 
   constructor(
     command: string,
     keybinding: Keybinding,
     when: When,
-    source: Source
+    source: Source,
+    id?: string
   ) {
     this.command = command;
     this.keybinding = keybinding;
     this.when = when;
     this.source = source;
+    if (id) {
+      this.id = id;
+    } else {
+      this.id = genShortID(10);
+    }
   }
 
   updateKeybinding(keybinding: Keybinding): KeyboardShortcut {
@@ -105,7 +106,8 @@ export class KeyboardShortcut implements KeyboardShortcutI {
       json.command,
       new Keybinding(json.keybinding.keys),
       new When(json.when.condition),
-      new Source(json.source.name, json.source.link)
+      new Source(json.source.name, json.source.link),
+      json?.id
     );
   }
 }
