@@ -119,4 +119,15 @@ export default css`
   td::-webkit-resizer {
     visibility: visible;
   }
+
+  .daemon {
+    display: flex;
+    gap: var(--spacingXXSmall);
+    font-size: var(--text-sm);
+  }
+  .daemon .keys {
+    font-size: var(--text-xs);
+    padding: 0;
+    margin: 0;
+  }
 `;

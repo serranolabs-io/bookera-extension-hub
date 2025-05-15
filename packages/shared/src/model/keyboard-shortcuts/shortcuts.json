@@ -54,7 +54,7 @@
   {
     "command": "workbench.action.previousPanelTab",
     "keybinding": {
-      "keys": [["ctrl", "h"]]
+      "keys": [["Control", "h"]]
     },
     "when": {
       "condition": ["panelFocus"]
@@ -67,7 +67,7 @@
   {
     "command": "workbench.action.nextPanelTab",
     "keybinding": {
-      "keys": [["ctrl", "l"]]
+      "keys": [["Control", "l"]]
     },
     "when": {
       "condition": ["panelFocus"]

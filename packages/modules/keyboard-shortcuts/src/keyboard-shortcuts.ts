@@ -10,7 +10,9 @@ import keyboardShortcutsStyle from './keyboard-shortcuts.style';
 import baseCss from '@serranolabs.io/shared/base';
 import {
   Keybinding,
+  KeyboardEventKey,
   KeyboardShortcut,
+  ModifierKeys,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 import {
@@ -22,6 +24,7 @@ import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/compone
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
 import { NEW_PANEL_EVENT, PanelTab } from '@serranolabs.io/shared/panel';
+import { calculateValue, handleKeyPress, handleKeyUp } from './formwrapper';
 
 export const elementName = 'keyboard-shortcuts-element';
 
@@ -36,6 +39,8 @@ export const ASSIGN_KEYBINDING_DIALOG_DEFAULTS = {
   index: -1,
   command: '',
 };
+
+export const SHORTCUT_MAX_LENGTH = 2;
 
 export const SUBMIT_FORM_EVENT = 'submit-form-event-key';
 
@@ -53,6 +58,13 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   @state()
   private _shortcutsBag!: Bag<KeyboardShortcut>;
 
+  @state()
+  isModifierPressed: ModifierKeys | null = null;
+
+  private _keyPressSet: KeyboardEventKey[] = [];
+
+  private _allKeyPressSets: KeyboardEventKey[][] = [];
+
   constructor(
     renderMode: RenderMode,
     module: BookeraModule,
@@ -62,18 +74,75 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
     this._keyboardShortcuts = [];
 
-    document.addEventListener('sl-hide', (e) => {
-      this.assignKeybindingDialogState = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
-    });
+    if (this.renderMode === 'renderInDaemon') {
+      this._createHandleInDaemonListeners();
+    }
 
-    // @ts-expect-error fuck it
-    document.addEventListener(
-      SUBMIT_FORM_EVENT,
-      this._listToAssignNewKeysEvent.bind(this)
-    );
+    if (
+      this.renderMode === 'renderInPanel' ||
+      this.renderMode === 'renderInSidePanel'
+    ) {
+      document.addEventListener('sl-hide', (e) => {
+        this.assignKeybindingDialogState = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
+      });
+
+      // @ts-expect-error fuck it
+      document.addEventListener(
+        SUBMIT_FORM_EVENT,
+        this._listToAssignNewKeysEvent.bind(this)
+      );
+    }
 
     this._setupState();
   }
+
+  private _detectShortcut() {
+    const allSets = [...this._allKeyPressSets, this._keyPressSet];
+    this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
+      allSets.every((set: KeyboardEventKey[]) => {
+        console.log(shortcut, set);
+      });
+    });
+  }
+  private _registerKeydownListener(e: KeyboardEvent) {
+    const nextKey = e.key as KeyboardEventKey;
+    const { allKeyPressSets, keyPressSet, isModifierPressed } = handleKeyPress(
+      this._allKeyPressSets,
+      this._keyPressSet,
+      this.isModifierPressed,
+      nextKey
+    );
+    this._allKeyPressSets = allKeyPressSets;
+    this._keyPressSet = keyPressSet;
+    this.isModifierPressed = isModifierPressed;
+    if (this._allKeyPressSets.length > SHORTCUT_MAX_LENGTH) {
+      this._allKeyPressSets = [];
+    }
+    this.requestUpdate();
+
+    this._detectShortcut();
+  }
+  private _registerKeyupListener(e: KeyboardEvent) {
+    const { allKeyPressSets, keyPressSet, isModifierPressed } = handleKeyUp(
+      this._allKeyPressSets,
+      this._keyPressSet,
+      this.isModifierPressed,
+      e.key as KeyboardEventKey
+    );
+    this._allKeyPressSets = allKeyPressSets;
+    this._keyPressSet = keyPressSet;
+    this.isModifierPressed = isModifierPressed;
+    this.requestUpdate();
+  }
+  private _createHandleInDaemonListeners() {
+    document.addEventListener(
+      'keydown',
+      this._registerKeydownListener.bind(this)
+    );
+
+    document.addEventListener('keyup', this._registerKeyupListener.bind(this));
+  }
+
   private async _setupState() {
     if (!this._bagManager) {
       return;
@@ -121,7 +190,18 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   protected renderInModuleDaemon(): TemplateResult {
-    return html``;
+    return html`
+      <div class="daemon">
+        <div class="context">
+          <small>context</small>
+        </div>
+        <div>
+          <small class="keys">
+            ${calculateValue(this._allKeyPressSets, this._keyPressSet)}
+          </small>
+        </div>
+      </div>
+    `;
   }
 
   private _openKeyboardShortcutsPanel(): TemplateResult {

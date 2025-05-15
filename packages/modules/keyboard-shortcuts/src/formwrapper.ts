@@ -5,6 +5,7 @@ import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/compone
 import baseCss from '@serranolabs.io/shared/base';
 import {
   ASSIGN_KEYBINDING_DIALOG_DEFAULTS,
+  SHORTCUT_MAX_LENGTH,
   SUBMIT_FORM_EVENT,
   type AssignKeybindingDialog,
 } from './keyboard-shortcuts';
@@ -18,6 +19,68 @@ import {
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 const KEYBINDINGS_INPUT_ID = 'keybindings-input';
+
+export const handleKeyPress = (
+  allKeyPressSets: KeyboardEventKey[][],
+  keyPressSet: KeyboardEventKey[],
+  isModifierPressed: ModifierKeys | null,
+  nextKey: KeyboardEventKey
+): {
+  allKeyPressSets: KeyboardEventKey[][];
+  keyPressSet: KeyboardEventKey[];
+  isModifierPressed: ModifierKeys | null;
+} => {
+  if (modifierKeys.includes(nextKey as ModifierKeys)) {
+    isModifierPressed = nextKey as ModifierKeys;
+  }
+
+  if (isModifierPressed) {
+    keyPressSet.push(nextKey);
+  } else {
+    allKeyPressSets.push([nextKey]);
+  }
+  return {
+    allKeyPressSets,
+    keyPressSet,
+    isModifierPressed,
+  };
+};
+
+export const handleKeyUp = (
+  allKeyPressSets: KeyboardEventKey[][],
+  keyPressSet: KeyboardEventKey[],
+  isModifierPressed: ModifierKeys | null,
+  nextKey: KeyboardEventKey
+): {
+  allKeyPressSets: KeyboardEventKey[][];
+  keyPressSet: KeyboardEventKey[];
+  isModifierPressed: ModifierKeys | null;
+  isModifierReleased: boolean;
+} => {
+  let isModifierReleased = false;
+  if (nextKey === isModifierPressed) {
+    isModifierPressed = null;
+    if (keyPressSet.length > 0) {
+      allKeyPressSets.push(keyPressSet);
+      keyPressSet = [];
+      isModifierReleased = true;
+    }
+  }
+  return {
+    allKeyPressSets,
+    keyPressSet,
+    isModifierPressed,
+    isModifierReleased,
+  };
+};
+
+export const calculateValue = (
+  allKeyPressSets: KeyboardEventKey[][],
+  keyPressSet: KeyboardEventKey[]
+): KeyboardEventKey => {
+  return (allKeyPressSets.flatMap((x) => x).join('') +
+    keyPressSet.join('')) as KeyboardEventKey;
+};
 
 @customElement('formwrapper-element')
 export class Formwrapper extends LitElement {
@@ -85,11 +148,6 @@ export class Formwrapper extends LitElement {
     )!;
   }
 
-  private _calculateValue(): KeyboardEventKey {
-    return (this._allKeyPressSets.flatMap((x) => x).join('') +
-      this._keyPressSet.join('')) as KeyboardEventKey;
-  }
-
   // behavior 1: - given the
   private _renderForm() {
     return this.#form.field(
@@ -102,16 +160,27 @@ export class Formwrapper extends LitElement {
             type="text"
             placeholder="First Name"
             id=${KEYBINDINGS_INPUT_ID}
-            .value="${this._calculateValue()}"
+            .value="${calculateValue(this._allKeyPressSets, this._keyPressSet)}"
             @blur="${() => field.handleBlur()}"
             @keyup="${(e: KeyboardEvent) => {
-              if (e.key === this.isModifierPressed) {
-                this.isModifierPressed = null;
-                if (this._keyPressSet.length > 0) {
-                  this._allKeyPressSets.push(this._keyPressSet);
-                  this._keyPressSet = [];
-                  field.handleChange(this._calculateValue());
-                }
+              const {
+                allKeyPressSets,
+                keyPressSet,
+                isModifierPressed,
+                isModifierReleased,
+              } = handleKeyUp(
+                this._allKeyPressSets,
+                this._keyPressSet,
+                this.isModifierPressed,
+                e.key as KeyboardEventKey
+              );
+              this._allKeyPressSets = allKeyPressSets;
+              this._keyPressSet = keyPressSet;
+              this.isModifierPressed = isModifierPressed;
+              if (isModifierReleased) {
+                field.handleChange(
+                  calculateValue(this._allKeyPressSets, this._keyPressSet)
+                );
               }
             }}"
             @keydown="${(e: KeyboardEvent) => {
@@ -121,24 +190,27 @@ export class Formwrapper extends LitElement {
                 return;
               }
 
-              if (this._allKeyPressSets.length >= 2) {
+              if (this._allKeyPressSets.length >= SHORTCUT_MAX_LENGTH) {
                 field.handleChange('' as KeyboardEventKey);
                 this._allKeyPressSets = [];
               }
 
-              if (modifierKeys.includes(nextKey as ModifierKeys)) {
-                this.isModifierPressed = nextKey as ModifierKeys;
-              }
+              const { allKeyPressSets, keyPressSet, isModifierPressed } =
+                handleKeyPress(
+                  this._allKeyPressSets,
+                  this._keyPressSet,
+                  this.isModifierPressed,
+                  nextKey
+                );
+              this._allKeyPressSets = allKeyPressSets;
+              this._keyPressSet = keyPressSet;
+              this.isModifierPressed = isModifierPressed;
 
-              if (this.isModifierPressed) {
-                this._keyPressSet.push(nextKey);
-              } else {
-                this._allKeyPressSets.push([nextKey]);
+              this.requestUpdate();
 
-                this.requestUpdate();
-              }
-
-              field.handleChange(this._calculateValue());
+              field.handleChange(
+                calculateValue(this._allKeyPressSets, this._keyPressSet)
+              );
 
               e.preventDefault();
             }}"
