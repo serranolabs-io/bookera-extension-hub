@@ -1,106 +1,74 @@
 [
   {
     "command": "workbench.action.previousPanelTab",
-    "keybinding": {
-      "keys": [["h"]]
-    },
-    "when": {
-      "condition": ["panelTabsFocus"]
-    },
+    "keys": [["h"]],
+    "when": ["panelTabsFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.nextPanelTab",
-    "keybinding": {
-      "keys": [["l"]]
-    },
-    "when": {
-      "condition": ["panelTabsFocus"]
-    },
+    "keys": [["l"]],
+    "when": ["panelTabsFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.leavePanelTabs",
-    "keybinding": {
-      "keys": [["j"]]
-    },
-    "when": {
-      "condition": ["panelTabsFocus"]
-    },
+    "keys": [["j"]],
+    "when": ["panelTabsFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.enterPanelTabs",
-    "keybinding": {
-      "keys": [["k"]]
-    },
-    "when": {
-      "condition": ["panelFocus"]
-    },
+    "keys": [["k"]],
+    "when": ["panelFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.previousPanelTab",
-    "keybinding": {
-      "keys": [["Control", "h"]]
-    },
-    "when": {
-      "condition": ["panelFocus"]
-    },
+    "keys": [["Control", "h"]],
+    "when": ["panelFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.nextPanelTab",
-    "keybinding": {
-      "keys": [["Control", "l"]]
-    },
-    "when": {
-      "condition": ["panelFocus"]
-    },
+    "keys": [["Control", "l"]],
+    "when": ["panelFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.nextPanelView",
-    "keybinding": {
-      "keys": [["l"]]
-    },
-    "when": {
-      "condition": ["panelFocus"]
-    },
+    "keys": [["l"]],
+    "when": ["panelFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   },
   {
     "command": "workbench.action.previousPanelView",
-    "keybinding": {
-      "keys": [["h"]]
-    },
-    "when": {
-      "condition": ["panelFocus"]
-    },
+    "keys": [["h"]],
+    "when": ["panelFocus"],
     "source": {
-      "name": "default",
-      "link": "https://example.com/shortcuts"
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
   }
 ]

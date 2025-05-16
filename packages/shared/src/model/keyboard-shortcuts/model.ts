@@ -4,16 +4,47 @@ import { html, type TemplateResult } from 'lit';
 
 export * from './keyboard-event-key-type';
 
-export class Keybinding {
-  keys: KeyboardEventKey[][];
+export type PanelTabsFocus = 'panelTabsFocus';
+export type PanelFocus = 'panelFocus';
 
-  constructor(keys: KeyboardEventKey[][]) {
-    this.keys = keys.filter((key: KeyboardEventKey[]) => {
-      return key.length > 0;
-    });
+export type When = PanelTabsFocus | PanelFocus;
+
+export class Source {
+  name: string;
+  link?: string;
+
+  constructor(name: string, link?: string) {
+    this.name = name;
+    this.link = link;
+  }
+}
+
+export class KeyboardShortcut {
+  command: string;
+  keys: KeyboardEventKey[][];
+  when: string[];
+  source: Source;
+  id: string;
+
+  constructor(
+    command: string,
+    keys: KeyboardEventKey[][],
+    when: When[],
+    source: Source,
+    id?: string
+  ) {
+    this.command = command;
+    this.keys = keys;
+    this.when = when;
+    this.source = source;
+    if (id) {
+      this.id = id;
+    } else {
+      this.id = genShortID(10);
+    }
   }
 
-  private _printKey(key: KeyboardEventKey) {
+  static PrintKey(key: KeyboardEventKey) {
     if (key === ' ') {
       return html`Space`;
     } else if (key === 'Alt') {
@@ -29,15 +60,27 @@ export class Keybinding {
     return key;
   }
 
-  render(): TemplateResult {
+  renderKeys(): TemplateResult {
+    return KeyboardShortcut.renderKeysStatic(this.keys);
+  }
+
+  static renderKeysStatic(keys: KeyboardEventKey[][]): TemplateResult {
+    console.log(keys);
     return html`
       <div class="keybindings">
-        ${this.keys.map((key, i: number) => {
-          let lastText = i !== this.keys.length - 1 ? 'chord to' : '';
+        ${keys.map((key, i: number) => {
+          let lastText =
+            (i !== keys.length - 1) === false && key.length > 0 === false
+              ? 'chord to'
+              : '';
+
+          if (key.length === 0) {
+            return html``;
+          }
 
           return html`<span class="keybinding"
-              >${key.map((k: string, i: number) => {
-                let value = this._printKey(k);
+              >${key.map((k: KeyboardEventKey, i: number) => {
+                let value = KeyboardShortcut.PrintKey(k);
 
                 return i !== key.length - 1
                   ? html`<span>${value}+</span>`
@@ -49,63 +92,16 @@ export class Keybinding {
       </div>
     `;
   }
-
-  print() {}
-}
-
-export class When {
-  condition: string[];
-
-  constructor(condition: string[]) {
-    this.condition = condition;
-  }
-}
-
-export class Source {
-  name: string;
-  link?: string;
-
-  constructor(name: string, link?: string) {
-    this.name = name;
-    this.link = link;
-  }
-}
-
-export class KeyboardShortcut {
-  command: string;
-  keybinding: Keybinding;
-  when: When;
-  source: Source;
-  id: string;
-
-  constructor(
-    command: string,
-    keybinding: Keybinding,
-    when: When,
-    source: Source,
-    id?: string
-  ) {
-    this.command = command;
-    this.keybinding = keybinding;
-    this.when = when;
-    this.source = source;
-    if (id) {
-      this.id = id;
-    } else {
-      this.id = genShortID(10);
-    }
-  }
-
-  updateKeybinding(keybinding: Keybinding): KeyboardShortcut {
-    this.keybinding = keybinding;
+  updateKeys(keys: KeyboardEventKey[][]): KeyboardShortcut {
+    this.keys = keys;
     return this;
   }
 
   static fromJSON(json: any): KeyboardShortcut {
     return new KeyboardShortcut(
       json.command,
-      new Keybinding(json.keybinding.keys),
-      new When(json.when.condition),
+      json.keys,
+      json.when,
       new Source(json.source.name, json.source.link),
       json?.id
     );

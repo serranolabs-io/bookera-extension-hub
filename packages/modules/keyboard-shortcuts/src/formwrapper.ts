@@ -14,6 +14,7 @@ import { sendEvent } from '@serranolabs.io/shared/util';
 import {
   Keybinding,
   KeyboardEventKey,
+  KeyboardShortcut,
   modifierKeys,
   ModifierKeys,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
@@ -205,6 +206,7 @@ export class Formwrapper extends LitElement {
               this._allKeyPressSets = allKeyPressSets;
               this._keyPressSet = keyPressSet;
               this.isModifierPressed = isModifierPressed;
+              // onsole.log(this._allKeyPressSets, this._keyPressSet);
 
               this.requestUpdate();
 
@@ -219,10 +221,10 @@ export class Formwrapper extends LitElement {
             ${field.state.value.length > 0
               ? html`<sl-icon name="check2"></sl-icon>`
               : html`<sl-icon name="x"></sl-icon>`}
-            ${new Keybinding([
+            ${KeyboardShortcut.renderKeysStatic([
               ...this._allKeyPressSets,
               this._keyPressSet,
-            ]).render()}
+            ])}
           </div>
         </div>`;
       }
@@ -230,10 +232,10 @@ export class Formwrapper extends LitElement {
   }
 
   private async _submitForm(): Promise<void> {
-    sendEvent<Keybinding>(
+    sendEvent<KeyboardEventKey[][]>(
       this,
       SUBMIT_FORM_EVENT,
-      new Keybinding(this._allKeyPressSets)
+      this._allKeyPressSets
     );
     this.assignKeybindingDialogState = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
     this.keybindingsInput.value = '';

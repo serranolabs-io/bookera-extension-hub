@@ -25,6 +25,7 @@ import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
 import { NEW_PANEL_EVENT, PanelTab } from '@serranolabs.io/shared/panel';
 import { calculateValue, handleKeyPress, handleKeyUp } from './formwrapper';
+import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 
 export const elementName = 'keyboard-shortcuts-element';
 
@@ -49,7 +50,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   static styles = [keyboardShortcutsStyle, moduleElementStyles, baseCss];
 
   @state()
-  private _keyboardShortcuts: KeyboardShortcut[] = [];
+  protected _keyboardShortcuts: KeyboardShortcut[] = [];
 
   @state()
   assignKeybindingDialogState: AssignKeybindingDialog =
@@ -61,9 +62,9 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   @state()
   isModifierPressed: ModifierKeys | null = null;
 
-  private _keyPressSet: KeyboardEventKey[] = [];
+  protected _keyPressSet: KeyboardEventKey[] = [];
 
-  private _allKeyPressSets: KeyboardEventKey[][] = [];
+  protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
   constructor(
     renderMode: RenderMode,
@@ -75,7 +76,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     this._keyboardShortcuts = [];
 
     if (this.renderMode === 'renderInDaemon') {
-      this._createHandleInDaemonListeners();
+      createHandleInDaemonListeners.bind(this)();
     }
 
     if (
@@ -94,53 +95,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     }
 
     this._setupState();
-  }
-
-  private _detectShortcut() {
-    const allSets = [...this._allKeyPressSets, this._keyPressSet];
-    this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
-      allSets.every((set: KeyboardEventKey[]) => {
-        console.log(shortcut, set);
-      });
-    });
-  }
-  private _registerKeydownListener(e: KeyboardEvent) {
-    const nextKey = e.key as KeyboardEventKey;
-    const { allKeyPressSets, keyPressSet, isModifierPressed } = handleKeyPress(
-      this._allKeyPressSets,
-      this._keyPressSet,
-      this.isModifierPressed,
-      nextKey
-    );
-    this._allKeyPressSets = allKeyPressSets;
-    this._keyPressSet = keyPressSet;
-    this.isModifierPressed = isModifierPressed;
-    if (this._allKeyPressSets.length > SHORTCUT_MAX_LENGTH) {
-      this._allKeyPressSets = [];
-    }
-    this.requestUpdate();
-
-    this._detectShortcut();
-  }
-  private _registerKeyupListener(e: KeyboardEvent) {
-    const { allKeyPressSets, keyPressSet, isModifierPressed } = handleKeyUp(
-      this._allKeyPressSets,
-      this._keyPressSet,
-      this.isModifierPressed,
-      e.key as KeyboardEventKey
-    );
-    this._allKeyPressSets = allKeyPressSets;
-    this._keyPressSet = keyPressSet;
-    this.isModifierPressed = isModifierPressed;
-    this.requestUpdate();
-  }
-  private _createHandleInDaemonListeners() {
-    document.addEventListener(
-      'keydown',
-      this._registerKeydownListener.bind(this)
-    );
-
-    document.addEventListener('keyup', this._registerKeyupListener.bind(this));
   }
 
   private async _setupState() {
@@ -173,7 +127,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     this.requestUpdate();
   }
 
-  private _listToAssignNewKeysEvent(e: CustomEvent<Keybinding>) {
+  private _listToAssignNewKeysEvent(e: CustomEvent<KeyboardEventKey[][]>) {
     if (this.assignKeybindingDialogState.index === -1) {
       return;
     }
@@ -181,7 +135,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     const updatedShortcut =
       this._keyboardShortcuts[this.assignKeybindingDialogState.index];
 
-    updatedShortcut.keybinding = e.detail;
+    updatedShortcut.keys = e.detail;
 
     KeyboardShortcutsState.updateShortcut(this._bagManager, updatedShortcut);
 
@@ -260,16 +214,20 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
           }}
         >
           ${this._keyboardShortcuts.map(
-            (shortcut, index: number) => html`
-              <tr data-index=${index} data-command="${shortcut.id}">
+            (shortcut: KeyboardShortcut, index: number) => html`
+              <tr
+                data-index=${index}
+                data-command="${shortcut.id}"
+                tabindex="0"
+              >
                 <td>
                   <sl-icon class="edit-icon" name="pencil"></sl-icon>
                   ${shortcut.command}
                 </td>
                 <td>
-                  <div class="center-v">${shortcut.keybinding.render()}</div>
+                  <div class="center-v">${shortcut.renderKeys()}</div>
                 </td>
-                <td>${shortcut.when.condition.join(', ')}</td>
+                <td>${shortcut.when.join(', ')}</td>
                 <td>
                   ${shortcut.source.link
                     ? html`<a href="${shortcut.source.link}" target="_blank"
