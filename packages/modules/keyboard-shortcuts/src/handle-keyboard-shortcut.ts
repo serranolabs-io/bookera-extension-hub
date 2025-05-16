@@ -1,6 +1,7 @@
 import {
   KeyboardEventKey,
   KeyboardShortcut,
+  When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyPress, handleKeyUp } from './formwrapper';
 import {
@@ -24,29 +25,43 @@ import {
 // 1. how to start focusing
 // 2. keybindings when focusing
 
-function matchCondition(this: KeyboardShortcutsElement): HTMLElement | null {
-  let focusedElement = document.activeElement;
+function traverseFocusTree(this: KeyboardShortcutsElement): {
+  focusTree: When[];
+  activeElement: HTMLElement;
+} {
+  let activeElement = document.activeElement;
 
   // this will give me focused tree
-  let focusTypes = [];
-  while (focusedElement?.shadowRoot) {
+  let focusTree = [];
+  while (activeElement?.shadowRoot) {
     // todo if element is focusable, get focus type in array
-    if (focusedElement.isFocusable) {
-      focusTypes.unshift(focusedElement.getFocus());
+    if (activeElement.isFocusable) {
+      focusTree.unshift(activeElement.getFocus());
 
-      // setFocus on it
-      if (focusedElement.setFocus) {
-        focusedElement.setFocus();
-      }
+      // set UN FOCUS on element
+      activeElement.setFocus(false);
     }
 
-    focusedElement = focusedElement.shadowRoot.activeElement;
+    activeElement = activeElement.shadowRoot.activeElement;
   }
 
-  focusedElement.focus();
+  activeElement.focus();
 
-  console.log('Currently focused element:', focusedElement);
-  return focusedElement as HTMLElement;
+  return {
+    focusTree,
+    activeElement: activeElement as HTMLElement,
+  };
+}
+
+function matchCondition(
+  this: KeyboardShortcutsElement,
+  when: When[]
+): HTMLElement | null {
+  const { focusTree, activeElement } = traverseFocusTree.bind(this)();
+
+  when.forEach((condition: When) => {});
+
+  return activeElement;
 }
 
 function detectShortcut(this: KeyboardShortcutsElement) {
@@ -62,7 +77,7 @@ function detectShortcut(this: KeyboardShortcutsElement) {
     );
 
     if (matchKeys) {
-      const matchedCondition = matchCondition.bind(this)();
+      const matchedCondition = matchCondition.bind(this)(shortcut.when);
       if (matchedCondition) {
         this._allKeyPressSets = [];
         this._keyPressSet = [];

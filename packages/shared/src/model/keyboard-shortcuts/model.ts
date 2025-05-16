@@ -4,10 +4,11 @@ import { html, type TemplateResult } from 'lit';
 
 export * from './keyboard-event-key-type';
 
+export type Operator = '&&' | '||' | '!' | '(' | ')';
 export type PanelTabsFocus = 'panelTabsFocus';
 export type PanelFocus = 'panelFocus';
 
-export type When = PanelTabsFocus | PanelFocus;
+export type When = PanelTabsFocus | PanelFocus | Operator;
 
 export class Source {
   name: string;
