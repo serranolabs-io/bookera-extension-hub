@@ -5,6 +5,15 @@ import { html, type TemplateResult } from 'lit';
 export * from './keyboard-event-key-type';
 
 export type Operator = '&&' | '||' | '!' | '(' | ')';
+
+export const operators: readonly Operator[] = [
+  '&&',
+  '||',
+  '!',
+  '(',
+  ')',
+] as const;
+
 export type PanelTabsFocus = 'panelTabsFocus';
 export type PanelFocus = 'panelFocus';
 
@@ -19,6 +28,17 @@ export class Source {
     this.link = link;
   }
 }
+
+export const workbench = {
+  action: {
+    previousPanelTab: 'workbench.action.previousPanelTab',
+    nextPanelTab: 'workbench.action.nextPanelTab',
+    leavePanelTabs: 'workbench.action.leavePanelTabs',
+    enterPanelTabs: 'workbench.action.enterPanelTabs',
+    previousPanelView: 'workbench.action.previousPanelView',
+    nextPanelView: 'workbench.action.nextPanelView',
+  },
+};
 
 export class KeyboardShortcut {
   command: string;

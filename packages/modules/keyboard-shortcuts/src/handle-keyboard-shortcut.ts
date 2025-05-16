@@ -1,6 +1,8 @@
 import {
   KeyboardEventKey,
   KeyboardShortcut,
+  Operator,
+  operators,
   When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyPress, handleKeyUp } from './formwrapper';
@@ -25,6 +27,8 @@ import {
 // 1. how to start focusing
 // 2. keybindings when focusing
 
+// when clicking anywhere, please apply traverse focus tree
+
 function traverseFocusTree(this: KeyboardShortcutsElement): {
   focusTree: When[];
   activeElement: HTMLElement;
@@ -34,7 +38,7 @@ function traverseFocusTree(this: KeyboardShortcutsElement): {
   // this will give me focused tree
   let focusTree = [];
   while (activeElement?.shadowRoot) {
-    // todo if element is focusable, get focus type in array
+    // todo if element is focusable, get when type in array
     if (activeElement.isFocusable) {
       focusTree.unshift(activeElement.getFocus());
 
@@ -45,23 +49,52 @@ function traverseFocusTree(this: KeyboardShortcutsElement): {
     activeElement = activeElement.shadowRoot.activeElement;
   }
 
-  activeElement.focus();
-
   return {
     focusTree,
     activeElement: activeElement as HTMLElement,
   };
 }
 
+export type WhenBoolean = When | boolean;
+
+export function evaluateWhenExpressionEval(conditions: WhenBoolean[]): boolean {
+  return eval(conditions.join(' '));
+}
+
+export function insertBooleansInCondition(
+  conditions: When[],
+  focusTree: When[]
+): WhenBoolean[] {
+  return conditions.map((condition: When) => {
+    if (operators.includes(condition as Operator)) {
+      return condition;
+    } else {
+      const foundCondition = focusTree.find((focusTreeCondition: When) => {
+        return focusTreeCondition === condition;
+      });
+
+      if (foundCondition) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  });
+}
+
 function matchCondition(
   this: KeyboardShortcutsElement,
   when: When[]
-): HTMLElement | null {
+): { isMatched: boolean; activeElement: HTMLElement } {
   const { focusTree, activeElement } = traverseFocusTree.bind(this)();
 
-  when.forEach((condition: When) => {});
+  const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
+    when,
+    focusTree
+  );
+  const isMatched = evaluateWhenExpressionEval.bind(this)(whenBoolean);
 
-  return activeElement;
+  return { isMatched, activeElement };
 }
 
 function detectShortcut(this: KeyboardShortcutsElement) {
@@ -77,8 +110,13 @@ function detectShortcut(this: KeyboardShortcutsElement) {
     );
 
     if (matchKeys) {
-      const matchedCondition = matchCondition.bind(this)(shortcut.when);
-      if (matchedCondition) {
+      const { isMatched, activeElement } = matchCondition.bind(this)(
+        shortcut.when as When[]
+      );
+
+      if (isMatched) {
+        activeElement.applyCommand(shortcut.command);
+
         this._allKeyPressSets = [];
         this._keyPressSet = [];
       }

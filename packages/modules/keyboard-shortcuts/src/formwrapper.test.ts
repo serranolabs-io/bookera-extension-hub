@@ -4,6 +4,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { modifierKeys } from '../../../shared/src/model/keyboard-shortcuts/keyboard-event-key-type';
 import { Formwrapper } from './formwrapper';
+import { When } from '@serranolabs.io/shared/keyboard-shortcuts';
+import {
+  evaluateWhenExpression,
+  evaluateWhenExpressionEval,
+  insertBooleansInCondition,
+  WhenBoolean,
+} from './handle-keyboard-shortcut';
 vi.mock(
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/dialog/dialog.js',
   () => ({
@@ -30,66 +37,132 @@ vi.mock(
   })
 );
 
-const getRandomKey = () => {
-  return Math.trunc(Math.random() * modifierKeys.length);
-};
+describe('handle-keyboard-shortcuts', () => {
+  it.each([
+    {
+      input: {
+        when: ['panelFocus'] as When[],
+        focusTree: ['panelFocus', 'inputFocus'] as When[],
+        expected: [true],
+      },
+      description: 'base case',
+    },
+    {
+      input: {
+        when: ['panelFocus', '&&', 'panelTabFocus'] as When[],
+        focusTree: ['panelFocus', 'inputFocus'] as When[],
+        expected: [true, '&&', false],
+      },
+      description: '&& case where one if found yet the other is not',
+    },
+    {
+      input: {
+        when: [
+          'panelFocus',
+          '&&',
+          'panelTabFocus',
+          '&&',
+          '!',
+          'panelFocus',
+        ] as When[],
+        focusTree: ['panelFocus', 'inputFocus'] as When[],
+        expected: [true, '&&', false, '&&', '!', true],
+      },
+      description: '&& case where one if found yet the other is not',
+    },
+  ])('should insert booleans in condition', ({ input }) => {
+    const conditionArray = insertBooleansInCondition(
+      input.when,
+      input.focusTree
+    );
 
-const acceptanceTests = [
-  { input: ['a'], description: 'simple characters' },
-  { input: ['a', 'b'], description: 'simple characters' },
-  {
-    input: [
-      modifierKeys[getRandomKey()],
-      'b',
-      modifierKeys[getRandomKey()],
-      'd',
-    ],
-    description: 'both modifier keys with characters',
-  },
-  {
-    input: [modifierKeys[getRandomKey()], 'b'],
-    description: 'modifier keys with characters, first key is modifier',
-  },
-  {
-    input: [modifierKeys[getRandomKey()], 'b', 'e'],
-    description: 'modifier keys with characters, first key is modifier',
-  },
-  {
-    input: ['b', modifierKeys[getRandomKey()], 'e'],
-    description: 'modifier keys with characters, last key is modifier',
-  },
-];
+    expect(conditionArray).toEqual(input.expected);
+  });
 
-const canStillTypeTests = [
-  {
-    input: [],
-    description: '0 length',
-  },
-  {
-    input: ['b'],
-    description: 'one key',
-  },
-  {
-    input: [modifierKeys[getRandomKey()], 'b'],
-    description: 'modifier key with one character, but can still type',
-  },
-  {
-    input: [modifierKeys[getRandomKey()], 'c', modifierKeys[getRandomKey()]],
-    description:
-      'modifier key set, with another modifier key, can still accept one more',
-  },
-];
+  it.each([
+    {
+      input: {
+        conditions: [true, '&&', false] as WhenBoolean[],
+        expected: false,
+      },
+      description: 'should match condition blah',
+    },
+    {
+      input: {
+        conditions: [true, '&&', true] as WhenBoolean[],
+        expected: true,
+      },
+      description: 'should be true',
+    },
+    {
+      input: {
+        conditions: [false, '&&', '(', false, '||', true, ')'] as WhenBoolean[],
+        expected: false,
+      },
+      description: 'parenthesis case',
+    },
+    {
+      input: {
+        conditions: [true, '&&', '(', false, '||', true, ')'] as WhenBoolean[],
+        expected: true,
+      },
+      description: 'parenthesis case 2',
+    },
+    {
+      input: {
+        conditions: [
+          '!',
+          true,
+          '&&',
+          '(',
+          false,
+          '||',
+          true,
+          ')',
+        ] as WhenBoolean[],
+        expected: false,
+      },
+      description: 'inverted case',
+    },
+    {
+      input: {
+        conditions: ['!', true] as WhenBoolean[],
+        expected: false,
+      },
+      description: 'inverted case',
+    },
+    {
+      input: {
+        conditions: ['!', false, '&&', '!', false] as WhenBoolean[],
+        expected: true,
+      },
+      description: 'inverted case',
+    },
+    {
+      input: {
+        conditions: ['!', '(', false, '||', true, ')'] as WhenBoolean[],
+        expected: false,
+      },
+      description: 'inverted case on parenthesis',
+    },
+    {
+      input: {
+        conditions: [
+          false,
+          '&&',
+          true,
+          '||',
+          false,
+          '||',
+          true,
+        ] as WhenBoolean[],
+        expected: true,
+      },
+      description: 'inverted case on parenthesis WITH ORDER OF OPERATIONS',
+    },
+  ])('should evaluate when expression, $description', ({ input }) => {
+    const evaluatedExpression = evaluateWhenExpressionEval(input.conditions);
 
-describe('Example Test', () => {
-  it.each(acceptanceTests)(
-    'should not accept a new character for $description',
-    ({ input }) => {
-      const fm = new Formwrapper();
-      //   expect(fm.isValidKeyCombo(input)).toBe(true);
-    }
-  );
-  it.each(canStillTypeTests)('can still type for $description', ({ input }) => {
-    const fm = new Formwrapper();
-    // expect(fm.canAcceptNewCharacter(input)).toBe(true);
+    expect(evaluatedExpression).toEqual(input.expected);
   });
 });
