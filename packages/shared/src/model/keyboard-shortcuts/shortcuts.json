@@ -111,9 +111,9 @@
   },
   {
     "command": "workbench.action.closePanel",
-    "keys": [["Meta", "w"]],
+    "keys": [["Control", "w"]],
     "when": ["panelFocus"],
-    "description": "closes current panel",
+    "description": "closes current panel tab. closing the last tab will close the panel",
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
