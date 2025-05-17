@@ -138,6 +138,20 @@ export class ActiveElementState {
     return activeElement;
   }
 
+  static async InitializeActiveElement(
+    defaultElement: HTMLElement
+  ): Promise<HTMLElement> {
+    const savedActiveElement =
+      await localforage.getItem<HTMLElement>(ACTIVE_ELEMENT_KEY);
+
+    if (!savedActiveElement) {
+      localforage.setItem<HTMLElement>(ACTIVE_ELEMENT_KEY, defaultElement);
+      return defaultElement;
+    }
+
+    return savedActiveElement;
+  }
+
   static async SetActiveElement(activeElement: HTMLElement) {
     localforage.setItem<HTMLElement>(ACTIVE_ELEMENT_KEY, activeElement);
   }
