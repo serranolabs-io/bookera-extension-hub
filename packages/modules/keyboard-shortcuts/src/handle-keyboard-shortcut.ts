@@ -120,6 +120,7 @@ function detectShortcut(this: KeyboardShortcutsElement) {
       const { isMatched, webComponentTree, activeElement } =
         matchCondition.bind(this)(shortcut.when as When[]);
 
+      console.log(isMatched, webComponentTree, activeElement);
       // problem I have is how to set the next active elemnt?
       if (isMatched) {
         webComponentTree[0].applyCommand(shortcut.command);

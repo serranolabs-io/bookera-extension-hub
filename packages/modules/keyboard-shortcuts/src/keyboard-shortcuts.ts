@@ -23,7 +23,11 @@ import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/compone
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
-import { NEW_PANEL_EVENT, PanelTab } from '@serranolabs.io/shared/panel';
+import {
+  NEW_PANEL_EVENT,
+  NewPanelEventType,
+  PanelTab,
+} from '@serranolabs.io/shared/panel';
 import { calculateValue, handleKeyPress, handleKeyUp } from './formwrapper';
 import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 

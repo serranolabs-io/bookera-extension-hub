@@ -131,25 +131,35 @@ export class KeyboardShortcut {
 }
 
 const ACTIVE_ELEMENT_KEY = 'active-element-key';
+interface ActiveElement {
+  id: string;
+  when: When;
+  subId: string;
+}
+
 export class ActiveElementState {
-  static async GetActiveElement(): Promise<string | null> {
-    const activeElement = localforage.getItem<string>(ACTIVE_ELEMENT_KEY);
+  static async GetActiveElement(): Promise<ActiveElement | null> {
+    const activeElement =
+      localforage.getItem<ActiveElement>(ACTIVE_ELEMENT_KEY);
 
     return activeElement;
   }
 
   static async InitializeActiveElement(
-    defaultElementId: string
-  ): Promise<string> {
-    const savedActiveElementId =
-      await localforage.getItem<string>(ACTIVE_ELEMENT_KEY);
+    defaultActiveElement: ActiveElement
+  ): Promise<ActiveElement | null> {
+    const savedActiveElement =
+      await localforage.getItem<ActiveElement>(ACTIVE_ELEMENT_KEY);
 
-    if (!savedActiveElementId) {
-      localforage.setItem<string>(ACTIVE_ELEMENT_KEY, defaultElementId);
-      return defaultElementId;
+    if (!savedActiveElement) {
+      localforage.setItem<ActiveElement>(
+        ACTIVE_ELEMENT_KEY,
+        defaultActiveElement
+      );
+      return defaultActiveElement;
     }
 
-    return savedActiveElementId;
+    return savedActiveElement;
   }
 
   static async SetActiveElement(activeElement: string) {
