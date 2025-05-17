@@ -276,7 +276,11 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
                     <sl-icon class="edit-icon" name="pencil"></sl-icon>
                     <span> ${shortcut.command} </span>
                     <span>
-                      <sl-tooltip content="${shortcut.description}">
+                      <sl-tooltip
+                        content="${shortcut.description}"
+                        hoist
+                        style="--sl-tooltip-arrow-size: 0;"
+                      >
                         ?
                       </sl-tooltip>
                     </span>

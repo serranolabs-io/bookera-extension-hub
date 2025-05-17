@@ -14,17 +14,6 @@ export default css`
     align-items: center;
     justify-content: space-between;
   }
-  k th::after,
-  td::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: -2px;
-    width: 4px;
-    cursor: ew-resize;
-    background: transparent;
-  }
 
   sl-icon-button[name='command'] {
     transition: transform 1s ease-in-out;
@@ -34,6 +23,17 @@ export default css`
     transform: rotate(360deg);
   }
 
+  /* th::after,
+  td::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -2px;
+    width: 4px;
+    cursor: ew-resize;
+    background: red;
+  }
   th::before,
   td::before {
     content: '';
@@ -43,8 +43,8 @@ export default css`
     left: -2px;
     width: 4px;
     cursor: ew-resize;
-    background: transparent;
-  }
+    background: green;
+  } */
 
   table {
     width: 100%;
@@ -54,7 +54,7 @@ export default css`
 
   th {
     padding: var(--spacingXSmall) var(--spacingSmall);
-    background-color: var(--slate-200);
+    background-color: var(--slate-300);
   }
 
   td {
@@ -75,6 +75,7 @@ export default css`
 
   tr {
     position: relative;
+    color: var(--slate-500);
   }
   .center-v {
     display: flex;
@@ -103,10 +104,10 @@ export default css`
   }
 
   tbody tr:nth-child(odd) {
-    background-color: var(--slate-300);
+    background-color: var(--slate-200);
   }
   tbody tr {
-    background-color: var(--slate-200);
+    background-color: var(--slate-100);
   }
 
   tbody tr:hover {

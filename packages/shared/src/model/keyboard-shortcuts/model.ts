@@ -39,10 +39,8 @@ export const workbench = {
     enterPanelTabs: 'workbench.action.enterPanelTabs',
     previousPanelView: 'workbench.action.previousPanelView',
     nextPanelView: 'workbench.action.nextPanelView',
-    growPanelRight: 'workbench.action.growPanelRight',
-    growPanelLeft: 'workbench.action.growPanelLeft',
-    shrinkPanelRight: 'workbench.action.shrinkPanelRight',
-    shrinkPanelLeft: 'workbench.action.shrinkPanelLeft',
+    growPanel: 'workbench.action.growPanel',
+    shrinkPanel: 'workbench.action.shrinkPanel',
   },
 };
 

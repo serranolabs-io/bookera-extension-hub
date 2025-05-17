@@ -6,7 +6,7 @@
     "description": "Navigate to the previous panel tab when panel tabs are focused. Will move over to previous panel if no more tabs",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -16,7 +16,7 @@
     "description": "Navigate to the next panel tab when panel tabs are focused. Will move over to next panel if no more tabs",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -26,7 +26,7 @@
     "description": "Leave the panel tabs focus and enter the panel view focus",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -36,7 +36,7 @@
     "description": "Enter the panel tabs focus from the panel view focus",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -46,7 +46,7 @@
     "description": "Navigate to the previous panel tab when the panel is focused. Will move over to previous panel if no more tabs",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -56,7 +56,7 @@
     "description": "Navigate to the next panel tab when the panel is focused. Will move over to next panel if no more tabs",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -66,7 +66,7 @@
     "description": "Navigate to the next panel view when the panel is focused.",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
@@ -76,47 +76,27 @@
     "description": "Navigate to the previous panel view when the panel is focused.",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
-    "command": "workbench.action.growPanelRight",
-    "keys": [["Control", "g"], ["r"]],
+    "command": "workbench.action.growPanel",
+    "keys": [["Control", "g"], ["p"]],
     "when": ["panelFocus"],
     "description": "Grow the panel to the right when the panel is focused.",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   },
   {
-    "command": "workbench.action.growPanelLeft",
-    "keys": [["Control", "g"], ["l"]],
-    "when": ["panelFocus"],
-    "description": "Grow the panel to the left when the panel is focused.",
-    "source": {
-      "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
-    }
-  },
-  {
-    "command": "workbench.action.shrinkPanelRight",
-    "keys": [["Control", "s"], ["r"]],
+    "command": "workbench.action.shrinkPanel",
+    "keys": [["Control", "s"], ["p"]],
     "when": ["panelFocus"],
     "description": "Shrink the panel to the right when the panel is focused.",
     "source": {
       "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
-    }
-  },
-  {
-    "command": "workbench.action.shrinkPanelLeft",
-    "keys": [["Control", "s"], ["l"]],
-    "when": ["panelFocus"],
-    "description": "Shrink the panel to the left when the panel is focused.",
-    "source": {
-      "name": "System",
-      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
   }
 ]
