@@ -41,6 +41,8 @@ export const workbench = {
     nextPanelView: 'workbench.action.nextPanelView',
     growPanel: 'workbench.action.growPanel',
     shrinkPanel: 'workbench.action.shrinkPanel',
+    closePanel: 'workbench.action.closePanel',
+    splitPanel: 'workbench.action.splitPanel',
   },
 };
 
