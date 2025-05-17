@@ -131,7 +131,7 @@ export class KeyboardShortcut {
 }
 
 const ACTIVE_ELEMENT_KEY = 'active-element-key';
-interface ActiveElement {
+export interface ActiveElement {
   id: string;
   when: When;
   subId: string;
