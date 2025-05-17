@@ -106,6 +106,7 @@ function matchCondition(
 
 function detectShortcut(this: KeyboardShortcutsElement) {
   console.log('triggered detectedShortcut');
+
   const allSets = [...this._allKeyPressSets, this._keyPressSet];
   this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
     const matchKeys = shortcut.keys.every(
@@ -124,6 +125,7 @@ function detectShortcut(this: KeyboardShortcutsElement) {
       // problem I have is how to set the next active elemnt?
       if (isMatched) {
         webComponentTree[0].applyCommand(shortcut.command);
+        this._commandsRan.push(shortcut.command);
 
         this._allKeyPressSets = [];
         this._keyPressSet = [];

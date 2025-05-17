@@ -162,7 +162,7 @@ export class ActiveElementState {
     return savedActiveElement;
   }
 
-  static async SetActiveElement(activeElement: string) {
-    localforage.setItem<string>(ACTIVE_ELEMENT_KEY, activeElement);
+  static async SetActiveElement(activeElement: ActiveElement) {
+    localforage.setItem<ActiveElement>(ACTIVE_ELEMENT_KEY, activeElement);
   }
 }

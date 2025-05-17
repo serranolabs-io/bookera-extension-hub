@@ -70,6 +70,8 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
+  protected _commandsRan: string[] = [];
+
   constructor(
     renderMode: RenderMode,
     module: BookeraModule,
@@ -156,6 +158,16 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         <div>
           <small class="keys">
             ${calculateValue(this._allKeyPressSets, this._keyPressSet)}
+          </small>
+        </div>
+          <small class="keys">
+            ${this._commandsRan.map((command: string) => {
+              setTimeout(() => {
+                this._commandsRan = [];
+              }, 200);
+
+              return html`<span>${command}</span>`;
+            })}
           </small>
         </div>
       </div>
