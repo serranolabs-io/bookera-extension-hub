@@ -53,6 +53,7 @@ export class KeyboardShortcut {
   keys: KeyboardEventKey[][];
   when: string[];
   source: Source;
+  description: string;
   id: string;
 
   constructor(
@@ -60,12 +61,14 @@ export class KeyboardShortcut {
     keys: KeyboardEventKey[][],
     when: When[],
     source: Source,
+    description: string,
     id?: string
   ) {
     this.command = command;
     this.keys = keys;
     this.when = when;
     this.source = source;
+    this.description = description;
     if (id) {
       this.id = id;
     } else {
@@ -132,6 +135,7 @@ export class KeyboardShortcut {
       json.keys,
       json.when,
       new Source(json.source.name, json.source.link),
+      json.description,
       json?.id
     );
   }

@@ -7,9 +7,14 @@ export default css`
     resize: horizontal;
     text-align: center;
     position: relative;
+    height: 100%;
   }
 
-  th::after,
+  .command-title {
+    align-items: center;
+    justify-content: space-between;
+  }
+  k th::after,
   td::after {
     content: '';
     position: absolute;
@@ -95,13 +100,6 @@ export default css`
   span {
     display: flex;
     align-items: center;
-  }
-
-  .edit-icon {
-    position: absolute;
-    left: 2%;
-    top: 50%;
-    transform: translateY(-50%);
   }
 
   tbody tr:nth-child(odd) {

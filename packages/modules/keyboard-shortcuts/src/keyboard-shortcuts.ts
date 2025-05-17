@@ -272,8 +272,15 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
                 tabindex="0"
               >
                 <td>
-                  <sl-icon class="edit-icon" name="pencil"></sl-icon>
-                  ${shortcut.command}
+                  <div class="flex command-title">
+                    <sl-icon class="edit-icon" name="pencil"></sl-icon>
+                    <span> ${shortcut.command} </span>
+                    <span>
+                      <sl-tooltip content="${shortcut.description}">
+                        ?
+                      </sl-tooltip>
+                    </span>
+                  </div>
                 </td>
                 <td>
                   <div class="center-v">${shortcut.renderKeys()}</div>
