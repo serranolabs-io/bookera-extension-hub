@@ -83,7 +83,7 @@
     "command": "workbench.action.growPanel",
     "keys": [["Control", "g"], ["p"]],
     "when": ["panelFocus"],
-    "description": "Grow the panel to the right when the panel is focused.",
+    "description": "Grow the panel when the panel is focused.",
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
@@ -93,7 +93,27 @@
     "command": "workbench.action.shrinkPanel",
     "keys": [["Control", "s"], ["p"]],
     "when": ["panelFocus"],
-    "description": "Shrink the panel to the right when the panel is focused.",
+    "description": "Shrinks the panel when the panel is focused.",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    }
+  },
+  {
+    "command": "workbench.action.splitPanel",
+    "keys": [["Meta", "\\"]],
+    "when": ["panelFocus"],
+    "description": "splits panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    }
+  },
+  {
+    "command": "workbench.action.closePanel",
+    "keys": [["Meta", "w"]],
+    "when": ["panelFocus"],
+    "description": "closes current panel",
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
