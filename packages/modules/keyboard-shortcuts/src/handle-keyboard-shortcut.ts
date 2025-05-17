@@ -30,7 +30,7 @@ import {
 // when clicking anywhere, please apply traverse focus tree
 
 function traverseFocusTree(this: KeyboardShortcutsElement): {
-  focusTree: When[];
+  focusTree: HTMLElement[];
   activeElement: HTMLElement;
 } {
   let activeElement = document.activeElement;
@@ -40,10 +40,8 @@ function traverseFocusTree(this: KeyboardShortcutsElement): {
   while (activeElement?.shadowRoot) {
     // todo if element is focusable, get when type in array
     if (activeElement.isFocusable) {
-      focusTree.unshift(activeElement.getFocus());
-
-      // set UN FOCUS on element
       activeElement.setFocus(false);
+      focusTree.unshift(activeElement as HTMLElement);
     }
 
     activeElement = activeElement.shadowRoot.activeElement;
@@ -85,16 +83,22 @@ export function insertBooleansInCondition(
 function matchCondition(
   this: KeyboardShortcutsElement,
   when: When[]
-): { isMatched: boolean; activeElement: HTMLElement } {
+): {
+  isMatched: boolean;
+  focusTree: HTMLElement[];
+  activeElement: HTMLElement;
+} {
   const { focusTree, activeElement } = traverseFocusTree.bind(this)();
 
   const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
     when,
-    focusTree
+    focusTree.map((element: HTMLElement) => {
+      return element.getWhen();
+    })
   );
   const isMatched = evaluateWhenExpressionEval.bind(this)(whenBoolean);
 
-  return { isMatched, activeElement };
+  return { isMatched, focusTree, activeElement };
 }
 
 function detectShortcut(this: KeyboardShortcutsElement) {
@@ -110,12 +114,12 @@ function detectShortcut(this: KeyboardShortcutsElement) {
     );
 
     if (matchKeys) {
-      const { isMatched, activeElement } = matchCondition.bind(this)(
+      const { isMatched, focusTree, activeElement } = matchCondition.bind(this)(
         shortcut.when as When[]
       );
 
       if (isMatched) {
-        activeElement.applyCommand(shortcut.command);
+        console.log(activeElement, focusTree, shortcut.command);
 
         this._allKeyPressSets = [];
         this._keyPressSet = [];

@@ -1,3 +1,4 @@
+import localforage from 'localforage';
 import { genShortID } from '../util';
 import type { KeyboardEventKey } from './keyboard-event-key-type';
 import { html, type TemplateResult } from 'lit';
@@ -126,5 +127,18 @@ export class KeyboardShortcut {
       new Source(json.source.name, json.source.link),
       json?.id
     );
+  }
+}
+
+const ACTIVE_ELEMENT_KEY = 'active-element-key';
+export class ActiveElementState {
+  static async GetActiveElement(): Promise<HTMLElement | null> {
+    const activeElement = localforage.getItem<HTMLElement>(ACTIVE_ELEMENT_KEY);
+
+    return activeElement;
+  }
+
+  static async SetActiveElement(activeElement: HTMLElement) {
+    localforage.setItem<HTMLElement>(ACTIVE_ELEMENT_KEY, activeElement);
   }
 }
