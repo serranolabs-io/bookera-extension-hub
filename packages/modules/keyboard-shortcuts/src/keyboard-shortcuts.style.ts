@@ -130,4 +130,15 @@ export default css`
     padding: 0;
     margin: 0;
   }
+
+  .context {
+    gap: var(--spacingXXSmall);
+  }
+
+  .label {
+    color: var(--slate-400);
+  }
+
+  .context-keys {
+  }
 `;

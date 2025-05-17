@@ -2,6 +2,7 @@ import localforage from 'localforage';
 import { genShortID } from '../util';
 import type { KeyboardEventKey } from './keyboard-event-key-type';
 import { html, type TemplateResult } from 'lit';
+import { shrink } from 'bun';
 
 export * from './keyboard-event-key-type';
 
@@ -38,8 +39,14 @@ export const workbench = {
     enterPanelTabs: 'workbench.action.enterPanelTabs',
     previousPanelView: 'workbench.action.previousPanelView',
     nextPanelView: 'workbench.action.nextPanelView',
+    growPanelRight: 'workbench.action.growPanelRight',
+    growPanelLeft: 'workbench.action.growPanelLeft',
+    shrinkPanelRight: 'workbench.action.shrinkPanelRight',
+    shrinkPanelLeft: 'workbench.action.shrinkPanelLeft',
   },
 };
+
+export type WorkbenchAction = keyof typeof workbench.action;
 
 export class KeyboardShortcut {
   command: string;

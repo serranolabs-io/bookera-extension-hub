@@ -93,11 +93,13 @@ function matchCondition(
   const { webComponentTree, activeElement } =
     traversewebComponentTree.bind(this)();
 
+  this._context = webComponentTree.map((element: HTMLElement) => {
+    return element.getWhen();
+  });
+
   const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
     when,
-    webComponentTree.map((element: HTMLElement) => {
-      return element.getWhen();
-    })
+    this._context
   );
   const isMatched = evaluateWhenExpressionEval.bind(this)(whenBoolean);
 
@@ -134,6 +136,8 @@ function detectShortcut(this: KeyboardShortcutsElement) {
           this._keyPressSet,
           this._allKeyPressSets
         );
+
+        this.requestUpdate();
       }
     }
   });

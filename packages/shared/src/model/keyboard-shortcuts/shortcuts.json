@@ -70,5 +70,41 @@
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
     }
+  },
+  {
+    "command": "workbench.action.growPanelRight",
+    "keys": [["Control", "g"], ["r"]],
+    "when": ["panelFocus"],
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+    }
+  },
+  {
+    "command": "workbench.action.growPanelLeft",
+    "keys": [["Control", "g"], ["l"]],
+    "when": ["panelFocus"],
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+    }
+  },
+  {
+    "command": "workbench.action.shrinkPanelRight",
+    "keys": [["Control", "s"], ["r"]],
+    "when": ["panelFocus"],
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+    }
+  },
+  {
+    "command": "workbench.action.shrinkPanelLeft",
+    "keys": [["Control", "s"], ["l"]],
+    "when": ["panelFocus"],
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/shared"
+    }
   }
 ]

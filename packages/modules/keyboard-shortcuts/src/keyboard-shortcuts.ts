@@ -13,6 +13,7 @@ import {
   KeyboardEventKey,
   KeyboardShortcut,
   ModifierKeys,
+  When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 import {
@@ -71,6 +72,8 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
   protected _commandsRan: string[] = [];
+
+  protected _context: When[] = [];
 
   constructor(
     renderMode: RenderMode,
@@ -149,28 +152,60 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     this.requestUpdate();
   }
 
+  protected _renderContextInModuleDaemon() {
+    if (this._context.length === 0) {
+      return html``;
+    }
+
+    return html`
+      <div class="context">
+        <small class="label">context</small>
+        ${this._context.map((when: When) => {
+          return html`<small>${when}</small>`;
+        })}
+      </div>
+    `;
+  }
+
+  protected _renderKeyPressesInModuleDaemon() {
+    const value = calculateValue(this._allKeyPressSets, this._keyPressSet);
+    if (value.length === 0) {
+      return html``;
+    }
+
+    return html`
+      <div>
+        <small class="label">keys</small>
+        <small class="keys"> ${value} </small>
+      </div>
+    `;
+  }
+
+  protected _renderCommandsInModuleDaemon() {
+    if (this._commandsRan.length === 0) {
+      return html``;
+    }
+
+    return html`
+        <div class="commands">
+            <small class="label">command</small>
+          ${this._commandsRan.map((command: string) => {
+            setTimeout(() => {
+              this._commandsRan = [];
+            }, 200);
+
+            return html`<small>${command}</small>`;
+          })}
+          </div>
+        </div>
+    `;
+  }
+
   protected renderInModuleDaemon(): TemplateResult {
     return html`
-      <div class="daemon">
-        <div class="context">
-          <small>context</small>
-        </div>
-        <div>
-          <small class="keys">
-            ${calculateValue(this._allKeyPressSets, this._keyPressSet)}
-          </small>
-        </div>
-          <small class="keys">
-            ${this._commandsRan.map((command: string) => {
-              setTimeout(() => {
-                this._commandsRan = [];
-              }, 200);
-
-              return html`<span>${command}</span>`;
-            })}
-          </small>
-        </div>
-      </div>
+      ${this._renderContextInModuleDaemon()}
+      ${this._renderKeyPressesInModuleDaemon()}
+      ${this._renderCommandsInModuleDaemon()}
     `;
   }
 
