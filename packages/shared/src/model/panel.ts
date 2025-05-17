@@ -76,6 +76,10 @@ export class PanelTab {
     }
   }
 
+  getId() {
+    return this.id;
+  }
+
   setModuleId(moduleId: string) {
     this.moduleId = moduleId;
   }

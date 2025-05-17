@@ -29,26 +29,26 @@ import {
 
 // when clicking anywhere, please apply traverse focus tree
 
-function traverseFocusTree(this: KeyboardShortcutsElement): {
-  focusTree: HTMLElement[];
+function traversewebComponentTree(this: KeyboardShortcutsElement): {
+  webComponentTree: HTMLElement[];
   activeElement: HTMLElement;
 } {
   let activeElement = document.activeElement;
 
   // this will give me focused tree
-  let focusTree = [];
+  let webComponentTree = [];
   while (activeElement?.shadowRoot) {
     // todo if element is focusable, get when type in array
     if (activeElement.isFocusable) {
       activeElement.setFocus(false);
-      focusTree.unshift(activeElement as HTMLElement);
+      webComponentTree.unshift(activeElement as HTMLElement);
     }
 
     activeElement = activeElement.shadowRoot.activeElement;
   }
 
   return {
-    focusTree,
+    webComponentTree,
     activeElement: activeElement as HTMLElement,
   };
 }
@@ -61,15 +61,17 @@ export function evaluateWhenExpressionEval(conditions: WhenBoolean[]): boolean {
 
 export function insertBooleansInCondition(
   conditions: When[],
-  focusTree: When[]
+  webComponentTree: When[]
 ): WhenBoolean[] {
   return conditions.map((condition: When) => {
     if (operators.includes(condition as Operator)) {
       return condition;
     } else {
-      const foundCondition = focusTree.find((focusTreeCondition: When) => {
-        return focusTreeCondition === condition;
-      });
+      const foundCondition = webComponentTree.find(
+        (webComponentTreeCondition: When) => {
+          return webComponentTreeCondition === condition;
+        }
+      );
 
       if (foundCondition) {
         return true;
@@ -85,20 +87,21 @@ function matchCondition(
   when: When[]
 ): {
   isMatched: boolean;
-  focusTree: HTMLElement[];
+  webComponentTree: HTMLElement[];
   activeElement: HTMLElement;
 } {
-  const { focusTree, activeElement } = traverseFocusTree.bind(this)();
+  const { webComponentTree, activeElement } =
+    traversewebComponentTree.bind(this)();
 
   const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
     when,
-    focusTree.map((element: HTMLElement) => {
+    webComponentTree.map((element: HTMLElement) => {
       return element.getWhen();
     })
   );
   const isMatched = evaluateWhenExpressionEval.bind(this)(whenBoolean);
 
-  return { isMatched, focusTree, activeElement };
+  return { isMatched, webComponentTree, activeElement };
 }
 
 function detectShortcut(this: KeyboardShortcutsElement) {
@@ -114,15 +117,20 @@ function detectShortcut(this: KeyboardShortcutsElement) {
     );
 
     if (matchKeys) {
-      const { isMatched, focusTree, activeElement } = matchCondition.bind(this)(
-        shortcut.when as When[]
-      );
+      const { isMatched, webComponentTree, activeElement } =
+        matchCondition.bind(this)(shortcut.when as When[]);
 
+      // problem I have is how to set the next active elemnt?
       if (isMatched) {
-        console.log(activeElement, focusTree, shortcut.command);
+        webComponentTree[0].applyCommand(shortcut.command);
 
         this._allKeyPressSets = [];
         this._keyPressSet = [];
+        console.log(
+          'matched, so resettingthe fucking keypresses',
+          this._keyPressSet,
+          this._allKeyPressSets
+        );
       }
     }
   });
