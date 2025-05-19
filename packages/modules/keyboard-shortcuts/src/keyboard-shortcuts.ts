@@ -21,6 +21,11 @@ import {
 } from '@serranolabs.io/shared/util';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
+import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu/menu.js';
+import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-item/menu-item.js';
+import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-label/menu-label.js';
+import './context-menu';
+
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
 import {
@@ -232,6 +237,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected renderInPanel(): TemplateResult {
     return html`
+      <context-menu></context-menu>
       <formwrapper-element
         .assignKeybindingDialogState=${this.assignKeybindingDialogState}
       ></formwrapper-element>
@@ -260,6 +266,10 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
             this.requestUpdate();
           }}
+          @contextmenu=${(e: Event) => {
+            console.log(e, 'event');
+            e.preventDefault();
+          }}
         >
           ${this._keyboardShortcuts?.map(
             (shortcut: KeyboardShortcut, index: number) => html`
@@ -271,7 +281,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
                 <td>
                   <div class="flex command-title">
                     <sl-icon class="edit-icon" name="pencil"></sl-icon>
-                    <span> ${shortcut.command} </span>
+                    <span> ${shortcut.title} </span>
                     <span>
                       <sl-tooltip
                         content="${shortcut.description}"

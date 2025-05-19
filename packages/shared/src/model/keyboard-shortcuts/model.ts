@@ -59,6 +59,7 @@ export class KeyboardShortcut {
   when: string[];
   source: Source;
   description: string;
+  title: string;
   id: string;
 
   constructor(
@@ -67,6 +68,7 @@ export class KeyboardShortcut {
     when: When[],
     source: Source,
     description: string,
+    title: string,
     id?: string
   ) {
     this.command = command;
@@ -74,6 +76,7 @@ export class KeyboardShortcut {
     this.when = when;
     this.source = source;
     this.description = description;
+    this.title = title;
     if (id) {
       this.id = id;
     } else {
@@ -114,6 +117,8 @@ export class KeyboardShortcut {
             return html``;
           }
 
+          console.log(key);
+
           return html`<span class="keybinding"
               >${key.map((k: KeyboardEventKey, i: number) => {
                 let value = KeyboardShortcut.PrintKey(k);
@@ -140,6 +145,7 @@ export class KeyboardShortcut {
       json.when,
       new Source(json.source.name, json.source.link),
       json.description,
+      json.title,
       json?.id
     );
   }

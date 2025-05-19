@@ -40,6 +40,24 @@ vi.mock(
     someFunction: () => '',
   })
 );
+vi.mock(
+  'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu/menu.js',
+  () => ({
+    someFunction: () => '',
+  })
+);
+vi.mock(
+  'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-item/menu-item.js',
+  () => ({
+    someFunction: () => '',
+  })
+);
+vi.mock(
+  'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-label/menu-label.js',
+  () => ({
+    someFunction: () => '',
+  })
+);
 
 describe('handle-keyboard-shortcuts', () => {
   it.each([
