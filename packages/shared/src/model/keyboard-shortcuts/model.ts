@@ -43,6 +43,11 @@ export const workbench = {
     shrinkPanel: 'workbench.action.shrinkPanel',
     closePanel: 'workbench.action.closePanel',
     splitPanel: 'workbench.action.splitPanel',
+    addTab: 'workbench.action.addPanelTab',
+  },
+  settings: {
+    openSettings: 'settings.open',
+    openKeyboardShortcuts: 'workbench.action.openKeyboardShortcuts',
   },
 };
 
@@ -97,7 +102,6 @@ export class KeyboardShortcut {
   }
 
   static renderKeysStatic(keys: KeyboardEventKey[][]): TemplateResult {
-    console.log(keys);
     return html`
       <div class="keybindings">
         ${keys.map((key, i: number) => {

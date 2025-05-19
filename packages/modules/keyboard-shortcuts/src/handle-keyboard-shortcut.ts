@@ -5,7 +5,7 @@ import {
   operators,
   When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
-import { handleKeyPress, handleKeyUp } from './formwrapper';
+import { handleKeyDownAndSubmit } from './formwrapper';
 import {
   KeyboardShortcutsElement,
   SHORTCUT_MAX_LENGTH,
@@ -106,85 +106,88 @@ function matchCondition(
   return { isMatched, webComponentTree, activeElement };
 }
 
-function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
-  const allSets = [...this._allKeyPressSets, this._keyPressSet];
-  this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
-    const matchKeys = shortcut.keys.every(
-      (set: KeyboardEventKey[], setIndex: number) => {
-        return set.every((key: KeyboardEventKey, arrayIndex: number) => {
-          return key === allSets[setIndex][arrayIndex];
-        });
+// [true, true, false]
+// checks if the shortcut could possibly be a match & checks if it is a match
+export function matchCommand(
+  currentShortcut: KeyboardEventKey[][],
+  shortcutKeys: KeyboardEventKey[][]
+): { match: boolean; hasPotentialMatch: boolean } {
+  let match = currentShortcut.length === shortcutKeys.length ? true : false;
+
+  const hasPotentialMatch = currentShortcut.every(
+    (set: KeyboardEventKey[], setIndex: number) => {
+      const matchedCharacter = set.every(
+        (key: KeyboardEventKey, arrayIndex: number) => {
+          return key === shortcutKeys[setIndex]?.[arrayIndex];
+        }
+      );
+      if (
+        !shortcutKeys[setIndex] ||
+        set.length !== shortcutKeys[setIndex].length ||
+        !matchedCharacter
+      ) {
+        match = false;
       }
+
+      return matchedCharacter;
+    }
+  );
+
+  return { match, hasPotentialMatch };
+}
+
+function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
+  let hasPotentialMatches = false;
+  let doesNotMatchWhen = false;
+  this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
+    const { match, hasPotentialMatch } = matchCommand(
+      this._allKeyPressSets,
+      shortcut.keys
     );
 
-    if (matchKeys) {
+    if (hasPotentialMatch) {
+      hasPotentialMatches = hasPotentialMatch;
+    }
+
+    if (match) {
       const { isMatched, webComponentTree, activeElement } =
         matchCondition.bind(this)(shortcut.when as When[]);
 
-      console.log('command matched', shortcut.command);
-      // problem I have is how to set the next active elemnt?
       if (isMatched) {
-        console.log(isMatched, webComponentTree, activeElement);
-        console.log('when matched', shortcut.command);
+        // @ts-ignore
         webComponentTree[0].applyCommand(shortcut.command);
         this._commandsRan.push(shortcut.command);
-
-        console.log('COMMAND PRESSED');
         e.preventDefault();
-
-        this._allKeyPressSets = [];
-        this._keyPressSet = [];
-        console.log(
-          'matched, so resettingthe fucking keypresses',
-          this._keyPressSet,
-          this._allKeyPressSets
-        );
-
         this.requestUpdate();
+        this._allKeyPressSets = [];
+      } else {
+        doesNotMatchWhen = true;
       }
     }
   });
+
+  if (!hasPotentialMatches || (doesNotMatchWhen && !hasPotentialMatches)) {
+    this._allKeyPressSets = [];
+  }
 }
 
 function registerKeydownListener(
   this: KeyboardShortcutsElement,
   e: KeyboardEvent
 ) {
-  const nextKey = e.key as KeyboardEventKey;
-  const { allKeyPressSets, keyPressSet, isModifierPressed } = handleKeyPress(
+  const { allKeyPressSets, modifiers } = handleKeyDownAndSubmit(
+    e,
     this._allKeyPressSets,
-    this._keyPressSet,
-    this.isModifierPressed,
-    nextKey
+    this._modifiers
   );
+
   this._allKeyPressSets = allKeyPressSets;
-  this._keyPressSet = keyPressSet;
-  this.isModifierPressed = isModifierPressed;
-  if (this._allKeyPressSets.length > SHORTCUT_MAX_LENGTH) {
-    this._allKeyPressSets = [];
-  }
+  this._modifiers = modifiers;
   this.requestUpdate();
 
   detectShortcut.bind(this)(e);
 }
-function registerKeyupListener(
-  this: KeyboardShortcutsElement,
-  e: KeyboardEvent
-) {
-  const { allKeyPressSets, keyPressSet, isModifierPressed } = handleKeyUp(
-    this._allKeyPressSets,
-    this._keyPressSet,
-    this.isModifierPressed,
-    e.key as KeyboardEventKey
-  );
-  this._allKeyPressSets = allKeyPressSets;
-  this._keyPressSet = keyPressSet;
-  this.isModifierPressed = isModifierPressed;
-  this.requestUpdate();
-}
 
 export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {
   document.addEventListener('keydown', registerKeydownListener.bind(this));
-
-  document.addEventListener('keyup', registerKeyupListener.bind(this));
 }

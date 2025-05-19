@@ -5,6 +5,8 @@ import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
 import { DarkModeKey, DarkModeSingleton } from './dark-mode-state';
 import { ColorPalette, ColorPalettesSingleton } from './stateful';
 import baseCss from '@serranolabs.io/shared/base';
+import shortcuts from './shortcuts.json';
+import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 @customElement('dark-mode')
 export class DarkMode extends LitElement {
@@ -63,6 +65,11 @@ export class DarkMode extends LitElement {
       this.applySelectedPallete();
       this.appliedMode = false;
     }, 100);
+
+    document.addEventListener(
+      shortcuts[0].command,
+      this._switchColorMode.bind(this)
+    );
   }
 
   applySelectedPallete() {

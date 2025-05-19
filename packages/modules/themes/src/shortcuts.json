@@ -1,0 +1,12 @@
+[
+  {
+    "command": "themes.action.changeMode",
+    "keys": [["Control", "Alt", "l"]],
+    "when": ["panelFocus"],
+    "description": "Changes from dark mode to light mode and vice versa.",
+    "source": {
+      "name": "Theme Switcher",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/modules/themes"
+    }
+  }
+]

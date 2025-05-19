@@ -21,66 +21,54 @@ import {
 
 const KEYBINDINGS_INPUT_ID = 'keybindings-input';
 
-export const handleKeyPress = (
+export const handleKeyDownAndSubmit = (
+  e: KeyboardEvent,
   allKeyPressSets: KeyboardEventKey[][],
-  keyPressSet: KeyboardEventKey[],
-  isModifierPressed: ModifierKeys | null,
-  nextKey: KeyboardEventKey
+  modifiers: KeyboardEventKey[]
 ): {
+  shouldSubmit: boolean;
   allKeyPressSets: KeyboardEventKey[][];
-  keyPressSet: KeyboardEventKey[];
-  isModifierPressed: ModifierKeys | null;
+  modifiers: KeyboardEventKey[];
 } => {
-  if (modifierKeys.includes(nextKey as ModifierKeys)) {
-    isModifierPressed = nextKey as ModifierKeys;
+  const nextKey = e.key as KeyboardEventKey;
+
+  if (e.altKey && !modifiers.includes('Alt')) {
+    modifiers.push('Alt');
+  }
+  if (e.ctrlKey && !modifiers.includes('Control')) {
+    modifiers.push('Control');
   }
 
-  if (isModifierPressed) {
-    keyPressSet.push(nextKey);
-  } else {
-    allKeyPressSets.push([nextKey]);
+  if (e.shiftKey && !modifiers.includes('Shift')) {
+    modifiers.push('Shift');
   }
-  return {
-    allKeyPressSets,
-    keyPressSet,
-    isModifierPressed,
-  };
-};
+  if (e.metaKey && !modifiers.includes('Meta')) {
+    modifiers.push('Meta');
+  }
 
-export const handleKeyUp = (
-  allKeyPressSets: KeyboardEventKey[][],
-  keyPressSet: KeyboardEventKey[],
-  isModifierPressed: ModifierKeys | null,
-  nextKey: KeyboardEventKey
-): {
-  allKeyPressSets: KeyboardEventKey[][];
-  keyPressSet: KeyboardEventKey[];
-  isModifierPressed: ModifierKeys | null;
-  isModifierReleased: boolean;
-} => {
-  let isModifierReleased = false;
-  if (nextKey === isModifierPressed) {
-    isModifierPressed = null;
-    if (keyPressSet.length > 0) {
-      allKeyPressSets.push(keyPressSet);
-      keyPressSet = [];
-      isModifierReleased = true;
-    }
+  if (nextKey === 'Enter' && modifiers.length === 0) {
+    return { shouldSubmit: true, allKeyPressSets, modifiers };
   }
-  return {
-    allKeyPressSets,
-    keyPressSet,
-    isModifierPressed,
-    isModifierReleased,
-  };
+
+  if (!modifierKeys.includes(nextKey as ModifierKeys)) {
+    allKeyPressSets.push([...(modifiers as KeyboardEventKey[]), nextKey]);
+    modifiers = [];
+  }
+  return { shouldSubmit: false, allKeyPressSets, modifiers };
 };
 
 export const calculateValue = (
   allKeyPressSets: KeyboardEventKey[][],
-  keyPressSet: KeyboardEventKey[]
+  modifiers: KeyboardEventKey[]
 ): KeyboardEventKey => {
-  return (allKeyPressSets.flatMap((x) => x).join('') +
-    keyPressSet.join('')) as KeyboardEventKey;
+  const value = (modifiers.join('') +
+    allKeyPressSets
+      .flatMap((keyPressSet) => {
+        return keyPressSet.join('');
+      })
+      .join('')) as KeyboardEventKey;
+
+  return value;
 };
 
 @customElement('formwrapper-element')
@@ -130,10 +118,7 @@ export class Formwrapper extends LitElement {
   assignKeybindingDialogState: AssignKeybindingDialog =
     ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
 
-  @state()
-  isModifierPressed: ModifierKeys | null = null;
-
-  private _keyPressSet: KeyboardEventKey[] = [];
+  private _modifiers: KeyboardEventKey[] = [];
 
   private _allKeyPressSets: KeyboardEventKey[][] = [];
 
@@ -149,6 +134,16 @@ export class Formwrapper extends LitElement {
     )!;
   }
 
+  private _renderKeysStatic() {
+    return KeyboardShortcut.renderKeysStatic(
+      [this._modifiers, ...this._allKeyPressSets].filter(
+        (kek: KeyboardEventKey[]) => {
+          return kek.length > 0;
+        }
+      )
+    );
+  }
+
   // behavior 1: - given the
   private _renderForm() {
     return this.#form.field(
@@ -161,57 +156,24 @@ export class Formwrapper extends LitElement {
             type="text"
             placeholder="First Name"
             id=${KEYBINDINGS_INPUT_ID}
-            .value="${calculateValue(this._allKeyPressSets, this._keyPressSet)}"
+            .value="${calculateValue(this._allKeyPressSets, this._modifiers)}"
             @blur="${() => field.handleBlur()}"
-            @keyup="${(e: KeyboardEvent) => {
-              const {
-                allKeyPressSets,
-                keyPressSet,
-                isModifierPressed,
-                isModifierReleased,
-              } = handleKeyUp(
-                this._allKeyPressSets,
-                this._keyPressSet,
-                this.isModifierPressed,
-                e.key as KeyboardEventKey
-              );
-              this._allKeyPressSets = allKeyPressSets;
-              this._keyPressSet = keyPressSet;
-              this.isModifierPressed = isModifierPressed;
-              if (isModifierReleased) {
-                field.handleChange(
-                  calculateValue(this._allKeyPressSets, this._keyPressSet)
-                );
-              }
-            }}"
             @keydown="${(e: KeyboardEvent) => {
-              const nextKey = e.key as KeyboardEventKey;
-              if (nextKey === 'Enter') {
+              const { shouldSubmit, allKeyPressSets, modifiers } =
+                handleKeyDownAndSubmit(
+                  e,
+                  this._allKeyPressSets,
+                  this._modifiers
+                );
+              this._allKeyPressSets = allKeyPressSets;
+              if (shouldSubmit) {
                 field.form.handleSubmit();
                 return;
               }
-
-              if (this._allKeyPressSets.length >= SHORTCUT_MAX_LENGTH) {
-                field.handleChange('' as KeyboardEventKey);
-                this._allKeyPressSets = [];
-              }
-
-              const { allKeyPressSets, keyPressSet, isModifierPressed } =
-                handleKeyPress(
-                  this._allKeyPressSets,
-                  this._keyPressSet,
-                  this.isModifierPressed,
-                  nextKey
-                );
-              this._allKeyPressSets = allKeyPressSets;
-              this._keyPressSet = keyPressSet;
-              this.isModifierPressed = isModifierPressed;
-              // onsole.log(this._allKeyPressSets, this._keyPressSet);
-
-              this.requestUpdate();
+              this._modifiers = modifiers;
 
               field.handleChange(
-                calculateValue(this._allKeyPressSets, this._keyPressSet)
+                calculateValue(this._allKeyPressSets, this._modifiers)
               );
 
               e.preventDefault();
@@ -221,10 +183,7 @@ export class Formwrapper extends LitElement {
             ${field.state.value.length > 0
               ? html`<sl-icon name="check2"></sl-icon>`
               : html`<sl-icon name="x"></sl-icon>`}
-            ${KeyboardShortcut.renderKeysStatic([
-              ...this._allKeyPressSets,
-              this._keyPressSet,
-            ])}
+            ${this._renderKeysStatic()}
           </div>
         </div>`;
       }
@@ -240,6 +199,7 @@ export class Formwrapper extends LitElement {
     this.assignKeybindingDialogState = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
     this.keybindingsInput.value = '';
     this._allKeyPressSets = [];
+    this._modifiers = [];
 
     return Promise.resolve();
   }

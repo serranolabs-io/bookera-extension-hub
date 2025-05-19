@@ -4,11 +4,15 @@
 import { describe, it, expect, vi } from 'vitest';
 import { modifierKeys } from '../../../shared/src/model/keyboard-shortcuts/keyboard-event-key-type';
 import { Formwrapper } from './formwrapper';
-import { When } from '@serranolabs.io/shared/keyboard-shortcuts';
+import {
+  KeyboardEventKey,
+  When,
+} from '@serranolabs.io/shared/keyboard-shortcuts';
 import {
   evaluateWhenExpression,
   evaluateWhenExpressionEval,
   insertBooleansInCondition,
+  matchCommand,
   WhenBoolean,
 } from './handle-keyboard-shortcut';
 vi.mock(
@@ -165,4 +169,83 @@ describe('handle-keyboard-shortcuts', () => {
 
     expect(evaluatedExpression).toEqual(input.expected);
   });
+});
+
+it.each([
+  {
+    input: {
+      currentShortcut: [['D']] as KeyboardEventKey[][],
+      shortcut: [['E'], ['F']] as KeyboardEventKey[][],
+      expected: {
+        match: false,
+        hasPotentialMatch: false,
+      },
+    },
+    description: 'has potential match true base case',
+  },
+  {
+    input: {
+      currentShortcut: [['D']] as KeyboardEventKey[][],
+      shortcut: [['E'], ['F']] as KeyboardEventKey[][],
+      expected: {
+        match: false,
+        hasPotentialMatch: false,
+      },
+    },
+    description: 'no matches, current shortcut shorter than shortcut',
+  },
+  {
+    input: {
+      currentShortcut: [['D']] as KeyboardEventKey[][],
+      shortcut: [['D'], ['F']] as KeyboardEventKey[][],
+      expected: {
+        match: false,
+        hasPotentialMatch: true,
+      },
+    },
+    description: 'has potential match true base case',
+  },
+  {
+    input: {
+      currentShortcut: [['D'], ['F']] as KeyboardEventKey[][],
+      shortcut: [['D']] as KeyboardEventKey[][],
+      expected: {
+        match: false,
+        hasPotentialMatch: false,
+      },
+    },
+    description: 'no mathces or potential matches base case',
+  },
+  {
+    input: {
+      currentShortcut: [['F']] as KeyboardEventKey[][],
+      shortcut: [['D']] as KeyboardEventKey[][],
+      expected: {
+        match: false,
+        hasPotentialMatch: false,
+      },
+    },
+    description: 'no mathces or potential matches base case',
+  },
+  {
+    input: {
+      currentShortcut: [['Shift', 'D'], ['j']] as KeyboardEventKey[][],
+      shortcut: [['j']] as KeyboardEventKey[][],
+      expected: {
+        match: false,
+        hasPotentialMatch: false,
+      },
+    },
+    description: 'no mathces or potential matches base case',
+  },
+])('should have potential match $description', ({ input }) => {
+  const { match, hasPotentialMatch } = matchCommand(
+    input.currentShortcut,
+    input.shortcut
+  );
+
+  console.log(match, hasPotentialMatch);
+
+  expect(match).toEqual(input.expected.match);
+  expect(hasPotentialMatch).toEqual(input.expected.hasPotentialMatch);
 });

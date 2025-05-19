@@ -22,7 +22,10 @@ export default defineConfig({
   build: {
     minify: 'terser',
     lib: {
-      entry: resolve(__dirname, 'src/main.ts'),
+      entry: {
+        'bookera-themes': resolve(__dirname, 'src/main.ts'),
+        shortcuts: resolve(__dirname, 'src/shortcuts.json'),
+      },
       name: 'bookera-themes',
       formats: ['es'],
     },

@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/bookera-themes",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "type": "module",
   "scripts": {
     "build": "vite build",
@@ -11,6 +11,19 @@
     "dist"
   ],
   "main": "./dist/bookera-themes.js",
+  "exports": {
+    "./shortcuts": {
+      "default": {
+        "import": "./dist/shortcuts.js"
+      },
+      "development": {
+        "import": "./src/shortcuts.json"
+      },
+      "production": {
+        "import": "./dist/shortcuts.js"
+      }
+    }
+  },
   "types": "./dist/main.d.ts",
   "dependencies": {
     "@pb33f/saddlebag": "^0.2.2",

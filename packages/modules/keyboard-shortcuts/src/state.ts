@@ -3,6 +3,7 @@ import shortcutsJson from './shortcuts.json';
 import localforage from 'localforage';
 import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
 import sharedShortcuts from '@serranolabs.io/shared/shortcuts-list';
+import themesShortcuts from '@serranolabs.io/bookera-themes/shortcuts';
 
 const KEYBINDINGS_BAG_NAME = 'keyboard-shortcuts';
 
@@ -15,6 +16,7 @@ const convertAll = (shortcuts: KeyboardShortcut[]): KeyboardShortcut[] => {
 export class KeyboardShortcutsState {
   static defaults: KeyboardShortcut[] = convertAll([
     ...sharedShortcuts,
+    ...themesShortcuts,
   ] as KeyboardShortcut[]);
   constructor() {}
 

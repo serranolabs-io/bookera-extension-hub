@@ -128,5 +128,15 @@
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     }
+  },
+  {
+    "command": "workbench.settings.open",
+    "keys": [["Control", ","]],
+    "when": ["panelFocus"],
+    "description": "adds a new tab to the current panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    }
   }
 ]

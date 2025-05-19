@@ -9,7 +9,6 @@ import './formwrapper';
 import keyboardShortcutsStyle from './keyboard-shortcuts.style';
 import baseCss from '@serranolabs.io/shared/base';
 import {
-  Keybinding,
   KeyboardEventKey,
   KeyboardShortcut,
   ModifierKeys,
@@ -29,7 +28,7 @@ import {
   NewPanelEventType,
   PanelTab,
 } from '@serranolabs.io/shared/panel';
-import { calculateValue, handleKeyPress, handleKeyUp } from './formwrapper';
+import { calculateValue } from './formwrapper';
 import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 
 export const elementName = 'keyboard-shortcuts-element';
@@ -64,16 +63,13 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   @state()
   private _shortcutsBag!: Bag<KeyboardShortcut>;
 
-  @state()
-  isModifierPressed: ModifierKeys | null = null;
-
-  protected _keyPressSet: KeyboardEventKey[] = [];
-
   protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
   protected _commandsRan: string[] = [];
 
   protected _context: When[] = [];
+
+  protected _modifiers: KeyboardEventKey[] = [];
 
   constructor(
     renderMode: RenderMode,
@@ -168,7 +164,8 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   protected _renderKeyPressesInModuleDaemon() {
-    const value = calculateValue(this._allKeyPressSets, this._keyPressSet);
+    const value = calculateValue(this._allKeyPressSets, this._modifiers);
+
     if (value.length === 0) {
       return html``;
     }
@@ -264,7 +261,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
             this.requestUpdate();
           }}
         >
-          ${this._keyboardShortcuts.map(
+          ${this._keyboardShortcuts?.map(
             (shortcut: KeyboardShortcut, index: number) => html`
               <tr
                 data-index=${index}
