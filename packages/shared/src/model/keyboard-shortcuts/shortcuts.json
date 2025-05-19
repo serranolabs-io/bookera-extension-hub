@@ -133,7 +133,17 @@
     "command": "workbench.settings.open",
     "keys": [["Control", ","]],
     "when": ["panelFocus"],
-    "description": "adds a new tab to the current panel",
+    "description": "opens the settings in a panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    }
+  },
+  {
+    "command": "workbench.settings.openCommandPalette",
+    "keys": [["Shift", "Meta", "P"]],
+    "when": ["panelFocus"],
+    "description": "Opens the settings command palette",
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
