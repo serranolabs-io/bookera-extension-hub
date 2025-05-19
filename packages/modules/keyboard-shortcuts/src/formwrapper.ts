@@ -12,7 +12,6 @@ import {
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/input/input.js';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import {
-  Keybinding,
   KeyboardEventKey,
   KeyboardShortcut,
   modifierKeys,
