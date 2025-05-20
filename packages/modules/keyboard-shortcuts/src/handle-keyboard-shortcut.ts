@@ -190,7 +190,8 @@ function registerKeydownListener(
 }
 
 function openCommandPalette(this: KeyboardShortcutsElement) {
-  this._isCommandPaletteOpened = true;
+  this._commandPaletteDialog.show();
+  this.requestUpdate();
 }
 
 export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {

@@ -103,6 +103,15 @@ export class KeyboardShortcut {
     return KeyboardShortcut.renderKeysStatic(this.keys);
   }
 
+  renderTitleCommand(): TemplateResult {
+    return html`
+      <div class="title-command">
+        <label>${this.title}</label>
+        <small>${this.command}</small>
+      </div>
+    `;
+  }
+
   static renderKeysStatic(keys: KeyboardEventKey[][]): TemplateResult {
     return html`
       <div class="keybindings">
@@ -115,8 +124,6 @@ export class KeyboardShortcut {
           if (key.length === 0) {
             return html``;
           }
-
-          console.log(key);
 
           return html`<span class="keybinding"
               >${key.map((k: KeyboardEventKey, i: number) => {

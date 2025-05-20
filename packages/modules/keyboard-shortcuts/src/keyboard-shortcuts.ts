@@ -1,5 +1,5 @@
 import { html, type TemplateResult } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, query, state } from 'lit/decorators.js';
 import {
   BookeraModuleElement,
   moduleElementStyles,
@@ -34,6 +34,9 @@ import {
 } from '@serranolabs.io/shared/panel';
 import { calculateValue } from './formwrapper';
 import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
+import { SlDialog, SlInput } from '@shoelace-style/shoelace';
+import Fuse from 'fuse.js';
+import { renderMatches } from './fuse';
 
 export const elementName = 'keyboard-shortcuts-element';
 
@@ -72,6 +75,8 @@ export const SUBMIT_FORM_EVENT = 'submit-form-event-key';
 
 export const CONTEXT_MENU_EVENT = 'context-menu-event-key';
 
+const COMMAND_PALETTE_DIALOG = 'command-palette-dialog';
+
 @customElement(elementName)
 export class KeyboardShortcutsElement extends BookeraModuleElement {
   static styles = [keyboardShortcutsStyle, moduleElementStyles, baseCss];
@@ -97,6 +102,11 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected _modifiers: KeyboardEventKey[] = [];
 
   protected _isCommandPaletteOpened = false;
+
+  private _shortcutFilters: string = '';
+
+  @query(`#${COMMAND_PALETTE_DIALOG}`)
+  _commandPaletteDialog!: SlDialog;
 
   constructor(
     renderMode: RenderMode,
@@ -214,19 +224,45 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     `;
   }
 
-  renderCommandPalette() {
-    return html`
-      <sl-dialog>
-        <sl-menu>
-          ${this._keyboardShortcuts.map((shortcut: KeyboardShortcut) => {
-            shortcut = KeyboardShortcut.fromJSON(shortcut);
+  private _renderMatches() {
+    const matches = renderMatches(
+      this._keyboardShortcuts,
+      ['keys', 'command', 'title'],
+      this._shortcutFilters
+    );
+    let shortcuts = this._keyboardShortcuts;
 
-            return html`
-              <sl-menu-item>
-                ${shortcut.command}
-                <div slot="suffix">${shortcut.renderKeys()}</div>
-              </sl-menu-item>
-            `;
+    console.log('hello from renderMatches', matches);
+
+    if (matches.length !== 0) {
+      shortcuts = matches;
+    }
+
+    console.log(matches);
+
+    return shortcuts;
+  }
+
+  private _renderCommandPalette() {
+    return html`
+        <sl-dialog id=${COMMAND_PALETTE_DIALOG}>
+        <sl-input autofocus @sl-input=${(e: CustomEvent) => {
+          // @ts-ignore
+          this._shortcutFilters = e.target.value;
+        }}></sl-input>
+        <sl-menu class="command-palette-menu">
+          
+          ${this._renderMatches().map((match) => {
+            if (match.item) {
+              return html`<sl-menu-item
+                >${match.item.renderTitleCommand()}
+                <p slot="suffix">${match.item.renderKeys()}</p></sl-menu-item
+              >`;
+            }
+            return html`<sl-menu-item
+              >${match.renderTitleCommand()}
+              <p slot="suffix">${match.renderKeys()}</p></sl-menu-item
+            >`;
           })}
         </sl-dialog>
       </div>
@@ -255,7 +291,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected renderInModuleDaemon(): TemplateResult {
     return html`
-      ${this._renderContextInModuleDaemon()}
+      ${this._renderCommandPalette()} ${this._renderContextInModuleDaemon()}
       ${this._renderKeyPressesInModuleDaemon()}
       ${this._renderCommandsInModuleDaemon()}
     `;
@@ -349,7 +385,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
                 <td>
                   <div class="flex command-title">
                     <sl-icon class="edit-icon" name="pencil"></sl-icon>
-                    <span> ${shortcut.title} </span>
+                    ${shortcut.renderTitleCommand()}
                     <span>
                       <sl-tooltip
                         content="${shortcut.description}"

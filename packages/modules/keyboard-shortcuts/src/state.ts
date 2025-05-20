@@ -45,8 +45,6 @@ export class KeyboardShortcutsState {
         KEYBINDINGS_BAG_NAME
       );
 
-    console.log(this.defaults);
-
     if (!savedShortcuts) {
       const defaultShortcuts = new Map<string, KeyboardShortcut>();
 

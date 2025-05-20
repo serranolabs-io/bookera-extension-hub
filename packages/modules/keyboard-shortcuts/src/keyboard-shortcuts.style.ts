@@ -119,6 +119,10 @@ export default css`
     visibility: visible;
   }
 
+  .title-command label {
+    display: block;
+  }
+
   .daemon {
     display: flex;
     gap: var(--spacingXXSmall);
@@ -139,5 +143,9 @@ export default css`
   }
 
   .context-keys {
+  }
+
+  .command-palette-menu {
+    max-height: 20rem;
   }
 `;

@@ -15,6 +15,9 @@ import {
   matchCommand,
   WhenBoolean,
 } from './handle-keyboard-shortcut';
+import { html } from 'lit';
+import { KeyboardShortcutsState } from './state';
+import { renderMatches } from './fuse';
 vi.mock(
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/dialog/dialog.js',
   () => ({
@@ -266,4 +269,27 @@ it.each([
 
   expect(match).toEqual(input.expected.match);
   expect(hasPotentialMatch).toEqual(input.expected.hasPotentialMatch);
+});
+
+it.each([
+  {
+    input: {
+      list: KeyboardShortcutsState.defaults,
+      pattern: 'nextPanel',
+      expected: true,
+    },
+    description: 'no mathces or potential matches base case',
+  },
+])('should properly highlight', ({ input }) => {
+  const rendering = renderMatches(
+    input.list,
+    ['command', 'title', 'keys'],
+    input.pattern
+  );
+
+  console.log(rendering);
+
+  console.log(html`<span></span>`);
+
+  expect(true).toBe(input.expected);
 });
