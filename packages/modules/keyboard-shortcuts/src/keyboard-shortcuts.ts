@@ -11,7 +11,6 @@ import baseCss from '@serranolabs.io/shared/base';
 import {
   KeyboardEventKey,
   KeyboardShortcut,
-  ModifierKeys,
   When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
@@ -50,9 +49,28 @@ export const ASSIGN_KEYBINDING_DIALOG_DEFAULTS = {
   command: '',
 };
 
+interface Coords {
+  x: number;
+  y: number;
+}
+
+export interface ContextMenuState {
+  isOpened: boolean;
+  keyboardShortcut: KeyboardShortcut | null;
+  coords: Coords | null;
+}
+
+export const CONTEXT_MENU_STATE_DEFAULTS: ContextMenuState = {
+  isOpened: false,
+  keyboardShortcut: null,
+  coords: null,
+};
+
 export const SHORTCUT_MAX_LENGTH = 2;
 
 export const SUBMIT_FORM_EVENT = 'submit-form-event-key';
+
+export const CONTEXT_MENU_EVENT = 'context-menu-event-key';
 
 @customElement(elementName)
 export class KeyboardShortcutsElement extends BookeraModuleElement {
@@ -65,6 +83,8 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   assignKeybindingDialogState: AssignKeybindingDialog =
     ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
 
+  protected _contextMenuState: ContextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
+
   @state()
   private _shortcutsBag!: Bag<KeyboardShortcut>;
 
@@ -75,6 +95,8 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected _context: When[] = [];
 
   protected _modifiers: KeyboardEventKey[] = [];
+
+  protected _isCommandPaletteOpened = false;
 
   constructor(
     renderMode: RenderMode,
@@ -102,9 +124,19 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         SUBMIT_FORM_EVENT,
         this._listToAssignNewKeysEvent.bind(this)
       );
+
+      // @ts-expect-error fuck you cunt
+      document.addEventListener(
+        CONTEXT_MENU_EVENT,
+        this._listenToContextMenuEvent.bind(this)
+      );
     }
 
     this._setupState();
+  }
+
+  private _listenToContextMenuEvent(e: CustomEvent<KeyboardShortcut>) {
+    this.requestUpdate();
   }
 
   private async _setupState() {
@@ -183,6 +215,25 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     `;
   }
 
+  renderCommandPalette() {
+    return html`
+      <sl-dialog>
+        <sl-menu>
+          ${this._keyboardShortcuts.map((shortcut: KeyboardShortcut) => {
+            shortcut = KeyboardShortcut.fromJSON(shortcut);
+
+            return html`
+              <sl-menu-item>
+                ${shortcut.command}
+                <div slot="suffix">${shortcut.renderKeys()}</div>
+              </sl-menu-item>
+            `;
+          })}
+        </sl-dialog>
+      </div>
+    `;
+  }
+
   protected _renderCommandsInModuleDaemon() {
     if (this._commandsRan.length === 0) {
       return html``;
@@ -237,7 +288,10 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected renderInPanel(): TemplateResult {
     return html`
-      <context-menu></context-menu>
+      <context-menu
+        .bagManager=${this._bagManager}
+        .contextMenuState=${this._contextMenuState}
+      ></context-menu>
       <formwrapper-element
         .assignKeybindingDialogState=${this.assignKeybindingDialogState}
       ></formwrapper-element>
@@ -266,9 +320,24 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
             this.requestUpdate();
           }}
-          @contextmenu=${(e: Event) => {
-            console.log(e, 'event');
+          @contextmenu=${(e: PointerEvent) => {
             e.preventDefault();
+            const el = doesClickContainElement<HTMLTableRowElement>(e, {
+              nodeName: 'TR',
+            })!;
+
+            const index: number = Number(el.dataset.index);
+            if (index !== 0 && !index) {
+              return;
+            }
+            const shortcut = this._keyboardShortcuts[index];
+
+            this._contextMenuState = {
+              isOpened: true,
+              keyboardShortcut: shortcut,
+              coords: { x: e.x, y: e.y },
+            };
+            this.requestUpdate();
           }}
         >
           ${this._keyboardShortcuts?.map(

@@ -4,6 +4,7 @@ import {
   Operator,
   operators,
   When,
+  workbench,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyDownAndSubmit } from './formwrapper';
 import {
@@ -188,6 +189,15 @@ function registerKeydownListener(
   detectShortcut.bind(this)(e);
 }
 
+function openCommandPalette(this: KeyboardShortcutsElement) {
+  this._isCommandPaletteOpened = true;
+}
+
 export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {
   document.addEventListener('keydown', registerKeydownListener.bind(this));
+
+  document.addEventListener(
+    workbench.settings.openCommandPalette,
+    openCommandPalette.bind(this)
+  );
 }

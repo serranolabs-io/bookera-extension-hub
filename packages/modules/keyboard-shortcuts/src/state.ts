@@ -1,5 +1,4 @@
 import type { Bag, BagManager } from '@pb33f/saddlebag';
-import shortcutsJson from './shortcuts.json';
 import localforage from 'localforage';
 import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
 import sharedShortcuts from '@serranolabs.io/shared/shortcuts-list';
@@ -20,6 +19,12 @@ export class KeyboardShortcutsState {
   ] as KeyboardShortcut[]);
   constructor() {}
 
+  static async GetShortcuts(): Promise<Map<string, KeyboardShortcut> | null> {
+    return await localforage.getItem<Map<string, KeyboardShortcut>>(
+      KEYBINDINGS_BAG_NAME
+    );
+  }
+
   static updateShortcut(bagManager: BagManager, shortcut: KeyboardShortcut) {
     const shortcutsBag =
       bagManager.getBag<KeyboardShortcut>(KEYBINDINGS_BAG_NAME);
@@ -39,6 +44,8 @@ export class KeyboardShortcutsState {
       await localforage.getItem<Map<string, KeyboardShortcut>>(
         KEYBINDINGS_BAG_NAME
       );
+
+    console.log(this.defaults);
 
     if (!savedShortcuts) {
       const defaultShortcuts = new Map<string, KeyboardShortcut>();

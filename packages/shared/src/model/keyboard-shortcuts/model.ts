@@ -2,7 +2,6 @@ import localforage from 'localforage';
 import { genShortID } from '../util';
 import type { KeyboardEventKey } from './keyboard-event-key-type';
 import { html, type TemplateResult } from 'lit';
-import { shrink } from 'bun';
 
 export * from './keyboard-event-key-type';
 
@@ -47,7 +46,7 @@ export const workbench = {
   },
   settings: {
     openSettings: 'settings.open',
-    openKeyboardShortcuts: 'workbench.action.openKeyboardShortcuts',
+    openCommandPalette: 'workbench.action.openCommandPalette',
   },
 };
 
