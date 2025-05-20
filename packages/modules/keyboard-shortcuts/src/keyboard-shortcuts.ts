@@ -125,7 +125,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         this._listToAssignNewKeysEvent.bind(this)
       );
 
-      // @ts-expect-error fuck you cunt
       document.addEventListener(
         CONTEXT_MENU_EVENT,
         this._listenToContextMenuEvent.bind(this)
@@ -135,7 +134,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     this._setupState();
   }
 
-  private _listenToContextMenuEvent(e: CustomEvent<KeyboardShortcut>) {
+  private _listenToContextMenuEvent() {
     this.requestUpdate();
   }
 
