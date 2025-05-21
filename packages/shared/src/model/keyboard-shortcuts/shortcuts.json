@@ -144,7 +144,7 @@
     "shouldAppearInCommandPallete": "false"
   },
   {
-    "command": "workbench.action.addTab",
+    "command": "workbench.action.addPanelTab",
     "keys": [["Control", "a"]],
     "when": ["panelFocus"],
     "description": "adds a new tab to the current panel",
@@ -177,6 +177,114 @@
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
     },
-    "shouldAppearInCommandPallete": "true"
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.openLeft",
+    "keys": [["Control", "l"]],
+    "when": ["panelFocus"],
+    "description": "Opens the left side panel",
+    "title": "Open Left Side Panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.openRight",
+    "keys": [["Control", "r"]],
+    "when": ["panelFocus"],
+    "description": "Opens the right side panel",
+    "title": "Open Right Side Panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.navigateToDrawer",
+    "keys": [["l"]],
+    "when": ["leftSidePanelFocus"],
+    "description": "Navigates from panel bar to drawer (left side)",
+    "title": "Navigate to Drawer",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.navigateToDrawer",
+    "keys": [["h"]],
+    "when": ["rightSidePanelFocus"],
+    "description": "Navigates from panel bar to drawer (right side)",
+    "title": "Navigate to Drawer",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.navigateToPanelBar",
+    "keys": [["h"]],
+    "when": ["leftSidePanelFocus"],
+    "description": "navigates to panel bar from drawer (left side)",
+    "title": "Navigates to Panel Bar",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.navigateToPanelBar",
+    "keys": [["l"]],
+    "when": ["rightSidePanelFocus"],
+    "description": "navigates to panel bar from drawer (right side)",
+    "title": "Navigates to Panel Bar",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.traverseTabsUp",
+    "keys": [["k"]],
+    "when": ["sidePanelFocus"],
+    "description": "allows you to traverse tabs up",
+    "title": "Traverse tabs up",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.traverseTabsDown",
+    "keys": [["j"]],
+    "when": ["sidePanelFocus"],
+    "description": "allows you to traverse tabs down",
+    "title": "Traverse tabs down",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.action.enter",
+    "keys": [["Enter"]],
+    "when": ["panelFocus", "||", "sidePanelFocus"],
+    "description": "focuses on the content in the drawer",
+    "title": "Focus Content",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
   }
 ]

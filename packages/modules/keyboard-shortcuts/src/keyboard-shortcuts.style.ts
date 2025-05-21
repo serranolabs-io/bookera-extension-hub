@@ -14,6 +14,13 @@ export default css`
     align-items: center;
     justify-content: space-between;
   }
+  .command-title label {
+    color: var(--slate-500);
+  }
+
+  .command-title small {
+    color: var(--slate-400);
+  }
 
   sl-icon-button[name='command'] {
     transition: transform 1s ease-in-out;

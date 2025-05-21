@@ -17,8 +17,17 @@ export const operators: readonly Operator[] = [
 
 export type PanelTabsFocus = 'panelTabsFocus';
 export type PanelFocus = 'panelFocus';
+export type SidePanelFocus = 'sidePanelFocus';
+export type LeftSidePanelFocus = 'leftSidePanelFocus';
+export type RightSidePanelFocus = 'rightSidePanelFocus';
 
-export type When = PanelTabsFocus | PanelFocus | Operator;
+export type When =
+  | PanelTabsFocus
+  | PanelFocus
+  | LeftSidePanelFocus
+  | RightSidePanelFocus
+  | SidePanelFocus
+  | Operator;
 
 export class Source {
   name: string;
@@ -42,7 +51,13 @@ export const workbench = {
     shrinkPanel: 'workbench.action.shrinkPanel',
     closePanel: 'workbench.action.closePanel',
     splitPanel: 'workbench.action.splitPanel',
-    addTab: 'workbench.action.addPanelTab',
+    addPanelTab: 'workbench.action.addPanelTab',
+  },
+  sidePanel: {
+    traverseTabsUp: 'workbench.sidePanel.traverseTabsUp',
+    traverseTabsDown: 'workbench.sidePanel.traverseTabsDown',
+    navigateToPanelBar: 'workbench.sidePanel.navigateToPanelBar',
+    navigateToDrawer: 'workbench.sidePanel.navigateToDrawer',
   },
   settings: {
     openSettings: 'workbench.settings.open',

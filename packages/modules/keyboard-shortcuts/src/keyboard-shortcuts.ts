@@ -127,7 +127,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInDaemon') {
       createHandleInDaemonListeners.bind(this)();
-      debugger;
       console.log(workbench.settings);
       document.addEventListener(
         workbench.settings.openCommandPalette,
@@ -268,7 +267,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   private _filterCommandPalette(): KeyboardShortcut[] {
     return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
-      // TODO: fix
       return true;
       return shortcut.shouldAppearInCommandPalette === 'true';
     });
