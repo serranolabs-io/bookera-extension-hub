@@ -12,6 +12,7 @@ import {
   KeyboardEventKey,
   KeyboardShortcut,
   When,
+  workbench,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 import {
@@ -33,7 +34,10 @@ import {
   PanelTab,
 } from '@serranolabs.io/shared/panel';
 import { calculateValue } from './formwrapper';
-import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
+import {
+  createHandleInDaemonListeners,
+  openCommandPalette,
+} from './handle-keyboard-shortcut';
 import { SlDialog, SlInput } from '@shoelace-style/shoelace';
 import Fuse, { FuseResult } from 'fuse.js';
 import { renderMatches } from './fuse';
@@ -108,6 +112,10 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   @query(`#${COMMAND_PALETTE_DIALOG}`)
   _commandPaletteDialog!: SlDialog;
 
+  private _listenToEvents() {
+    console.log('fuck');
+  }
+
   constructor(
     renderMode: RenderMode,
     module: BookeraModule,
@@ -119,6 +127,12 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInDaemon') {
       createHandleInDaemonListeners.bind(this)();
+      debugger;
+      console.log(workbench.settings);
+      document.addEventListener(
+        workbench.settings.openCommandPalette,
+        openCommandPalette.bind(this)
+      );
     }
 
     if (
@@ -253,8 +267,9 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   private _filterCommandPalette(): KeyboardShortcut[] {
-    console.log(this._keyboardShortcuts);
     return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
+      // TODO: fix
+      return true;
       return shortcut.shouldAppearInCommandPalette === 'true';
     });
   }

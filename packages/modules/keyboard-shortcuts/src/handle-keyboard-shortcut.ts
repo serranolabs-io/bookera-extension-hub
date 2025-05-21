@@ -154,6 +154,7 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
       const { isMatched, webComponentTree, activeElement } =
         matchCondition.bind(this)(shortcut.when as When[]);
 
+      debugger;
       if (isMatched) {
         // @ts-ignore
         webComponentTree[0].applyCommand(shortcut.command);
@@ -189,16 +190,12 @@ function registerKeydownListener(
   detectShortcut.bind(this)(e);
 }
 
-function openCommandPalette(this: KeyboardShortcutsElement) {
+export function openCommandPalette(this: KeyboardShortcutsElement, e: Event) {
   this._commandPaletteDialog.show();
   this.requestUpdate();
+  e.preventDefault();
 }
 
 export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {
   document.addEventListener('keydown', registerKeydownListener.bind(this));
-
-  document.addEventListener(
-    workbench.settings.openCommandPalette,
-    openCommandPalette.bind(this)
-  );
 }

@@ -7,6 +7,7 @@ import themesShortcuts from '@serranolabs.io/bookera-themes/shortcuts';
 const KEYBINDINGS_BAG_NAME = 'keyboard-shortcuts';
 
 const convertAll = (shortcuts: KeyboardShortcut[]): KeyboardShortcut[] => {
+  console.log(shortcuts);
   return shortcuts.map((shortcut) => {
     return KeyboardShortcut.fromJSON(shortcut);
   });

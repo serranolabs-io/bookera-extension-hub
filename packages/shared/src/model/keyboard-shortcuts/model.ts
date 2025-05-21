@@ -45,8 +45,8 @@ export const workbench = {
     addTab: 'workbench.action.addPanelTab',
   },
   settings: {
-    openSettings: 'settings.open',
-    openCommandPalette: 'workbench.action.openCommandPalette',
+    openSettings: 'workbench.settings.open',
+    openCommandPalette: 'workbench.settings.openCommandPalette',
   },
 };
 
