@@ -253,8 +253,9 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   private _filterCommandPalette(): KeyboardShortcut[] {
+    console.log(this._keyboardShortcuts);
     return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
-      return shortcut.shouldAppearInCommandPalette;
+      return shortcut.shouldAppearInCommandPalette === 'true';
     });
   }
 

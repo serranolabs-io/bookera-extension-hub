@@ -8,6 +8,7 @@
       "name": "Theme Switcher",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/modules/themes"
     },
-    "title": "Light/Dark mode toggle"
+    "title": "Light/Dark mode toggle",
+    "shouldAppearInCommandPallete": "true"
   }
 ]

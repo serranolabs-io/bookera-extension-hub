@@ -148,11 +148,11 @@ export class KeyboardShortcut {
     return this;
   }
 
-  static fromJSON(json: any): KeyboardShortcut {
+  static fromJSON(json: KeyboardShortcut): KeyboardShortcut {
     return new KeyboardShortcut(
       json.command,
       json.keys,
-      json.when,
+      json.when as When[],
       new Source(json.source.name, json.source.link),
       json.description,
       json.title,
