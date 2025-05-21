@@ -59,6 +59,7 @@ export class KeyboardShortcut {
   source: Source;
   description: string;
   title: string;
+  shouldAppearInCommandPalette: string;
   id: string;
 
   constructor(
@@ -68,6 +69,7 @@ export class KeyboardShortcut {
     source: Source,
     description: string,
     title: string,
+    shouldAppearInCommandPalette: string,
     id?: string
   ) {
     this.command = command;
@@ -76,6 +78,8 @@ export class KeyboardShortcut {
     this.source = source;
     this.description = description;
     this.title = title;
+    this.shouldAppearInCommandPalette = shouldAppearInCommandPalette;
+
     if (id) {
       this.id = id;
     } else {
@@ -152,6 +156,7 @@ export class KeyboardShortcut {
       new Source(json.source.name, json.source.link),
       json.description,
       json.title,
+      json.shouldAppearInCommandPalette,
       json?.id
     );
   }

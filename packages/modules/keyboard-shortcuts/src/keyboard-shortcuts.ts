@@ -35,7 +35,7 @@ import {
 import { calculateValue } from './formwrapper';
 import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 import { SlDialog, SlInput } from '@shoelace-style/shoelace';
-import Fuse from 'fuse.js';
+import Fuse, { FuseResult } from 'fuse.js';
 import { renderMatches } from './fuse';
 
 export const elementName = 'keyboard-shortcuts-element';
@@ -224,23 +224,38 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     `;
   }
 
-  private _renderMatches() {
+  private _renderMatches():
+    | FuseResult<KeyboardShortcut>[]
+    | KeyboardShortcut[] {
     const matches = renderMatches(
-      this._keyboardShortcuts,
+      this._filterCommandPalette(),
       ['keys', 'command', 'title'],
       this._shortcutFilters
     );
-    let shortcuts = this._keyboardShortcuts;
-
-    console.log('hello from renderMatches', matches);
 
     if (matches.length !== 0) {
-      shortcuts = matches;
+      return matches;
     }
 
-    console.log(matches);
+    return this._filterCommandPalette();
+  }
 
-    return shortcuts;
+  private _selectCommand(e: CustomEvent) {
+    const value: string = e.detail.item.value;
+
+    const shortcut = this._keyboardShortcuts.find(
+      (shortcut: KeyboardShortcut) => {
+        return shortcut.id === value;
+      }
+    )!;
+
+    sendEvent(this, shortcut?.command);
+  }
+
+  private _filterCommandPalette(): KeyboardShortcut[] {
+    return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
+      return shortcut.shouldAppearInCommandPalette;
+    });
   }
 
   private _renderCommandPalette() {
@@ -250,20 +265,22 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
           // @ts-ignore
           this._shortcutFilters = e.target.value;
         }}></sl-input>
-        <sl-menu class="command-palette-menu">
+        <sl-menu class="command-palette-menu" @sl-select=${this._selectCommand.bind(this)}>
           
-          ${this._renderMatches().map((match) => {
-            if (match.item) {
-              return html`<sl-menu-item
-                >${match.item.renderTitleCommand()}
-                <p slot="suffix">${match.item.renderKeys()}</p></sl-menu-item
+          ${this._renderMatches().map(
+            (match: FuseResult<KeyboardShortcut> | KeyboardShortcut) => {
+              if ('item' in match) {
+                return html`<sl-menu-item value=${match.item.id}
+                  >${match.item.renderTitleCommand()}
+                  <p slot="suffix">${match.item.renderKeys()}</p></sl-menu-item
+                >`;
+              }
+              return html`<sl-menu-item value=${match.id}
+                >${match.renderTitleCommand()}
+                <p slot="suffix">${match.renderKeys()}</p></sl-menu-item
               >`;
             }
-            return html`<sl-menu-item
-              >${match.renderTitleCommand()}
-              <p slot="suffix">${match.renderKeys()}</p></sl-menu-item
-            >`;
-          })}
+          )}
         </sl-dialog>
       </div>
     `;

@@ -8,7 +8,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.nextPanelTab",
@@ -19,7 +20,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.leavePanelTabs",
@@ -30,7 +32,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.enterPanelTabs",
@@ -41,7 +44,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.previousPanelTab",
@@ -52,7 +56,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.nextPanelTab",
@@ -63,7 +68,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.nextPanelView",
@@ -74,7 +80,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.previousPanelView",
@@ -85,7 +92,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.growPanel",
@@ -96,7 +104,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.shrinkPanel",
@@ -107,7 +116,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.splitPanel",
@@ -118,7 +128,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.closePanel",
@@ -129,7 +140,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.action.addTab",
@@ -140,7 +152,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "false"
   },
   {
     "command": "workbench.settings.open",
@@ -151,7 +164,8 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "true"
   },
   {
     "command": "workbench.settings.openCommandPalette",
@@ -162,6 +176,7 @@
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
-    }
+    },
+    "shouldAppearInCommandPallete": "true"
   }
 ]
