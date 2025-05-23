@@ -45,7 +45,6 @@ export class KeyboardShortcutsState {
       await localforage.getItem<Map<string, KeyboardShortcut>>(
         KEYBINDINGS_BAG_NAME
       );
-    console.log(this.defaults);
 
     if (!savedShortcuts) {
       const defaultShortcuts = new Map<string, KeyboardShortcut>();

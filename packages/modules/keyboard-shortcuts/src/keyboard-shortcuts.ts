@@ -109,6 +109,9 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   private _shortcutFilters: string = '';
 
+  protected _registerKeydownListener!: Function;
+  protected _openCommandPaletteListener!: Function;
+
   @query(`#${COMMAND_PALETTE_DIALOG}`)
   _commandPaletteDialog!: SlDialog;
 
@@ -127,11 +130,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInDaemon') {
       createHandleInDaemonListeners.bind(this)();
-      console.log(workbench.settings);
-      document.addEventListener(
-        workbench.settings.openCommandPalette,
-        openCommandPalette.bind(this)
-      );
     }
 
     if (
@@ -155,6 +153,13 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     }
 
     this._setupState();
+  }
+
+  disconnectedCallback(): void {
+    // @ts-ignore
+    document.removeEventListener('keydown', this._registerKeydownListener);
+    // @ts-ignore
+    document.removeEventListener('keydown', this._openCommandPaletteListener);
   }
 
   private _listenToContextMenuEvent() {
@@ -215,8 +220,10 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     return html`
       <div class="context">
         <small class="label">context</small>
-        ${this._context.map((when: When) => {
-          return html`<small>${when}</small>`;
+        ${this._context.map((when: When, i: number) => {
+          return html`<small>${when}</small> ${i !== this._context.length - 1
+              ? '&'
+              : ''} `;
         })}
       </div>
     `;
@@ -265,9 +272,14 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     sendEvent(this, shortcut?.command);
   }
 
-  private _filterCommandPalette(): KeyboardShortcut[] {
+  private _filterCommandPalette(
+    applyFilter: boolean = true
+  ): KeyboardShortcut[] {
     return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
-      return true;
+      if (applyFilter) {
+        return true;
+      }
+
       return shortcut.shouldAppearInCommandPalette === 'true';
     });
   }
@@ -278,9 +290,9 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         <sl-input autofocus @sl-input=${(e: CustomEvent) => {
           // @ts-ignore
           this._shortcutFilters = e.target.value;
+          e.preventDefault();
         }}></sl-input>
         <sl-menu class="command-palette-menu" @sl-select=${this._selectCommand.bind(this)}>
-          
           ${this._renderMatches().map(
             (match: FuseResult<KeyboardShortcut> | KeyboardShortcut) => {
               if ('item' in match) {
@@ -309,10 +321,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         <div class="commands">
             <small class="label">command</small>
           ${this._commandsRan.map((command: string) => {
-            setTimeout(() => {
-              this._commandsRan = [];
-            }, 200);
-
             return html`<small>${command}</small>`;
           })}
           </div>
@@ -361,6 +369,15 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       <formwrapper-element
         .assignKeybindingDialogState=${this.assignKeybindingDialogState}
       ></formwrapper-element>
+
+      <sl-input
+        autofocus
+        @sl-input=${(e: CustomEvent) => {
+          // @ts-ignore
+          this._shortcutFilters = e.target.value;
+          this.requestUpdate();
+        }}
+      ></sl-input>
       <table>
         <thead>
           <tr>
@@ -406,41 +423,50 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
             this.requestUpdate();
           }}
         >
-          ${this._keyboardShortcuts?.map(
-            (shortcut: KeyboardShortcut, index: number) => html`
-              <tr
-                data-index=${index}
-                data-command="${shortcut.id}"
-                tabindex="0"
-              >
-                <td>
-                  <div class="flex command-title">
-                    <sl-icon class="edit-icon" name="pencil"></sl-icon>
-                    ${shortcut.renderTitleCommand()}
-                    <span>
-                      <sl-tooltip
-                        content="${shortcut.description}"
-                        hoist
-                        style="--sl-tooltip-arrow-size: 0;"
-                      >
-                        ?
-                      </sl-tooltip>
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div class="center-v">${shortcut.renderKeys()}</div>
-                </td>
-                <td>${shortcut.when.join(', ')}</td>
-                <td>
-                  ${shortcut.source.link
-                    ? html`<a href="${shortcut.source.link}" target="_blank"
-                        >${shortcut.source.name}</a
-                      >`
-                    : shortcut.source.name}
-                </td>
-              </tr>
-            `
+          ${this._renderMatches()?.map(
+            (
+              shortcut: FuseResult<KeyboardShortcut> | KeyboardShortcut,
+              index: number
+            ) => {
+              if ('item' in shortcut) {
+                shortcut = shortcut.item;
+              }
+
+              return html`
+                <tr
+                  data-index=${index}
+                  data-command="${shortcut.id}"
+                  tabindex="0"
+                >
+                  <td>
+                    <div class="flex command-title">
+                      <sl-icon class="edit-icon" name="pencil"></sl-icon>
+                      ${shortcut.renderTitleCommand()}
+                      <span>
+                        <sl-tooltip
+                          content="${shortcut.description}"
+                          hoist
+                          style="--sl-tooltip-arrow-size: 0;"
+                        >
+                          ?
+                        </sl-tooltip>
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="center-v">${shortcut.renderKeys()}</div>
+                  </td>
+                  <td>${shortcut.when.join(' ')}</td>
+                  <td>
+                    ${shortcut.source.link
+                      ? html`<a href="${shortcut.source.link}" target="_blank"
+                          >${shortcut.source.name}</a
+                        >`
+                      : shortcut.source.name}
+                  </td>
+                </tr>
+              `;
+            }
           )}
         </tbody>
       </table>

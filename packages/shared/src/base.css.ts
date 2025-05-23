@@ -1,6 +1,10 @@
 import { css } from 'lit';
 
 export default css`
+ .focused {
+    outline: 2px solid var(--slate-800);
+    outline-offset: -2px;
+  }
 
   *::-webkit-scrollbar {
     width: 6px;

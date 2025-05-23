@@ -82,6 +82,18 @@ describe('handle-keyboard-shortcuts', () => {
     },
     {
       input: {
+        when: ['panelBarFocus'] as When[],
+        focusTree: [
+          'sidePanelFocus',
+          'leftSidePanelFocus',
+          'panelBarFocus',
+        ] as When[],
+        expected: [true],
+      },
+      description: '&& case where one if found yet the other is not',
+    },
+    {
+      input: {
         when: [
           'panelFocus',
           '&&',

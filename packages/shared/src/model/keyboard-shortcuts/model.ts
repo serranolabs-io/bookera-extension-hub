@@ -20,6 +20,9 @@ export type PanelFocus = 'panelFocus';
 export type SidePanelFocus = 'sidePanelFocus';
 export type LeftSidePanelFocus = 'leftSidePanelFocus';
 export type RightSidePanelFocus = 'rightSidePanelFocus';
+export type PanelBarFocus = 'panelBarFocus';
+export type SideDrawerFocus = 'sideDrawerFocus';
+export type ModuleDaemonFocus = 'moduleDaemonFocus';
 
 export type When =
   | PanelTabsFocus
@@ -27,7 +30,10 @@ export type When =
   | LeftSidePanelFocus
   | RightSidePanelFocus
   | SidePanelFocus
-  | Operator;
+  | Operator
+  | PanelBarFocus
+  | SideDrawerFocus
+  | ModuleDaemonFocus;
 
 export class Source {
   name: string;
@@ -180,7 +186,7 @@ export class KeyboardShortcut {
 const ACTIVE_ELEMENT_KEY = 'active-element-key';
 export interface ActiveElement {
   id: string;
-  when: When;
+  when: When[];
   subId: string;
 }
 

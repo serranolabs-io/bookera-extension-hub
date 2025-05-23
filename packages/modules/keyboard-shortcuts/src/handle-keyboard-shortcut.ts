@@ -11,6 +11,7 @@ import {
   KeyboardShortcutsElement,
   SHORTCUT_MAX_LENGTH,
 } from './keyboard-shortcuts';
+import { L } from 'vitest/dist/chunks/reporters.d.DG9VKi4m.js';
 
 // setting focus
 
@@ -39,7 +40,6 @@ function traversewebComponentTree(this: KeyboardShortcutsElement): {
   // this will give me focused tree
   let webComponentTree = [];
   while (activeElement?.shadowRoot) {
-    // todo if element is focusable, get when type in array
     if (activeElement.isFocusable) {
       activeElement.setFocus(false);
       webComponentTree.unshift(activeElement as HTMLElement);
@@ -94,7 +94,7 @@ function matchCondition(
   const { webComponentTree, activeElement } =
     traversewebComponentTree.bind(this)();
 
-  this._context = webComponentTree.map((element: HTMLElement) => {
+  this._context = webComponentTree.flatMap((element: HTMLElement) => {
     return element.getWhen();
   });
 
@@ -140,6 +140,10 @@ export function matchCommand(
 function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
   let hasPotentialMatches = false;
   let doesNotMatchWhen = false;
+
+  this._commandsRan = [];
+
+  let shouldRequestUpdate = false;
   this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
     const { match, hasPotentialMatch } = matchCommand(
       this._allKeyPressSets,
@@ -154,9 +158,25 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
       const { isMatched, webComponentTree, activeElement } =
         matchCondition.bind(this)(shortcut.when as When[]);
 
+      // TODO, fix this. This is a weird one. I'm going to have to think this one through
+      if (activeElement.nodeName === 'INPUT') {
+        console.log('DONT DO ANYTHING');
+        shouldRequestUpdate = true;
+        return;
+      }
+
       if (isMatched) {
+        console.log(
+          'key is matched -> ',
+          isMatched,
+          webComponentTree[0],
+          shortcut
+        );
         // @ts-ignore
-        webComponentTree[0].applyCommand(shortcut.command);
+
+        webComponentTree
+          .find((el) => el.isKeyboardRouter)
+          .applyCommand(shortcut.command);
         this._commandsRan.push(shortcut.command);
         e.preventDefault();
         this.requestUpdate();
@@ -164,11 +184,18 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
       } else {
         doesNotMatchWhen = true;
       }
+    } else {
+      shouldRequestUpdate = true;
     }
   });
 
-  if (!hasPotentialMatches || (doesNotMatchWhen && !hasPotentialMatches)) {
-    this._allKeyPressSets = [];
+  console.log(hasPotentialMatches, shouldRequestUpdate, doesNotMatchWhen);
+
+  if (shouldRequestUpdate) {
+    if (!hasPotentialMatches || (doesNotMatchWhen && !hasPotentialMatches)) {
+      this._allKeyPressSets = [];
+      this.requestUpdate();
+    }
   }
 }
 
@@ -184,7 +211,6 @@ function registerKeydownListener(
 
   this._allKeyPressSets = allKeyPressSets;
   this._modifiers = modifiers;
-  this.requestUpdate();
 
   detectShortcut.bind(this)(e);
 }
@@ -196,5 +222,16 @@ export function openCommandPalette(this: KeyboardShortcutsElement, e: Event) {
 }
 
 export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {
-  document.addEventListener('keydown', registerKeydownListener.bind(this));
+  this._registerKeydownListener = registerKeydownListener.bind(this);
+
+  // @ts-ignore
+  document.addEventListener('keydown', this._registerKeydownListener);
+
+  this._openCommandPaletteListener = openCommandPalette.bind(this);
+
+  // @ts-ignore
+  document.addEventListener(
+    workbench.settings.openCommandPalette,
+    this._openCommandPaletteListener
+  );
 }
