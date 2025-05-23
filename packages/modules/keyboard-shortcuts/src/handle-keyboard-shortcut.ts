@@ -45,8 +45,10 @@ function traversewebComponentTree(this: KeyboardShortcutsElement): {
       webComponentTree.unshift(activeElement as HTMLElement);
     }
 
+    console.log('twct', activeElement);
     activeElement = activeElement.shadowRoot.activeElement;
   }
+  console.log('twct', activeElement);
 
   return {
     webComponentTree,
@@ -97,6 +99,8 @@ function matchCondition(
   this._context = webComponentTree.flatMap((element: HTMLElement) => {
     return element.getWhen();
   });
+
+  console.log(this._context);
 
   const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
     when,

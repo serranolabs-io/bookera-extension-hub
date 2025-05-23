@@ -228,6 +228,30 @@
     "shouldAppearInCommandPallete": "false"
   },
   {
+    "command": "workbench.sidePanel.navigateToSidePanel",
+    "keys": [["l"]],
+    "when": ["sideDrawerFocus", "leftSidePanelFocus"],
+    "description": "Navigate to side panel from left drawer",
+    "title": "Navigate to side panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
+    "command": "workbench.sidePanel.navigateToSidePanel",
+    "keys": [["h"]],
+    "when": ["sideDrawerFocus", "rightSidePanelFocus"],
+    "description": "Navigate to side panel from right drawer",
+    "title": "Navigate to side panel",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPallete": "false"
+  },
+  {
     "command": "workbench.sidePanel.navigateToPanelBar",
     "keys": [["h"]],
     "when": ["leftSidePanelFocus"],
@@ -254,7 +278,7 @@
   {
     "command": "workbench.sidePanel.traverseTabsUp",
     "keys": [["k"]],
-    "when": ["sidePanelFocus"],
+    "when": ["sidePanelFocus", "&&", "!", "sideDrawerFocus"],
     "description": "allows you to traverse tabs up",
     "title": "Traverse tabs up",
     "source": {
@@ -266,7 +290,7 @@
   {
     "command": "workbench.sidePanel.traverseTabsDown",
     "keys": [["j"]],
-    "when": ["sidePanelFocus"],
+    "when": ["sidePanelFocus", "&&", "!", "sideDrawerFocus"],
     "description": "allows you to traverse tabs down",
     "title": "Traverse tabs down",
     "source": {

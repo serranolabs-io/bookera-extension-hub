@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.72",
+  "version": "0.0.73",
   "type": "module",
   "private": false,
   "scripts": {
@@ -27,12 +27,12 @@
       }
     },
     "./base": {
-      "development": {
-        "import": "./src/base.css.ts"
-      },
       "default": {
         "import": "./dist/base.js",
         "types": "./dist/base.css.d.ts"
+      },
+      "development": {
+        "import": "./src/base.css.ts"
       },
       "production": {
         "import": "./dist/base.js",
