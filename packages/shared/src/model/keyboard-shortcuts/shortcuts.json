@@ -230,7 +230,7 @@
   {
     "command": "workbench.sidePanel.navigateToSidePanel",
     "keys": [["l"]],
-    "when": ["sideDrawerFocus", "leftSidePanelFocus"],
+    "when": ["sideDrawerFocus", "&&", "leftSidePanelFocus"],
     "description": "Navigate to side panel from left drawer",
     "title": "Navigate to side panel",
     "source": {
@@ -242,7 +242,7 @@
   {
     "command": "workbench.sidePanel.navigateToSidePanel",
     "keys": [["h"]],
-    "when": ["sideDrawerFocus", "rightSidePanelFocus"],
+    "when": ["sideDrawerFocus", "&&", "rightSidePanelFocus"],
     "description": "Navigate to side panel from right drawer",
     "title": "Navigate to side panel",
     "source": {
