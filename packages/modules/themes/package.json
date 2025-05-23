@@ -27,13 +27,15 @@
     },
     "./shortcuts": {
       "default": {
-        "import": "./dist/shortcuts.js"
+        "import": "./dist/shortcuts.js",
+        "types": "./dist/shortcuts.json.d.ts"
       },
       "development": {
         "import": "./src/shortcuts.json"
       },
       "production": {
-        "import": "./dist/shortcuts.js"
+        "import": "./dist/shortcuts.js",
+        "types": "./dist/shortcuts.json.d.ts"
       }
     }
   },

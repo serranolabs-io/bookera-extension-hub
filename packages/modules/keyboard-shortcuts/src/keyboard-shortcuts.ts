@@ -12,7 +12,7 @@ import {
   KeyboardEventKey,
   KeyboardShortcut,
   When,
-  workbench,
+  studio,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 import {
@@ -248,7 +248,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     | FuseResult<KeyboardShortcut>[]
     | KeyboardShortcut[] {
     const matches = renderMatches(
-      this._filterCommandPalette(),
+      this._filterCommandPalette(false),
       ['keys', 'command', 'title'],
       this._shortcutFilters
     );
@@ -257,7 +257,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       return matches;
     }
 
-    return this._filterCommandPalette();
+    return this._keyboardShortcuts;
   }
 
   private _selectCommand(e: CustomEvent) {

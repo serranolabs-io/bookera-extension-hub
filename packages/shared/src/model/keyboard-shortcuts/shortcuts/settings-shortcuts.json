@@ -1,0 +1,26 @@
+[
+  {
+    "command": "studio.settings.open",
+    "keys": [["Control", ","]],
+    "when": ["panelFocus"],
+    "description": "opens the settings in a panel",
+    "title": "Open Settings",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPalette": "true"
+  },
+  {
+    "command": "studio.settings.openCommandPalette",
+    "keys": [["Shift", "Meta", "P"]],
+    "when": ["panelFocus"],
+    "description": "Opens the settings command palette",
+    "title": "Open Command Palette",
+    "source": {
+      "name": "System",
+      "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
+    },
+    "shouldAppearInCommandPalette": "false"
+  }
+]

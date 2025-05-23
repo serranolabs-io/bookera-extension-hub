@@ -45,33 +45,34 @@ export class Source {
   }
 }
 
-export const workbench = {
-  action: {
-    previousPanelTab: 'workbench.action.previousPanelTab',
-    nextPanelTab: 'workbench.action.nextPanelTab',
-    leavePanelTabs: 'workbench.action.leavePanelTabs',
-    enterPanelTabs: 'workbench.action.enterPanelTabs',
-    previousPanelView: 'workbench.action.previousPanelView',
-    nextPanelView: 'workbench.action.nextPanelView',
-    growPanel: 'workbench.action.growPanel',
-    shrinkPanel: 'workbench.action.shrinkPanel',
-    closePanel: 'workbench.action.closePanel',
-    splitPanel: 'workbench.action.splitPanel',
-    addPanelTab: 'workbench.action.addPanelTab',
+export const studio = {
+  panel: {
+    previousPanelTab: 'studio.panel.previousPanelTab',
+    nextPanelTab: 'studio.panel.nextPanelTab',
+    leavePanelTabs: 'studio.panel.leavePanelTabs',
+    enterPanelTabs: 'studio.panel.enterPanelTabs',
+    previousPanelView: 'studio.panel.previousPanelView',
+    nextPanelView: 'studio.panel.nextPanelView',
+    growPanel: 'studio.panel.growPanel',
+    shrinkPanel: 'studio.panel.shrinkPanel',
+    closePanel: 'studio.panel.closePanel',
+    splitPanel: 'studio.panel.splitPanel',
+    addPanelTab: 'studio.panel.addPanelTab',
   },
   sidePanel: {
-    traverseTabsUp: 'workbench.sidePanel.traverseTabsUp',
-    traverseTabsDown: 'workbench.sidePanel.traverseTabsDown',
-    navigateToPanelBar: 'workbench.sidePanel.navigateToPanelBar',
-    navigateToDrawer: 'workbench.sidePanel.navigateToDrawer',
+    traverseTabsUp: 'studio.sidePanel.traverseTabsUp',
+    traverseTabsDown: 'studio.sidePanel.traverseTabsDown',
+    navigateToPanelBar: 'studio.sidePanel.navigateToPanelBar',
+    navigateToDrawer: 'studio.sidePanel.navigateToDrawer',
+    openLeft: 'studio.sidePanel.openLeft',
+    openRight: 'studio.sidePanel.openRight',
+    navigateToSidePanel: 'studio.sidePanel.navigateToSidePanel',
   },
   settings: {
-    openSettings: 'workbench.settings.open',
-    openCommandPalette: 'workbench.settings.openCommandPalette',
+    openSettings: 'studio.settings.open',
+    openCommandPalette: 'studio.settings.openCommandPalette',
   },
 };
-
-export type WorkbenchAction = keyof typeof workbench.action;
 
 export class KeyboardShortcut {
   command: string;

@@ -4,7 +4,7 @@ import {
   Operator,
   operators,
   When,
-  workbench,
+  studio,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyDownAndSubmit } from './formwrapper';
 import {
@@ -141,6 +141,14 @@ export function matchCommand(
   return { match, hasPotentialMatch };
 }
 
+function getNewContext(this: KeyboardShortcutsElement) {
+  const { webComponentTree } = traversewebComponentTree.bind(this)();
+
+  this._context = webComponentTree.flatMap((element: HTMLElement) => {
+    return element.getWhen();
+  });
+}
+
 function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
   let hasPotentialMatches = false;
   let doesNotMatchWhen = false;
@@ -182,6 +190,9 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
           .find((el) => el.isKeyboardRouter)
           .applyCommand(shortcut.command);
         this._commandsRan.push(shortcut.command);
+
+        getNewContext.bind(this)();
+
         e.preventDefault();
         this.requestUpdate();
         this._allKeyPressSets = [];
@@ -235,7 +246,7 @@ export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {
 
   // @ts-ignore
   document.addEventListener(
-    workbench.settings.openCommandPalette,
+    studio.settings.openCommandPalette,
     this._openCommandPaletteListener
   );
 }
