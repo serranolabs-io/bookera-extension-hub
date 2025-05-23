@@ -100,13 +100,13 @@ function matchCondition(
     return element.getWhen();
   });
 
-  console.log(this._context);
-
   const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
     when,
     this._context
   );
   const isMatched = evaluateWhenExpressionEval.bind(this)(whenBoolean);
+
+  console.log(this._context, whenBoolean, isMatched);
 
   return { isMatched, webComponentTree, activeElement };
 }
