@@ -17,6 +17,7 @@ import {
   modifierKeys,
   ModifierKeys,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
+import { notify } from '@serranolabs.io/shared/lit';
 
 const KEYBINDINGS_INPUT_ID = 'keybindings-input';
 
@@ -30,6 +31,12 @@ export const handleKeyDownAndSubmit = (
   modifiers: KeyboardEventKey[];
 } => {
   const nextKey = e.key as KeyboardEventKey;
+
+  let isModifierPressed = false;
+
+  if (e.altKey || e.ctrlKey || e.shiftKey || e.metaKey) {
+    isModifierPressed = true;
+  }
 
   if (e.altKey && !modifiers.includes('Alt')) {
     modifiers.push('Alt');
@@ -50,9 +57,15 @@ export const handleKeyDownAndSubmit = (
   }
 
   if (!modifierKeys.includes(nextKey as ModifierKeys)) {
-    allKeyPressSets.push([...(modifiers as KeyboardEventKey[]), nextKey]);
+    if (isModifierPressed) {
+      allKeyPressSets.push([...(modifiers as KeyboardEventKey[]), nextKey]);
+    } else {
+      allKeyPressSets.push([nextKey]);
+    }
+
     modifiers = [];
   }
+
   return { shouldSubmit: false, allKeyPressSets, modifiers };
 };
 
@@ -60,12 +73,11 @@ export const calculateValue = (
   allKeyPressSets: KeyboardEventKey[][],
   modifiers: KeyboardEventKey[]
 ): KeyboardEventKey => {
-  const value = (modifiers.join('') +
-    allKeyPressSets
-      .flatMap((keyPressSet) => {
-        return keyPressSet.join('');
-      })
-      .join('')) as KeyboardEventKey;
+  const value = (allKeyPressSets
+    .flatMap((keyPressSet) => {
+      return keyPressSet.join('');
+    })
+    .join('') + modifiers.join('')) as KeyboardEventKey;
 
   return value;
 };
@@ -135,7 +147,7 @@ export class Formwrapper extends LitElement {
 
   private _renderKeysStatic() {
     return KeyboardShortcut.renderKeysStatic(
-      [this._modifiers, ...this._allKeyPressSets].filter(
+      [...this._allKeyPressSets, this._modifiers].filter(
         (kek: KeyboardEventKey[]) => {
           return kek.length > 0;
         }
@@ -165,6 +177,7 @@ export class Formwrapper extends LitElement {
                   this._modifiers
                 );
               this._allKeyPressSets = allKeyPressSets;
+
               if (shouldSubmit) {
                 field.form.handleSubmit();
                 return;
@@ -174,6 +187,16 @@ export class Formwrapper extends LitElement {
               field.handleChange(
                 calculateValue(this._allKeyPressSets, this._modifiers)
               );
+
+              console.log(this._allKeyPressSets);
+              if (this._allKeyPressSets.length === 6) {
+                notify(
+                  'LMAO y r u making a longa$$ keycombo?',
+                  'warning',
+                  'wow',
+                  2000
+                );
+              }
 
               e.preventDefault();
             }}"

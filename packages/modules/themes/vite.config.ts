@@ -34,4 +34,7 @@ export default defineConfig({
       keep_classnames: true,
     },
   },
+  server: {
+    port: 4000,
+  },
 });

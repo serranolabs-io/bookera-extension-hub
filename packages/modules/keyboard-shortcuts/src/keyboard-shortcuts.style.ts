@@ -91,7 +91,8 @@ export default css`
   }
 
   .keybinding {
-    background-color: var(--slate-100);
+    background-color: var(--slate-400);
+    color: var(--slate-200);
     padding: var(--spacingXXSmall);
     border-radius: var(--borderRadius);
     display: flex;
@@ -130,10 +131,17 @@ export default css`
     display: block;
   }
 
+  .commands,
+  .commands div {
+    display: flex;
+    gap: var(--spacingXXSmall);
+  }
+
   .daemon {
     display: flex;
     gap: var(--spacingXXSmall);
     font-size: var(--text-sm);
+    align-items: center;
   }
   .daemon .keys {
     font-size: var(--text-xs);

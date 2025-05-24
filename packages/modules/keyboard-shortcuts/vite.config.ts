@@ -4,6 +4,13 @@ import dts from 'vite-plugin-dts';
 import babel from 'vite-plugin-babel';
 
 export default defineConfig({
+  server: {
+    port: 3000,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+    },
+  },
   plugins: [
     dts(),
     babel({
@@ -31,4 +38,10 @@ export default defineConfig({
       keep_classnames: true,
     },
   },
+  // resolve: {
+  //   alias: {
+  //     // Ensure the shared package is resolved locally
+  //     '@serranolabs.io/shared': resolve(__dirname, '../../shared/src'),
+  //   },
+  // },
 });

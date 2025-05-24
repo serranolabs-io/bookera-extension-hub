@@ -4,6 +4,10 @@ import dts from 'vite-plugin-dts';
 import babel from 'vite-plugin-babel'
 
 export default defineConfig({
+  hmr: {
+    protocol: 'ws',
+    host: 'localhost',
+  },
   plugins: [
     dts(),
     babel({
@@ -47,4 +51,7 @@ export default defineConfig({
       target: 'esnext',
       cssCodeSplit: true,
   },
+  server: {
+    port: 5000,
+  }
 });

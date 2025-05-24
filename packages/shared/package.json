@@ -1,11 +1,11 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.77",
+  "version": "0.0.78",
   "type": "module",
   "private": false,
   "scripts": {
     "build": "vite build",
-    "dev": "bun dev",
+    "dev": "vite",
     "lint": "eslint  . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
@@ -45,7 +45,7 @@
         "types": "./dist/root.css.d.ts"
       },
       "development": {
-        "import": "./src/root.css.ts"
+        "import": "./src/root.css"
       },
       "production": {
         "import": "./dist/root.css",

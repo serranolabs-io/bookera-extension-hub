@@ -17,7 +17,7 @@ const KEYBINDINGS_BAG_NAME = 'keyboard-shortcuts';
 
 const convertAll = (shortcuts: KeyboardShortcutJson[]): KeyboardShortcut[] => {
   return shortcuts.map((shortcut) => {
-    return KeyboardShortcut.fromJSON(shortcut);
+    return KeyboardShortcut.fromJson(shortcut);
   });
 };
 

@@ -183,7 +183,7 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
         webComponentTree
           .find((el) => el.isKeyboardRouter)
           .applyCommand(shortcut.command);
-        this._commandsRan.push(shortcut.command);
+        this._commandsRan.push(shortcut);
 
         getNewContext.bind(this)();
 
@@ -198,13 +198,11 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
     }
   });
 
-  console.log(hasPotentialMatches, shouldRequestUpdate, doesNotMatchWhen);
-
   if (shouldRequestUpdate) {
     if (!hasPotentialMatches || (doesNotMatchWhen && !hasPotentialMatches)) {
       this._allKeyPressSets = [];
-      this.requestUpdate();
     }
+    this.requestUpdate();
   }
 }
 

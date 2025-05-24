@@ -36,12 +36,9 @@ import {
   PanelTab,
 } from '@serranolabs.io/shared/panel';
 import { calculateValue } from './formwrapper';
-import {
-  createHandleInDaemonListeners,
-  openCommandPalette,
-} from './handle-keyboard-shortcut';
-import { SlDialog, SlInput } from '@shoelace-style/shoelace';
-import Fuse, { FuseResult } from 'fuse.js';
+import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
+import { SlDialog } from '@shoelace-style/shoelace';
+import { FuseResult } from 'fuse.js';
 import { renderMatches } from './fuse';
 
 export const elementName = 'keyboard-shortcuts-element';
@@ -101,7 +98,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
-  protected _commandsRan: string[] = [];
+  protected _commandsRan: KeyboardShortcut[] = [];
 
   protected _context: When[] = [];
 
@@ -227,13 +224,15 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     `;
   }
 
-  protected _renderKeyPressesInModuleDaemon() {
-    const value = calculateValue(this._allKeyPressSets, this._modifiers);
+  protected _renderKeyPressesInModuleDaemon(
+    allKeyPressSets: KeyboardEventKey[][],
+    modifiers: KeyboardEventKey[]
+  ) {
+    const value = calculateValue(allKeyPressSets, modifiers);
 
     if (value.length === 0) {
       return html``;
     }
-
     return html`
       <div>
         <small class="label">keys</small>
@@ -318,8 +317,13 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     return html`
         <div class="commands">
             <small class="label">command</small>
-          ${this._commandsRan.map((command: string) => {
-            return html`<small>${command}</small>`;
+          ${this._commandsRan.map((shortcut: KeyboardShortcut) => {
+            return html`
+              <div>
+                <small>${shortcut.command}</small>
+                ${this._renderKeyPressesInModuleDaemon(shortcut.keys, [])}
+              </div>
+            `;
           })}
           </div>
         </div>
@@ -329,7 +333,10 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected renderInModuleDaemon(): TemplateResult {
     return html`
       ${this._renderCommandPalette()} ${this._renderContextInModuleDaemon()}
-      ${this._renderKeyPressesInModuleDaemon()}
+      ${this._renderKeyPressesInModuleDaemon(
+        this._allKeyPressSets,
+        this._modifiers
+      )}
       ${this._renderCommandsInModuleDaemon()}
     `;
   }

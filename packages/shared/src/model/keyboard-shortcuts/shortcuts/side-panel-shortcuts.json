@@ -1,10 +1,10 @@
 [
   {
-    "command": "studio.sidePanel.openLeft",
-    "keys": [["Control", "l"]],
-    "when": ["panelFocus"],
-    "description": "Opens the left side panel",
-    "title": "Open Left Side Panel",
+    "command": "studio.sidePanel.toggleLeft",
+    "keys": [["Shift", "Control", "l"]],
+    "when": [],
+    "description": "toggles the left side panel, only when there is a module. Will toggle last selected. If none are selected, will toggle first",
+    "title": "Toggles Left Side Panel",
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"
@@ -12,11 +12,11 @@
     "shouldAppearInCommandPalette": "false"
   },
   {
-    "command": "studio.sidePanel.openRight",
-    "keys": [["Control", "r"]],
-    "when": ["panelFocus"],
-    "description": "Opens the right side panel",
-    "title": "Open Right Side Panel",
+    "command": "studio.sidePanel.toggleRight",
+    "keys": [["Shift", "Control", "r"]],
+    "when": [],
+    "description": "Toggles the right side panel, only when there is a module. Will toggle last selected. If none are selected, will toggle first",
+    "title": "Toggles Right Side Panel",
     "source": {
       "name": "System",
       "link": "https://github.com/serranolabs-io/bookera-extension-hub/blob/main/packages/shared/src/model/keyboard-shortcuts/shortcuts.json"

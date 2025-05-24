@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "@pb33f/saddlebag": "^0.2.2",
-    "@serranolabs.io/shared": "*",
+    "@serranolabs.io/shared": "workspace:*",
     "@shoelace-style/shoelace": "^2.20.1",
     "@tanstack/lit-form": "^1.11.1",
     "lit": "^3.3.0",

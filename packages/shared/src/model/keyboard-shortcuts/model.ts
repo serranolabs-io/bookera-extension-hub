@@ -64,8 +64,8 @@ export const studio = {
     traverseTabsDown: 'studio.sidePanel.traverseTabsDown',
     navigateToPanelBar: 'studio.sidePanel.navigateToPanelBar',
     navigateToDrawer: 'studio.sidePanel.navigateToDrawer',
-    openLeft: 'studio.sidePanel.openLeft',
-    openRight: 'studio.sidePanel.openRight',
+    toggleLeft: 'studio.sidePanel.toggleLeft',
+    toggleRight: 'studio.sidePanel.toggleRight',
     navigateToSidePanel: 'studio.sidePanel.navigateToSidePanel',
   },
   settings: {
@@ -152,10 +152,7 @@ export class KeyboardShortcut implements KeyboardShortcutJson {
     return html`
       <div class="keybindings">
         ${keys.map((key, i: number) => {
-          let lastText =
-            (i !== keys.length - 1) === false && key.length > 0 === false
-              ? 'chord to'
-              : '';
+          let lastText = i !== keys.length - 1 ? 'chord to' : '';
 
           if (key.length === 0) {
             return html``;
@@ -170,7 +167,7 @@ export class KeyboardShortcut implements KeyboardShortcutJson {
                   : html`<span>${value}</span>`;
               })}</span
             >
-            <p>${lastText}</p>`;
+            <i>${lastText}</i>`;
         })}
       </div>
     `;
