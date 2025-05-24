@@ -7,10 +7,7 @@ import {
   When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyDownAndSubmit } from './formwrapper';
-import {
-  KeyboardShortcutsElement,
-  SHORTCUT_MAX_LENGTH,
-} from './keyboard-shortcuts';
+import { KeyboardShortcutsElement } from './keyboard-shortcuts';
 
 // setting focus
 
@@ -44,10 +41,8 @@ function traversewebComponentTree(this: KeyboardShortcutsElement): {
       webComponentTree.unshift(activeElement as HTMLElement);
     }
 
-    console.log('twct', activeElement);
     activeElement = activeElement.shadowRoot.activeElement;
   }
-  console.log('twct', activeElement);
 
   return {
     webComponentTree,

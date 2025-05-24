@@ -117,10 +117,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   @query(`#${COMMAND_PALETTE_DIALOG}`)
   _commandPaletteDialog!: SlDialog;
 
-  private _listenToEvents() {
-    console.log('fuck');
-  }
-
   constructor(
     renderMode: RenderMode,
     module: BookeraModule,
@@ -179,13 +175,13 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
     this._keyboardShortcuts = Array.from(
       this._shortcutsBag.export().values()
-    ).map((shortcut: KeyboardShortcut) => KeyboardShortcut.fromJSON(shortcut));
+    ).map((shortcut: KeyboardShortcut) => KeyboardShortcut.fromJson(shortcut));
 
     this._shortcutsBag.onAllChanges(this._listenToAllChanges.bind(this));
   }
 
   private _listenToAllChanges(changed: string) {
-    const changedCommand = KeyboardShortcut.fromJSON(
+    const changedCommand = KeyboardShortcut.fromJson(
       this._shortcutsBag.get(changed)!
     );
 

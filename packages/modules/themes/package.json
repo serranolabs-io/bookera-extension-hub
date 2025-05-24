@@ -17,7 +17,7 @@
         "types": "./dist/main.d.ts"
       },
       "development": {
-        "import": "./src/bookera-themes.json",
+        "import": "./src/bookera-themes.ts",
         "types": "./dist/main.d.ts"
       },
       "production": {
