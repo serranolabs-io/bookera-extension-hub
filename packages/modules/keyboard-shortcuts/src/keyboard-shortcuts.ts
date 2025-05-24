@@ -24,6 +24,8 @@ import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/compone
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu/menu.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-item/menu-item.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu-label/menu-label.js';
+import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/switch/switch.js';
+
 import './context-menu';
 
 import { KeyboardShortcutsState } from './state';

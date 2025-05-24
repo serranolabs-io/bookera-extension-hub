@@ -74,7 +74,17 @@ export const studio = {
   },
 };
 
-export class KeyboardShortcut {
+export interface KeyboardShortcutJson {
+  command: string;
+  keys: KeyboardEventKey[][];
+  when: string[];
+  source: Source;
+  description: string;
+  title: string;
+  shouldAppearInCommandPalette: string;
+}
+
+export class KeyboardShortcut implements KeyboardShortcutJson {
   command: string;
   keys: KeyboardEventKey[][];
   when: string[];
@@ -170,7 +180,7 @@ export class KeyboardShortcut {
     return this;
   }
 
-  static fromJSON(json: KeyboardShortcut): KeyboardShortcut {
+  static fromJson(json: KeyboardShortcutJson): KeyboardShortcut {
     return new KeyboardShortcut(
       json.command,
       json.keys,

@@ -3,15 +3,14 @@ import {
   KeyboardShortcut,
   Operator,
   operators,
-  When,
   studio,
+  When,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyDownAndSubmit } from './formwrapper';
 import {
   KeyboardShortcutsElement,
   SHORTCUT_MAX_LENGTH,
 } from './keyboard-shortcuts';
-import { L } from 'vitest/dist/chunks/reporters.d.DG9VKi4m.js';
 
 // setting focus
 

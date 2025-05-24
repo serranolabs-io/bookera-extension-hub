@@ -1,6 +1,9 @@
 import type { Bag, BagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
-import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
+import {
+  KeyboardShortcut,
+  KeyboardShortcutJson,
+} from '@serranolabs.io/shared/keyboard-shortcuts';
 import {
   panelShortcuts,
   sidePanelShortcuts,
@@ -12,7 +15,7 @@ import themesShortcuts from '@serranolabs.io/bookera-themes/shortcuts';
 
 const KEYBINDINGS_BAG_NAME = 'keyboard-shortcuts';
 
-const convertAll = (shortcuts: KeyboardShortcut[]): KeyboardShortcut[] => {
+const convertAll = (shortcuts: KeyboardShortcutJson[]): KeyboardShortcut[] => {
   return shortcuts.map((shortcut) => {
     return KeyboardShortcut.fromJSON(shortcut);
   });
@@ -25,7 +28,7 @@ export class KeyboardShortcutsState {
     ...settingsShortcuts,
     ...miscShortcuts,
     ...themesShortcuts,
-  ] as KeyboardShortcut[]);
+  ] as KeyboardShortcutJson[]);
   constructor() {}
 
   static async GetShortcuts(): Promise<Map<string, KeyboardShortcut> | null> {
