@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/bookera-keyboard-shortcuts",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "type": "module",
   "scripts": {
     "build": "vite build",
@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "@pb33f/saddlebag": "^0.2.2",
-    "@serranolabs.io/shared": "workspace:*",
+    "@serranolabs.io/shared": "*",
     "@shoelace-style/shoelace": "^2.20.1",
     "@tanstack/lit-form": "^1.11.1",
     "lit": "^3.3.0",
