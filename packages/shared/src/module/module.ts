@@ -31,7 +31,7 @@ export class BookeraModule {
   version?: string;
   title?: string;
   description?: string;
-  tab?: Tab | null;
+  tab?: Tab;
   id?: string;
   renderModes?: RenderMode[];
 

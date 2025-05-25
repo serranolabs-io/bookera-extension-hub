@@ -93,7 +93,7 @@ export abstract class BookeraModuleElement extends LitElement {
     );
   }
 
-  protected findKey(savingKeys, index) {
+  protected findKey(savingKeys: any, index: any) {
     Object.keys(savingKeys).find(
       (key) => savingKeys[key as keyof typeof savingKeys] === index
     );
@@ -130,6 +130,10 @@ export abstract class BookeraModuleElement extends LitElement {
   }
 
   protected handleTab() {
+    if (!this.module.hasSidePanel()) {
+      return html``;
+    }
+
     if (this.module.tab?.isAppended) {
       return html`
         <sl-tooltip content="Remove tab from side-bar">
