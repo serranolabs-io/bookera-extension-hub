@@ -26,18 +26,15 @@ export type RenderMode =
   | 'renderInDaemon'
   | 'renderInPanel';
 
-export type RenderModeArray = Array<RenderMode>;
-
-const renderMode: RenderModeArray = ['renderInDaemon', 'renderInPanel'];
-
 // extensions are just extended functionality from the core system, BookeraModules
 export class BookeraModule {
   version?: string;
   title?: string;
   description?: string;
-  tab?: Tab;
+  tab?: Tab | null;
   id?: string;
-  hasSettings?: boolean;
+  renderModes?: RenderMode[];
+
   // * no id since there will always be one instance, of BookeraModules. They are not meant to be passed. But, there are versions.
   constructor(
     version?: string,
@@ -45,7 +42,7 @@ export class BookeraModule {
     description?: string,
     tab?: Tab,
     id?: string,
-    hasSettings?: boolean,
+    renderModes?: RenderMode[],
     constructorType?: BookeraModuleClass
   ) {
     if (version) {
@@ -56,6 +53,9 @@ export class BookeraModule {
     }
     if (description) {
       this.description = description;
+    }
+    if (renderModes) {
+      this.renderModes = renderModes;
     }
 
     if (constructorType) {
@@ -77,20 +77,37 @@ export class BookeraModule {
     if (tab && id) {
       this.tab!.id = id;
     }
+  }
 
-    if (hasSettings) {
-      this.hasSettings = hasSettings;
-    } else {
-      this.hasSettings = false;
+  hasSettings() {
+    if (this.renderModes?.includes('renderInSettings')) {
+      return true;
     }
+    return false;
+  }
+
+  hasPanel() {
+    if (this.renderModes?.includes('renderInPanel')) {
+      return true;
+    }
+    return false;
+  }
+
+  hasSidePanel() {
+    if (this.renderModes?.includes('renderInSidePanel')) {
+      return true;
+    }
+    return false;
+  }
+
+  hasModuleDaemon() {
+    if (this.renderModes?.includes('renderInDaemon')) {
+      return true;
+    }
+    return false;
   }
 
   getConstructorTypeName() {
     return this.title?.replaceAll(' ', '').concat('Element');
-  }
-
-  setHasSettings(val: boolean): this {
-    this.hasSettings = val;
-    return this;
   }
 }

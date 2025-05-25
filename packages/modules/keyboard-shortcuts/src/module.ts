@@ -13,6 +13,6 @@ export const keyboardShortcutsModule = new BookeraModule(
   description,
   new Tab(title, 'command', '', elementName, 'left').removeTab(),
   genShortID(10),
-  true,
+  ['renderInSettings', 'renderInDaemon', 'renderInPanel'],
   KeyboardShortcutsElement
 );

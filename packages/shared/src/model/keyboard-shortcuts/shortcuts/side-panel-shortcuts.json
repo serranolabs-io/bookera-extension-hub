@@ -1,7 +1,7 @@
 [
   {
     "command": "studio.sidePanel.toggleLeft",
-    "keys": [["Shift", "Control", "l"]],
+    "keys": [["Shift", "Control", "L"]],
     "when": [],
     "description": "toggles the left side panel, only when there is a module. Will toggle last selected. If none are selected, will toggle first",
     "title": "Toggles Left Side Panel",
@@ -13,7 +13,7 @@
   },
   {
     "command": "studio.sidePanel.toggleRight",
-    "keys": [["Shift", "Control", "r"]],
+    "keys": [["Shift", "Control", "R"]],
     "when": [],
     "description": "Toggles the right side panel, only when there is a module. Will toggle last selected. If none are selected, will toggle first",
     "title": "Toggles Right Side Panel",

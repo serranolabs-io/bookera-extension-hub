@@ -14,14 +14,13 @@ import {
 } from './color-sets';
 
 import { SlColorPicker, SlSelect } from '@shoelace-style/shoelace';
-import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
+import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
 import {
   ColorPalette,
   ColorPalettesKey,
   ColorPalettesSingleton,
   CustomColorPalette,
   getIndexes,
-  getShadeVariable,
   Mode,
   SelectedColorPaletteKey,
   SystemColorPalette,
@@ -317,7 +316,7 @@ export class ThemesElement extends BookeraModuleElement {
     this.requestUpdate();
   }
 
-  protected renderInPanel() {
+  protected renderInPanel(): TemplateResult {
     return html``;
   }
 
@@ -637,7 +636,7 @@ export class ThemesElement extends BookeraModuleElement {
     })}`;
   }
 
-  protected renderInSettings() {
+  renderInSettings() {
     return html`
       ${this.renderTitleSection()} ${this._renderApplyChangesButton()}
       ${this._renderCurrentSection()}
@@ -649,7 +648,7 @@ export class ThemesElement extends BookeraModuleElement {
     `;
   }
 
-  protected renderInSidePanel() {
+  renderInSidePanel() {
     return html`
       ${this.renderSidePanelTitleSection()}
       <div class="center dark-mode-padding">
@@ -663,7 +662,7 @@ export class ThemesElement extends BookeraModuleElement {
     `;
   }
 
-  protected renderInModuleDaemon() {
+  renderInModuleDaemon() {
     return html`
       <dark-mode daemon></dark-mode>
       <code>${this.selectedColorPalette?.name}</code>

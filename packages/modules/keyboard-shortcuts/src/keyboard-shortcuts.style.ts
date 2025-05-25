@@ -135,6 +135,12 @@ export default css`
   .commands div {
     display: flex;
     gap: var(--spacingXXSmall);
+    align-items: center;
+  }
+
+  .commands .keybinding {
+    font-size: var(--text-xs);
+    padding: 0 !important;
   }
 
   .daemon {

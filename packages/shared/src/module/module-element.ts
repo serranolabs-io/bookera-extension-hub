@@ -14,26 +14,6 @@ import { notify } from '../model/lit';
 import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
 
-interface RenderInModuleDaemon {
-  renderInModuleDaemon(): TemplateResult;
-}
-
-interface RenderInPanel {
-  renderInPanel(): TemplateResult;
-}
-interface RenderInSettings {
-  renderInSettings(): TemplateResult;
-}
-interface RenderInSidePanel {
-  protected renderInSidePanel(): TemplateResult;
-}
-
-type RenderMethods =
-  | RenderInModuleDaemon
-  | RenderInPanel
-  | RenderInSettings
-  | RenderInSidePanel;
-
 customElement('bookera-module-element');
 /**
  * The `ModuleElement` class serves as an abstract base class for creating custom module elements
@@ -61,7 +41,7 @@ customElement('bookera-module-element');
  * @method renderInSettings - Abstract method to define rendering logic for the main panel.
  * @method render - Abstract method to define the overall rendering logic for the module element.
  */
-export abstract class BookeraModuleElement extends LitElement implements RenderInSidePanel{
+export abstract class BookeraModuleElement extends LitElement {
   @state()
   module!: BookeraModule;
 

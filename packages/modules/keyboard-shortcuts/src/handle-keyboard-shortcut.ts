@@ -1,4 +1,5 @@
 import {
+  ActiveElementState,
   KeyboardEventKey,
   KeyboardShortcut,
   Operator,
@@ -8,6 +9,7 @@ import {
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { handleKeyDownAndSubmit } from './formwrapper';
 import { KeyboardShortcutsElement } from './keyboard-shortcuts';
+import { sendEvent } from '@serranolabs.io/shared/util';
 
 // setting focus
 
@@ -27,7 +29,10 @@ import { KeyboardShortcutsElement } from './keyboard-shortcuts';
 
 // when clicking anywhere, please apply traverse focus tree
 
-function traversewebComponentTree(this: KeyboardShortcutsElement): {
+function traversewebComponentTree(
+  this: KeyboardShortcutsElement,
+  changeFocus: boolean
+): {
   webComponentTree: HTMLElement[];
   activeElement: HTMLElement;
 } {
@@ -37,7 +42,10 @@ function traversewebComponentTree(this: KeyboardShortcutsElement): {
   let webComponentTree = [];
   while (activeElement?.shadowRoot) {
     if (activeElement.isFocusable) {
-      activeElement.setFocus(false);
+      if (changeFocus) {
+        activeElement.setFocus(false);
+      }
+
       webComponentTree.unshift(activeElement as HTMLElement);
     }
 
@@ -88,11 +96,17 @@ function matchCondition(
   activeElement: HTMLElement;
 } {
   const { webComponentTree, activeElement } =
-    traversewebComponentTree.bind(this)();
+    traversewebComponentTree.bind(this)(true);
 
   this._context = webComponentTree.flatMap((element: HTMLElement) => {
     return element.getWhen();
   });
+
+  console.log('matchCondition', webComponentTree, activeElement, this._context);
+
+  if (when.length === 0) {
+    return { isMatched: true, webComponentTree, activeElement };
+  }
 
   const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
     when,
@@ -136,10 +150,10 @@ export function matchCommand(
 }
 
 function getNewContext(this: KeyboardShortcutsElement) {
-  const { webComponentTree } = traversewebComponentTree.bind(this)();
+  const { webComponentTree } = traversewebComponentTree.bind(this)(false);
 
   this._context = webComponentTree.flatMap((element: HTMLElement) => {
-    return element.getWhen();
+    return [...new Set(element.getWhen())];
   });
 }
 
@@ -180,9 +194,15 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
         );
         // @ts-ignore
 
-        webComponentTree
-          .find((el) => el.isKeyboardRouter)
-          .applyCommand(shortcut.command);
+        if (webComponentTree.length > 0) {
+          // assuming that there is only one keyboardRouter
+          webComponentTree
+            .find((el) => el.isKeyboardRouter)
+            .applyCommand(shortcut.command);
+        } else {
+          sendEvent<string>(this, shortcut.command);
+        }
+
         this._commandsRan.push(shortcut);
 
         getNewContext.bind(this)();

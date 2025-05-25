@@ -321,7 +321,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
             return html`
               <div>
                 <small>${shortcut.command}</small>
-                ${this._renderKeyPressesInModuleDaemon(shortcut.keys, [])}
+                ${shortcut.renderKeys()}
               </div>
             `;
           })}
