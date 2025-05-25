@@ -11,7 +11,7 @@ export const keyboardShortcutsModule = new BookeraModule(
   DEFAULT_VERSION,
   title,
   description,
-  new Tab(title, 'command', '', elementName, 'left').removeTab(),
+  undefined,
   genShortID(10),
   ['renderInSettings', 'renderInDaemon', 'renderInPanel'],
   KeyboardShortcutsElement
