@@ -40,6 +40,8 @@ export default defineConfig({
             'module/module-element': resolve(__dirname, 'src/module/module-element.ts'),
             'keyboard-shortcuts': resolve(__dirname, 'src/model/keyboard-shortcuts/model.ts'),
             'shortcuts-list': resolve(__dirname, 'src/model/keyboard-shortcuts/shortcuts/shortcuts.ts'),
+            'extension-marketplace': resolve(__dirname, 'src/model/extension-marketplace/main.ts'),
+            "user": resolve(__dirname, 'src/model/user/author.ts'),
           },
           name: 'shared',
           formats: ['es'],

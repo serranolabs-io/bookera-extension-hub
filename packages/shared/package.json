@@ -52,6 +52,19 @@
         "types": "./dist/root.css.d.ts"
       }
     },
+    "./user": {
+      "default": {
+        "import": "./dist/user.js",
+        "types": "./dist/model/user/author.d.ts"
+      },
+      "development": {
+        "import": "./src/model/user/author.ts"
+      },
+      "production": {
+        "import": "./dist/user.js",
+        "types": "./dist/model/user/author.d.ts"
+      }
+    },
     "./shortcuts-list": {
       "default": {
         "import": "./dist/shortcuts-list.js",
@@ -76,6 +89,19 @@
       "production": {
         "import": "./dist/keyboard-shortcuts.js",
         "types": "./dist/model/keyboard-shortcuts/model.d.ts"
+      }
+    },
+    "./extension-marketplace": {
+      "default": {
+        "import": "./dist/extension-marketplace.js",
+        "types": "./dist/model/extension-marketplace/main.d.ts"
+      },
+      "development": {
+        "import": "./src/model/extension-marketplace/main.ts"
+      },
+      "production": {
+        "import": "./dist/extension-marketplace.js",
+        "types": "./dist/model/extension-marketplace/main.d.ts"
       }
     },
     "./util": {

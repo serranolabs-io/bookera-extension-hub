@@ -1,4 +1,4 @@
-import { genShortID } from "../util";
+import { genShortID } from '../util';
 
 export class User {
   name: string;
