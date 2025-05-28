@@ -23,13 +23,22 @@ export class Config<T> {
 
   constructor(source: Source, value: T, nameIndex: keyof T | '', id?: string) {
     this.source = source;
-    this.value = value;
     if (id) {
       this.id = id;
     } else {
       this.id = genShortID(10);
     }
     this.nameIndex = nameIndex;
+
+    if (typeof this.value === 'string') {
+      try {
+        this.value = JSON.parse(this.value);
+      } catch (error) {
+        console.error('Failed to parse value as JSON:', error);
+      }
+    } else {
+      this.value = value;
+    }
   }
 
   getConfigName() {

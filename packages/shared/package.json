@@ -182,6 +182,7 @@
   "dependencies": {
     "@pb33f/saddlebag": "^0.2.2",
     "@shoelace-style/shoelace": "^2.20.1",
+    "@supabase/supabase-js": "^2.49.8",
     "lit": "^3.2.1",
     "localforage": "^1.01.0",
     "shoelace": "^0.1.1",
