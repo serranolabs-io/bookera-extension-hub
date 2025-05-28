@@ -4,7 +4,11 @@ import {
   BookeraModuleElement,
   moduleElementStyles,
 } from '@serranolabs.io/shared/module-element';
-import { BookeraModule, type RenderMode } from '@serranolabs.io/shared/module';
+import {
+  BookeraModule,
+  BookeraModuleConfig,
+  type RenderMode,
+} from '@serranolabs.io/shared/module';
 import './formwrapper';
 import keyboardShortcutsStyle from './keyboard-shortcuts.style';
 import baseCss from '@serranolabs.io/shared/base';
@@ -114,12 +118,8 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   @query(`#${COMMAND_PALETTE_DIALOG}`)
   _commandPaletteDialog!: SlDialog;
 
-  constructor(
-    renderMode: RenderMode,
-    module: BookeraModule,
-    _panelTabId: string
-  ) {
-    super(renderMode, module, _panelTabId);
+  constructor(config: BookeraModuleConfig) {
+    super(config);
 
     this._keyboardShortcuts = [];
 

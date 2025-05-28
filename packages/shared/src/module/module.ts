@@ -1,3 +1,4 @@
+import { SupabaseClient } from '@supabase/supabase-js';
 import { genShortID } from '../model/util';
 import type { Tab } from './tab';
 
@@ -10,12 +11,14 @@ export interface RequestUpdateEventType {
 }
 
 export const DEFAULT_VERSION = '0.0.1';
+export interface BookeraModuleConfig {
+  renderMode: RenderMode;
+  module: BookeraModule;
+  _panelTabId?: string;
+  supabase: SupabaseClient;
+}
 
-export type BookeraModuleClass = new (
-  renderMode: RenderMode,
-  module: BookeraModule,
-  _panelTabId?: string
-) => object;
+export type BookeraModuleClass = new (config: BookeraModuleConfig) => object;
 
 export const BookeraModuleRegistryClasses: Record<string, BookeraModuleClass> =
   {};

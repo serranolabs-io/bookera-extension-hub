@@ -43,7 +43,11 @@ import {
   moduleElementStyles,
 } from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
-import { BookeraModule, RenderMode } from '@serranolabs.io/shared/module';
+import {
+  BookeraModule,
+  BookeraModuleConfig,
+  RenderMode,
+} from '@serranolabs.io/shared/module';
 
 import { genShortID } from '@serranolabs.io/shared/util';
 
@@ -176,12 +180,8 @@ export class ThemesElement extends BookeraModuleElement {
   private _isSystemDirty = false;
   private _isCustomDirty = false;
 
-  constructor(
-    renderMode: RenderMode,
-    module: BookeraModule,
-    _panelTabId?: string
-  ) {
-    super(renderMode, module, _panelTabId);
+  constructor(config: BookeraModuleConfig) {
+    super(config);
 
     savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue(
       '--primary'

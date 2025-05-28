@@ -7,12 +7,13 @@ import {
   UPDATE_BookeraModule_EVENT,
   UPDATE_BookeraModule_EVENT_TYPE,
 } from './module';
-import type { RenderMode } from './module';
+import type { BookeraModuleConfig, RenderMode } from './module';
 import { Tab } from './tab';
 import { sendEvent } from '../model/util';
 import { notify } from '../model/lit';
 import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 customElement('bookera-module-element');
 /**
@@ -64,24 +65,26 @@ export abstract class BookeraModuleElement extends LitElement {
   protected _bagManager: BagManager;
   protected _bag: Bag | undefined;
 
+  protected _supabase!: SupabaseClient | null;
+
   private _formInstanceId() {
     return this.module.id! + this._panelTabId;
   }
 
-  constructor(
-    renderMode: RenderMode,
-    module: BookeraModule,
-    _panelTabId?: string
-  ) {
+  constructor(config: BookeraModuleConfig) {
     super();
-    this.renderMode = renderMode;
-    this.module = module;
+    this.renderMode = config.renderMode;
+    this.module = config.module;
+
     this.module.tab = Object.assign(new Tab(), this.module.tab);
     this.title = this.module.title!;
     this._bagManager = CreateBagManager();
+    if (config.supabase) {
+      this._supabase = config.supabase;
+    }
 
-    if (_panelTabId) {
-      this._panelTabId = _panelTabId;
+    if (config._panelTabId) {
+      this._panelTabId = config._panelTabId;
       this.instanceId = this._formInstanceId();
       this._bag = CreateBag(this.instanceId);
     }

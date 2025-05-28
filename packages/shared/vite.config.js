@@ -42,6 +42,7 @@ export default defineConfig({
             'shortcuts-list': resolve(__dirname, 'src/model/keyboard-shortcuts/shortcuts/shortcuts.ts'),
             'extension-marketplace': resolve(__dirname, 'src/model/extension-marketplace/main.ts'),
             "user": resolve(__dirname, 'src/model/user/author.ts'),
+            "supabase": resolve(__dirname, 'src/model/supabase.ts'),
           },
           name: 'shared',
           formats: ['es'],
