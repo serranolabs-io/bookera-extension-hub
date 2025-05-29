@@ -171,14 +171,14 @@
     },
     "./supabase": {
       "default": {
-        "import": "./dist/model/supabase.js",
+        "import": "./dist/supabase.js",
         "types": "./dist/model/supabase.d.ts"
       },
       "development": {
         "import": "./src/model/supabase.ts"
       },
       "production": {
-        "import": "./dist/model/supabase.js",
+        "import": "./dist/supabase.js",
         "types": "./dist/mdoel/supabase.d.ts"
       }
     }

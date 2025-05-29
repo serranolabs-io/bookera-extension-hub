@@ -181,6 +181,7 @@ export class ThemesElement extends BookeraModuleElement {
   private _isCustomDirty = false;
 
   constructor(config: BookeraModuleConfig) {
+    console.log(config);
     super(config);
 
     savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue(
