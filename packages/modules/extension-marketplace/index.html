@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extension Marketplace</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js"></script> 
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js"></script> 
+    <style>
+      .separator {
+        margin: 2rem 0;
+      }
+
+    </style>
+    <script type="module" >
+      import {ExtensionMarketplaceElement} from '/src/extension-marketplace-element.ts';
+      import {extensionMarketplaceModule} from '/src/module.ts';
+      import "@serranolabs.io/shared/root"
+
+      const makeDemo = (renderMode) => {
+        let separator = document.createElement("p");
+        separator.classList.add("separator")
+        let extensionMarketplace = new ExtensionMarketplaceElement(renderMode, extensionMarketplaceModule);
+        separator.innerText = `start ${renderMode} ----------------------------------------`;
+
+        document.body.appendChild(separator.cloneNode(true));
+      document.body.appendChild(extensionMarketplace);
+      separator.innerText = `end ${renderMode} ----------------------------------------`;
+      document.body.appendChild(separator.cloneNode(true));
+      }
+
+      if (extensionMarketplaceModule.hasSettings()) {
+        makeDemo("renderInSettings")
+      } 
+      
+      if (extensionMarketplaceModule.hasModuleDaemon()) {
+        makeDemo("renderInDaemon")
+      } 
+
+      if (extensionMarketplaceModule.hasSidePanel()) {
+        makeDemo("renderInSidePanel")
+      } 
+
+      if (extensionMarketplaceModule.hasPanel()) {
+        makeDemo("renderInPanel")
+      } 
+
+    </script>
+  
+  </head>
+  <body>
+    <my-element>
+      <h1>Vite + Lit</h1>
+    </my-element>
+  </body>
+</html>

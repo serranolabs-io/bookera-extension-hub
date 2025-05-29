@@ -1,0 +1,60 @@
+{
+  "name": "@serranolabs.io/bookera-extension-marketplace",
+  "description": "The Bookera Marketplace is your go-to hub for discovering, installing, and managing extensions that enhance your reading and writing experience. Whether you're looking for tools to improve productivity, customize your reading environment, or integrate with your favorite apps and platforms, the Extension Marketplace offers a wide variety of extensions built by the community.",
+  "private": false,
+  "version": "0.0.3",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "default": {
+        "import": "./dist/extension-marketplace.js",
+        "types": "./dist/main.d.ts"
+      },
+      "development": {
+        "import": "./src/extension-marketplace.ts",
+        "types": "./dist/main.d.ts"
+      },
+      "production": {
+        "import": "./dist/shortcuts.js",
+        "types": "./dist/main.d.ts"
+      }
+    },
+    "./shortcuts": {
+      "default": {
+        "import": "./dist/shortcuts.js",
+        "types": "./dist/shortcuts.json.d.ts"
+      },
+      "development": {
+        "import": "./src/shortcuts.json"
+      },
+      "production": {
+        "import": "./dist/shortcuts.js",
+        "types": "./dist/shortcuts.json.d.ts"
+      }
+    }
+  },
+  "dependencies": {
+    "@shoelace-style/shoelace": "^2.20.1",
+    "lit": "^3.3.0",
+    "localforage": "^1.10.0",
+    "vite-plugin-dts": "^4.5.3"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.25.9",
+    "@serranolabs.io/typescript-config": "*",
+    "typescript": "~5.7.2",
+    "vite": "^6.3.1",
+    "vite-plugin-babel": "^1.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
