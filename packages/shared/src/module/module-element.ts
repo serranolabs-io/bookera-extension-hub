@@ -14,6 +14,7 @@ import { notify } from '../model/lit';
 import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { Source } from '../model/keyboard-shortcuts/model';
 
 customElement('bookera-module-element');
 /**
@@ -56,6 +57,8 @@ export abstract class BookeraModuleElement extends LitElement {
 
   private _panelTabId: string | undefined;
 
+  protected _source: Source;
+
   @state()
   instanceId: string | undefined;
 
@@ -87,6 +90,13 @@ export abstract class BookeraModuleElement extends LitElement {
       this._panelTabId = config._panelTabId;
       this.instanceId = this._formInstanceId();
       this._bag = CreateBag(this.instanceId);
+    }
+
+    if (this.module.title) {
+      this._source = new Source(
+        this.module.title,
+        'https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/modules/themes'
+      );
     }
 
     // @ts-expect-error addEventListener sucks

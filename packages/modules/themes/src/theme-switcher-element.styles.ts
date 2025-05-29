@@ -1,5 +1,11 @@
 import { css } from 'lit';
 export default css`
+  .share-config {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .colors-box {
     overflow: hidden;
     height: 40rem;
