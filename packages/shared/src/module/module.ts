@@ -11,12 +11,11 @@ export interface RequestUpdateEventType {
 }
 
 export const DEFAULT_VERSION = '0.0.1';
-export interface BookeraModuleConfig<T = unknown> {
+export interface BookeraModuleConfig<T> {
   renderMode: RenderMode;
-  module: BookeraModule;
+  module: BookeraModule<T>;
   _panelTabId?: string;
   supabase?: SupabaseClient;
-  moduleState?: T;
 }
 
 export type BookeraModuleClass<T = unknown> = new (
@@ -27,7 +26,6 @@ export const BookeraModuleRegistryClasses: Record<
   string,
   BookeraModuleClass<any>
 > = {};
-
 export type RenderMode =
   | 'renderInSettings'
   | 'renderInSidePanel'
@@ -35,13 +33,14 @@ export type RenderMode =
   | 'renderInPanel';
 
 // extensions are just extended functionality from the core system, BookeraModules
-export class BookeraModule {
+export class BookeraModule<T = unknown> {
   version?: string;
   title?: string;
   description?: string;
   tab?: Tab;
   id?: string;
   renderModes?: RenderMode[];
+  instances: T[];
 
   // * no id since there will always be one instance, of BookeraModules. They are not meant to be passed. But, there are versions.
   constructor(
@@ -51,7 +50,8 @@ export class BookeraModule {
     tab?: Tab,
     id?: string,
     renderModes?: RenderMode[],
-    constructorType?: BookeraModuleClass
+    constructorType?: BookeraModuleClass,
+    instances?: T[]
   ) {
     if (version) {
       this.version = version;
@@ -71,6 +71,12 @@ export class BookeraModule {
       if (constructorTypeName) {
         BookeraModuleRegistryClasses[constructorTypeName] = constructorType;
       }
+    }
+
+    if (instances) {
+      this.instances = instances;
+    } else {
+      this.instances = [];
     }
 
     if (id) {

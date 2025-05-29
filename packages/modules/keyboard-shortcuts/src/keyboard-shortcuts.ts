@@ -346,7 +346,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       <sl-button
         @click=${() => {
           sendEvent<NewPanelEventType>(this, NEW_PANEL_EVENT, {
-            tab: new PanelTab(this.module.title, 'Module'),
+            tab: new PanelTab('⌨️' + this.module.title, 'Module'),
             moduleId: this.module.id,
           });
         }}

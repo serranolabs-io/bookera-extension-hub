@@ -14,5 +14,6 @@ export const keyboardShortcutsModule = new BookeraModule(
   new Tab(title, 'command', '', elementName, 'left'),
   genShortID(10),
   ['renderInSettings', 'renderInDaemon', 'renderInPanel'],
-  KeyboardShortcutsElement
+  KeyboardShortcutsElement,
+  []
 );

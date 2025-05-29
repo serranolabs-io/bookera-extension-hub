@@ -13,5 +13,6 @@ export const themeSwitcherModule = new BookeraModule(
   new Tab('Themes', 'palette', '', 'themes-element', 'left').removeTab(),
   genShortID(10),
   ['renderInDaemon', 'renderInPanel', 'renderInSettings', 'renderInSidePanel'],
-  ThemesElement
+  ThemesElement,
+  []
 );
