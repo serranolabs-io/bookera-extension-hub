@@ -67,7 +67,7 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
     const config = e.detail.config;
-    upsertConfigPanel.bind(this, { config });
+    upsertConfigPanel.bind(this)({ config });
   }
 
   private _setupDaemonListeners() {

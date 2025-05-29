@@ -498,7 +498,9 @@ export class ThemesElement extends BookeraModuleElement {
     `;
   }
 
-  private _sendConfig(customColorPalette): SEND_CONFIG_EVENT_TYPE<string> {
+  private _sendConfig(
+    customColorPalette: CustomColorPalette
+  ): SEND_CONFIG_EVENT_TYPE<string> {
     return {
       config: {
         source: this._source,
