@@ -134,6 +134,8 @@ export class ManageConfigElement extends LitElement {
 
   private _config: BookeraModuleConfig;
 
+  private _;
+
   constructor(config: BookeraModuleConfig) {
     super();
 

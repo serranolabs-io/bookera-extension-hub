@@ -3,14 +3,14 @@ import { Source } from '../keyboard-shortcuts/model';
 import { User } from '../user/author';
 import { genShortID } from '../util';
 
-export interface Config<T extends string> {
+export interface Config<T extends object> {
   source: Source; // name: Theme, link: blah blah
   value: T; // CustomColorPalette
   id: string;
   nameIndex: keyof T | ''; // theme.name
 }
 
-export interface SEND_CONFIG_EVENT_TYPE<T extends string> {
+export interface SEND_CONFIG_EVENT_TYPE<T extends object> {
   config: Config<T>;
 }
 export const SEND_CONFIG_EVENT = 'send-config-event';
@@ -66,7 +66,7 @@ export interface ExtensionConfig<T>
   isPublished: boolean;
 }
 
-export class ExtensionConfig<T extends string> implements ExtensionConfig<T> {
+export class ExtensionConfig<T extends object> implements ExtensionConfig<T> {
   configs: Config<T>[];
   markdown: string;
   user: User;
@@ -92,14 +92,14 @@ export class ExtensionConfig<T extends string> implements ExtensionConfig<T> {
     this.isPublished = isPublished;
   }
 
-  static FromInterface<T extends string>(
+  static FromInterface<T extends object>(
     data: ExtensionConfig<T>
   ): ExtensionConfig<T> {
     const configs = data.configs.map(
       (config) =>
         new Config<T>(
           config.source,
-          config.value as unknown as string,
+          config.value as unknown as object,
           config.nameIndex,
           config.id
         )

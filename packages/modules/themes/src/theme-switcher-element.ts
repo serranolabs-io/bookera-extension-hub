@@ -50,7 +50,10 @@ import {
 } from '@serranolabs.io/shared/module';
 
 import { genShortID, sendEvent } from '@serranolabs.io/shared/util';
-import { SEND_CONFIG_EVENT, SEND_CONFIG_EVENT_TYPE } from '@serranolabs.io/shared/extension-marketplace';
+import {
+  SEND_CONFIG_EVENT,
+  SEND_CONFIG_EVENT_TYPE,
+} from '@serranolabs.io/shared/extension-marketplace';
 import { Source } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 export type ColorMode = 'Light' | 'Dark';
@@ -108,56 +111,53 @@ export const savingProperties = {
   // custom
 };
 
-
-
-
 // the theme switcher should always have the same ID no matter what, across every single app
 // the tab will follow
 @customElement('themes-element')
 export class ThemesElement extends BookeraModuleElement {
   static styles = [themeSwitcherElementStyles, baseCss, moduleElementStyles];
-  
+
   @query('#color-selector') colorSelect!: SlSelect;
-  
+
   @query('#primary-color-picker') primaryColorPicker!: SlColorPicker;
-  
+
   @property()
   bagManager: BagManager = CreateBagManager(true);
-  
+
   @state()
   createColorPaletteMode: boolean = savingKeys.createColorPaletteMode;
-  
+
   // only consume what I want from the singleton
   @state()
   colorPalettes: ColorPalette[] = [];
-  
+
   // system color palette mode
   @state()
   systemName: string = savingKeys.systemName;
-  
+
   @state()
   systemColorPaletteMode: boolean = savingKeys.systemColorPaletteMode;
-  
+
   @state()
   primaryColor: string = savingKeys.primaryColor;
-  
+
   @state()
   backgroundColor: SystemColorSets = savingKeys.backgroundColor;
   // end system color palette mode
-  
+
   // begin custom color palettes
   @state()
   lightMode: Mode = savingKeys.lightMode;
-  
+
   @state()
   darkMode: Mode = savingKeys.darkMode;
-  
+
   @state()
   customName: string = savingKeys.customName;
-  
+
   @state()
   colorPalettesBag!: Bag<ColorPalette>;
-  
+
   @state()
   selectedColorPalette: ColorPalette | null = null;
 
@@ -499,15 +499,14 @@ export class ThemesElement extends BookeraModuleElement {
   }
 
   private _sendConfig(customColorPalette): SEND_CONFIG_EVENT_TYPE<string> {
-
     return {
       config: {
-        source: 
+        source: this._source,
         value: customColorPalette,
         id: customColorPalette.id,
-        nameIndex: "name"
-      }
-    }
+        nameIndex: 'name',
+      },
+    };
   }
 
   private renderSelectedColorPalettes(isSettings: boolean) {
@@ -519,10 +518,16 @@ export class ThemesElement extends BookeraModuleElement {
         return html`
           <div slot="suffix" class="share-config">
             <sl-tooltip content="Share your palette!">
-              <sl-icon-button name="send" @click=${() => {
-                sendEvent<SEND_CONFIG_EVENT_TYPE<string>>(this, SEND_CONFIG_EVENT, this._sendConfig())
-
-              }}></sl-icon-button>
+              <sl-icon-button
+                name="send"
+                @click=${() => {
+                  sendEvent<SEND_CONFIG_EVENT_TYPE<string>>(
+                    this,
+                    SEND_CONFIG_EVENT,
+                    this._sendConfig(colorPalette)
+                  );
+                }}
+              ></sl-icon-button>
             </sl-tooltip>
           </div>
         `;

@@ -1,5 +1,9 @@
 import { html, type TemplateResult } from 'lit';
-import { BookeraModule, type BookeraModuleClass } from '../module/module';
+import {
+  BookeraModule,
+  ModuleState,
+  type BookeraModuleClass,
+} from '../module/module';
 import type { TabPosition } from '../module/tab';
 import { genShortID } from './util';
 
@@ -14,13 +18,10 @@ export const TOGGLE_SIDE_PANEL_EVENT = 'toggle-side-panel-event';
 export const SWITCH_TOGGLE_SIDE_PANEL_EVENT = 'switch-toggle-side-panel-event';
 export const CLOSE_SIDE_PANEL_EVENT = 'close-side-panel-event';
 
-export interface NewPanelEventType {
+export interface NewPanelEventType<T extends string> {
   tab: PanelTab;
   moduleId?: string;
-}
-
-export interface NewPanelEventType {
-  tab: PanelTab;
+  moduleState?: T;
 }
 
 export interface OpenSidePanelEventTYpe {

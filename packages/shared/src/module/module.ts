@@ -11,17 +11,22 @@ export interface RequestUpdateEventType {
 }
 
 export const DEFAULT_VERSION = '0.0.1';
-export interface BookeraModuleConfig {
+export interface BookeraModuleConfig<T = unknown> {
   renderMode: RenderMode;
   module: BookeraModule;
   _panelTabId?: string;
-  supabase: SupabaseClient;
+  supabase?: SupabaseClient;
+  moduleState?: T;
 }
 
-export type BookeraModuleClass = new (config: BookeraModuleConfig) => object;
+export type BookeraModuleClass<T = unknown> = new (
+  config: BookeraModuleConfig<T>
+) => object;
 
-export const BookeraModuleRegistryClasses: Record<string, BookeraModuleClass> =
-  {};
+export const BookeraModuleRegistryClasses: Record<
+  string,
+  BookeraModuleClass<any>
+> = {};
 
 export type RenderMode =
   | 'renderInSettings'

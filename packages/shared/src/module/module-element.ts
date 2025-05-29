@@ -7,7 +7,7 @@ import {
   UPDATE_BookeraModule_EVENT,
   UPDATE_BookeraModule_EVENT_TYPE,
 } from './module';
-import type { BookeraModuleConfig, RenderMode } from './module';
+import type { BookeraModuleConfig, ModuleState, RenderMode } from './module';
 import { Tab } from './tab';
 import { sendEvent } from '../model/util';
 import { notify } from '../model/lit';
@@ -74,6 +74,8 @@ export abstract class BookeraModuleElement extends LitElement {
     return this.module.id! + this._panelTabId;
   }
 
+  protected _config: BookeraModuleConfig;
+
   constructor(config: BookeraModuleConfig) {
     super();
     this.renderMode = config.renderMode;
@@ -91,6 +93,8 @@ export abstract class BookeraModuleElement extends LitElement {
       this.instanceId = this._formInstanceId();
       this._bag = CreateBag(this.instanceId);
     }
+
+    this._config = config;
 
     if (this.module.title) {
       this._source = new Source(
