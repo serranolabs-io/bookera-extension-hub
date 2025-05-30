@@ -53,6 +53,13 @@ export enum PanelDrop {
   Center = 'Center',
 }
 
+export interface PanelContentConfig {
+  panelTabType: PanelTabType;
+  id: string;
+  moduleId?: string;
+  moduleInstanceType: string | undefined;
+}
+
 // ! please please redefine them lmao
 export const PanelTabs = {
   Settings: 'Settings',
@@ -97,27 +104,18 @@ export class PanelTab {
   }
 
   renderPanelContents(
-    panelContentElement: new (
-      panelTabType: PanelTabType,
-      id: string,
-      moduleId?: string
-    ) => object
+    panelContentElement: new (panelContentConfig: PanelContentConfig) => object
   ): TemplateResult {
     if (!this.id) return html``;
 
     let panelContent: object;
-    if (this.moduleId) {
-      panelContent = new panelContentElement(
-        this.type as PanelTabType,
-        this.id,
-        this.moduleId
-      );
-    } else {
-      panelContent = new panelContentElement(
-        this.type as PanelTabType,
-        this.id
-      );
-    }
+
+    panelContent = new panelContentElement({
+      panelTabType: this.type as PanelTabType,
+      id: this.id,
+      moduleId: this.moduleId,
+      moduleInstanceType: this.moduleInstanceType,
+    });
 
     return html`${panelContent}`;
   }
