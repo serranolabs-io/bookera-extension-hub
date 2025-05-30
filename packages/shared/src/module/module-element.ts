@@ -7,7 +7,11 @@ import {
   UPDATE_BookeraModule_EVENT,
   UPDATE_BookeraModule_EVENT_TYPE,
 } from './module';
-import type { BookeraModuleConfig, ModuleState, RenderMode } from './module';
+import type {
+  BookeraModuleConfig,
+  ModuleInstanceType,
+  RenderMode,
+} from './module';
 import { Tab } from './tab';
 import { sendEvent } from '../model/util';
 import { notify } from '../model/lit';
@@ -74,12 +78,16 @@ export abstract class BookeraModuleElement extends LitElement {
     return this.module.id! + this._panelTabId;
   }
 
-  protected _config: BookeraModuleConfig;
+  protected _config: BookeraModuleConfig<any>;
 
-  constructor(config: BookeraModuleConfig) {
+  constructor(config: BookeraModuleConfig<any>) {
     super();
     this.renderMode = config.renderMode;
     this.module = config.module;
+
+    if (config.instanceType) {
+      this.module.instances.push(config.instanceType);
+    }
 
     this.module.tab = Object.assign(new Tab(), this.module.tab);
     this.title = this.module.title!;

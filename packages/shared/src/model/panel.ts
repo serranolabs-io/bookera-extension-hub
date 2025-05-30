@@ -1,7 +1,7 @@
 import { html, type TemplateResult } from 'lit';
 import {
   BookeraModule,
-  ModuleState,
+  ModuleInstanceType,
   type BookeraModuleClass,
 } from '../module/module';
 import type { TabPosition } from '../module/tab';
@@ -21,7 +21,7 @@ export const CLOSE_SIDE_PANEL_EVENT = 'close-side-panel-event';
 export interface NewPanelEventType<T extends string> {
   tab: PanelTab;
   moduleId?: string;
-  moduleState?: T;
+  moduleInstanceType?: T;
 }
 
 export interface OpenSidePanelEventTYpe {
@@ -66,6 +66,7 @@ export class PanelTab {
   type?: PanelTabType;
   id?: string;
   moduleId?: string;
+  moduleInstanceType?: string;
 
   constructor(name?: string, type?: PanelTabType, id?: string) {
     this.name = name;
@@ -83,6 +84,9 @@ export class PanelTab {
 
   setModuleId(moduleId: string) {
     this.moduleId = moduleId;
+  }
+  setModuleInstanceType(moduleInstanceType: string) {
+    this.moduleInstanceType = moduleInstanceType;
   }
 
   static NewPanelTab(panelTab: PanelTab): PanelTab {

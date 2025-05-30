@@ -16,6 +16,7 @@ export interface BookeraModuleConfig<T> {
   module: BookeraModule<T>;
   _panelTabId?: string;
   supabase?: SupabaseClient;
+  instanceType?: T;
 }
 
 export type BookeraModuleClass<T = unknown> = new (

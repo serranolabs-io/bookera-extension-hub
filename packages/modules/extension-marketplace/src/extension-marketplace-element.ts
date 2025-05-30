@@ -25,7 +25,10 @@ import {
   setupSidePanel,
   TabGroup,
 } from './side-panel';
-import { ExtensionMarketplaceModuleState, upsertConfigPanel } from './api';
+import {
+  ExtensionMarketplaceModuleInstanceType,
+  upsertConfigPanel,
+} from './api';
 
 export const elementName = 'extension-marketplace-element';
 
@@ -33,14 +36,10 @@ export const elementName = 'extension-marketplace-element';
 export class ExtensionMarketplaceElement extends BookeraModuleElement {
   static styles = [extensionMarketplaceStyles, baseCss, moduleElementStyles];
 
-  _moduleState!: ExtensionMarketplaceModuleState | null;
-
-  constructor(config: BookeraModuleConfig<ExtensionMarketplaceModuleState>) {
+  constructor(
+    config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>
+  ) {
     super(config);
-
-    if (config.moduleState) {
-      this._moduleState = config.moduleState;
-    }
 
     if (this.renderMode === 'renderInDaemon') {
       this._setupDaemonListeners();
@@ -87,7 +86,8 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     `;
   }
   protected renderInPanel(): TemplateResult {
-    if (this._moduleState === 'render-config') {
+    // if this instance includes render-config, render in panel
+    if (this.module === 'render-config') {
       return html`NEW PANEL BABY`;
     }
 

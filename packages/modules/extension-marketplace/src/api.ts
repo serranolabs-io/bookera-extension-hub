@@ -18,7 +18,7 @@ export const moduleInstances = {
   renderConfig: 'render-config',
 } as const;
 
-export type ExtensionMarketplaceModuleState =
+export type ExtensionMarketplaceModuleInstanceType =
   (typeof moduleInstances)[keyof typeof moduleInstances];
 
 // send the config, and also send the panel, which is of panelTab type
@@ -29,6 +29,6 @@ export function upsertConfigPanel(
   sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
     tab: new PanelTab('🧩🌐 Publish E️xtension', PanelTabs.Module),
     moduleId: this.module.id,
-    moduleState: moduleInstances.renderConfig,
+    moduleInstanceType: moduleInstances.renderConfig,
   });
 }
