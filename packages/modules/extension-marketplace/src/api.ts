@@ -31,5 +31,6 @@ export function upsertConfigPanel(
     tab: new PanelTab('🧩🌐 Publish E️xtension', PanelTabs.Module),
     moduleId: this.module.id,
     moduleInstanceType: moduleInstances.renderConfig,
+    instanceLimit: 1,
   });
 }

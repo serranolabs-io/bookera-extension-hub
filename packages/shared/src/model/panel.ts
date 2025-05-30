@@ -22,6 +22,7 @@ export interface NewPanelEventType<T extends string> {
   tab: PanelTab;
   moduleId?: string;
   moduleInstanceType?: T;
+  instanceLimit?: number;
 }
 
 export interface OpenSidePanelEventTYpe {
@@ -45,6 +46,7 @@ export interface SplitPanelEventType {
   side: PanelDrop;
   moduleId?: string;
   moduleInstanceType?: string;
+  instanceLimit?: number;
 }
 
 export enum PanelDrop {
@@ -57,7 +59,7 @@ export interface PanelContentConfig {
   panelTabType: PanelTabType;
   id: string;
   moduleId?: string;
-  moduleInstanceType: string | undefined;
+  moduleInstanceType?: string;
 }
 
 // ! please please redefine them lmao
