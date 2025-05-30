@@ -87,11 +87,19 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   }
   protected renderInPanel(): TemplateResult {
     // if this instance includes render-config, render in panel
-    if (this.module === 'render-config') {
-      return html`NEW PANEL BABY`;
+    console.log(this._config.instanceType);
+
+    switch (
+      this._config.instanceType as ExtensionMarketplaceModuleInstanceType
+    ) {
+      case 'render-config':
+        return html`${new ManageConfigElement(this._config)}`;
+      case 'published-config':
+        return html`published config!`;
+      default:
     }
 
-    return html`${new ManageConfigElement(this._config)}`;
+    return html`render config`;
   }
   protected renderInModuleDaemon(): TemplateResult {
     return html``;

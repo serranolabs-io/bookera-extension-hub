@@ -16,6 +16,7 @@ export interface UpsertConfigPanel {
 
 export const moduleInstances = {
   renderConfig: 'render-config',
+  publishedConfig: 'published-config',
 } as const;
 
 export type ExtensionMarketplaceModuleInstanceType =
