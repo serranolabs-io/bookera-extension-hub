@@ -44,6 +44,7 @@ export interface SplitPanelEventType {
   tab: PanelTab;
   side: PanelDrop;
   moduleId?: string;
+  moduleInstanceType?: string;
 }
 
 export enum PanelDrop {

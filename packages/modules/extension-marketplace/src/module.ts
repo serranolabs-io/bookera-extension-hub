@@ -23,5 +23,5 @@ export const extensionMarketplaceModule =
       'renderInPanel',
     ],
     ExtensionMarketplaceElement,
-    Object.values(moduleInstances)
+    []
   );

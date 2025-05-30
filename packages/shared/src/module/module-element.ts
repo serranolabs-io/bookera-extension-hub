@@ -61,7 +61,7 @@ export abstract class BookeraModuleElement extends LitElement {
 
   private _panelTabId: string | undefined;
 
-  protected _source: Source;
+  protected _source?: Source;
 
   @state()
   instanceId: string | undefined;
@@ -84,10 +84,6 @@ export abstract class BookeraModuleElement extends LitElement {
     super();
     this.renderMode = config.renderMode;
     this.module = config.module;
-
-    if (config.instanceType) {
-      this.module.instances.push(config.instanceType);
-    }
 
     this.module.tab = Object.assign(new Tab(), this.module.tab);
     this.title = this.module.title!;
