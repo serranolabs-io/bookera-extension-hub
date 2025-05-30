@@ -14,9 +14,12 @@ import { repeat } from 'lit/directives/repeat.js';
 import {
   Config,
   ExtensionConfig,
+  SEND_CONFIG_EVENT,
+  SEND_CONFIG_EVENT_TYPE,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { TABLES } from '@serranolabs.io/shared/supabase';
+import { ExtensionMarketplaceModuleInstanceType } from './api';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -128,19 +131,13 @@ const defaults: ExtensionConfig<any> = {
 
 type SubmitType = 'publish' | 'save-as-draft';
 
+export const SendConfig = 'send-config';
+
 @customElement('manage-config-element')
 export class ManageConfigElement extends LitElement {
   static styles = [manageConfigElementStyles, baseCss];
 
   private _config: BookeraModuleConfig;
-
-  private _;
-
-  constructor(config: BookeraModuleConfig) {
-    super();
-
-    this._config = config;
-  }
 
   #form = new TanStackFormController(this, {
     defaultValues: {
@@ -171,6 +168,25 @@ export class ManageConfigElement extends LitElement {
       }
     },
   });
+
+  constructor(
+    config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>
+  ) {
+    super();
+
+    this._config = config;
+
+    document.addEventListener(
+      SEND_CONFIG_EVENT,
+      this._listenToConfigEvents.bind(this)
+    );
+  }
+
+  private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
+    const configs = this.#form.api.getFieldValue('extensionConfig.configs');
+    configs.push(e.detail.config);
+    this.#form.api.setFieldValue('extensionConfig.configs', configs);
+  }
 
   private _hideTab(e: CustomEvent) {
     const target = e.target;

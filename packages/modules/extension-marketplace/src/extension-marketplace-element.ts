@@ -87,7 +87,6 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   }
   protected renderInPanel(): TemplateResult {
     // if this instance includes render-config, render in panel
-    console.log(this._config.instanceType);
 
     switch (
       this._config.instanceType as ExtensionMarketplaceModuleInstanceType
