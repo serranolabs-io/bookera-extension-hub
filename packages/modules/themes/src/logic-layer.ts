@@ -140,7 +140,7 @@ function _handleSelectInternals(
   // set state
   ColorPalettesSingleton.SetSelectedColorPalette(bagManager, colorPalette);
 
-  console.log('4 my sweetheart <3', colorPalette);
+  console.log('hola Nathalia <3. Copia esto y damelo porfa', colorPalette);
 }
 
 export function handleSelectColorPaletteFromId(id: string) {

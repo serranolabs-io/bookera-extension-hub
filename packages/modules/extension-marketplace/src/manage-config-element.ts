@@ -17,13 +17,19 @@ import {
   SEND_CONFIG_EVENT,
   SEND_CONFIG_EVENT_FROM_API,
   SEND_CONFIG_EVENT_TYPE,
+  CustomColorPaletteSchema,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { TABLES } from '@serranolabs.io/shared/supabase';
 import { ExtensionMarketplaceModuleInstanceType } from './api';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { notify } from '@serranolabs.io/shared/lit';
-import { KeyboardShortcutConfigSchema } from '@serranolabs.io/shared/keyboard-shortcuts';
+import {
+  KeyboardShortcut,
+  KeyboardShortcutConfigSchema,
+} from '@serranolabs.io/shared/keyboard-shortcuts';
+import { ZodObject } from 'zod/v4';
+import { key } from 'localforage';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -228,6 +234,10 @@ export class ManageConfigElement extends LitElement {
     sendEvent(this, MANAGE_CONFIG_CONSTRUCTED_EVENT);
   }
 
+  private _addToPreviousConfig(configs: Config[]) {
+    configs.forEach((config: Config) => {});
+  }
+
   // to determine what is the config that came in, I need to create zod interfaces...
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
     const configs = this.#form.api.getFieldValue('extensionConfig.configs');
@@ -253,11 +263,57 @@ export class ManageConfigElement extends LitElement {
     const target = e.target;
   }
 
-  private _renderConfig(config: Config<any>) {
-    console.log(config);
-    const result = KeyboardShortcutConfigSchema.parse(config);
+  private _setupSchemaAction(
+    schema: ZodObject,
+    action: Function
+  ): { schema: ZodObject; action: Function } {
+    return {
+      schema: schema,
+      action: action,
+    };
+  }
 
-    console.log(result);
+  private _keyboardShortcutAction(keyboardShortcut: KeyboardShortcut) {
+    // Define the action for keyboard shortcuts
+    console.log('hell from keyboard shortcut', keyboardShortcut);
+  }
+
+  private _customColorPaletteAction(customColorPalette) {
+    // Define the action for custom color palettes
+    console.log('hello from customColorPalette', customColorPalette);
+  }
+
+  private _renderConfig(config: Config<any>) {
+    const ar = [
+      this._setupSchemaAction(
+        KeyboardShortcutConfigSchema,
+        this._keyboardShortcutAction
+      ),
+      this._setupSchemaAction(
+        CustomColorPaletteSchema,
+        this._customColorPaletteAction
+      ),
+    ];
+
+    let successfulParse = false;
+    let index = 0;
+    while (!successfulParse && index < ar.length) {
+      const { success: successfulParse, ...rest } =
+        ar[index].schema.safeParse(config);
+
+      if (!successfulParse) {
+        index++;
+        continue;
+      }
+
+      if (rest.data) {
+        ar[index].action(rest.data);
+      }
+    }
+
+    if (index >= ar.length) {
+      console.error('Unfortunately this config cannot be rendered!');
+    }
   }
 
   private _renderForm() {

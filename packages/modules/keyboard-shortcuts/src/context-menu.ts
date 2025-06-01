@@ -155,8 +155,8 @@ export class ContextMenu extends LitElement {
 
     const payload: Config<Partial<KeyboardShortcut>> = new Config(
       this.source,
-      c,
-      'command'
+      [c],
+      ''
     );
 
     sendEvent<SEND_CONFIG_EVENT_TYPE<Partial<KeyboardShortcut>>>(
