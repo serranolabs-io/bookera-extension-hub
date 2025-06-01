@@ -24,17 +24,19 @@ export type PanelBarFocus = 'panelBarFocus';
 export type SideDrawerFocus = 'sideDrawerFocus';
 export type ModuleDaemonFocus = 'moduleDaemonFocus';
 
-export const WhenSchema = z.union([
-  z.literal('panelTabsFocus'),
-  z.literal('panelFocus'),
-  z.literal('sidePanelFocus'),
-  z.literal('leftSidePanelFocus'),
-  z.literal('rightSidePanelFocus'),
-  z.literal('panelBarFocus'),
-  z.literal('sideDrawerFocus'),
-  z.literal('moduleDaemonFocus'),
-  ...operators.map((operator) => z.literal(operator)),
+export const WhenSchema = z.enum([
+  'panelTabsFocus',
+  'panelFocus',
+  'sidePanelFocus',
+  'leftSidePanelFocus',
+  'rightSidePanelFocus',
+  'panelBarFocus',
+  'sideDrawerFocus',
+  'moduleDaemonFocus',
+  ...operators,
 ]);
+
+export const WhensSchema = z.array(WhenSchema);
 
 export type When = z.infer<typeof WhenSchema>;
 
@@ -90,7 +92,8 @@ export interface KeyboardShortcutJson {
 export const KeyboardShortcutConfigSchema = z.object({
   command: z.string(),
   keys: z.array(z.array(z.string())), // Assuming KeyboardEventKey is a string type
-  when: WhenSchema,
+  when: WhensSchema,
+  title: z.string(),
 });
 
 export class KeyboardShortcut implements KeyboardShortcutJson {

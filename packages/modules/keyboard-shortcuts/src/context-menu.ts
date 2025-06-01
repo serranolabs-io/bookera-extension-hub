@@ -171,7 +171,7 @@ export class ContextMenu extends LitElement {
   private _handleSelectMenuItem(e: SlSelect) {
     const menuOptionType: MenuOptionType = e.detail.item.value;
     if (menuOptionType === 'copy-all') {
-      this._handleCopyKeys(['title', 'command', 'when'], false);
+      this._handleCopyKeys(['title', 'command', 'when', 'keys'], false);
     } else if (menuOptionType === 'copy-id') {
       this._handleCopyKeys(['command'], true);
     } else if (menuOptionType === 'copy-title') {
@@ -182,7 +182,7 @@ export class ContextMenu extends LitElement {
       this._handleResetKeybinding();
     } else if (menuOptionType === 'share-keybinding') {
       this._shareKeybinding(
-        this._extractKeys(['title', 'command', 'when'], false)
+        this._extractKeys(['title', 'command', 'when', 'keys'], false)
       );
     }
 

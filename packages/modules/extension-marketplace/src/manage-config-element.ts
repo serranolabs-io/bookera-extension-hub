@@ -254,6 +254,7 @@ export class ManageConfigElement extends LitElement {
   }
 
   private _renderConfig(config: Config<any>) {
+    console.log(config);
     const result = KeyboardShortcutConfigSchema.parse(config);
 
     console.log(result);
