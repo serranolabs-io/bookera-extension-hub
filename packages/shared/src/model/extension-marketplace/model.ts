@@ -14,6 +14,7 @@ export interface SEND_CONFIG_EVENT_TYPE<T extends object> {
   config: Config<T>;
 }
 export const SEND_CONFIG_EVENT = 'send-config-event';
+export const SEND_CONFIG_EVENT_FROM_API = 'send-config-from-api-event';
 
 export class Config<T> {
   source: Source; // name: Theme, link: blah blah

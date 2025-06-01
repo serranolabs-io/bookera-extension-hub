@@ -2,9 +2,9 @@ import localforage from 'localforage';
 import { genShortID } from '../util';
 import type { KeyboardEventKey } from './keyboard-event-key-type';
 import { html, type TemplateResult } from 'lit';
+import { z } from 'zod';
 
 export * from './keyboard-event-key-type';
-
 export type Operator = '&&' | '||' | '!' | '(' | ')';
 
 export const operators: readonly Operator[] = [
@@ -24,16 +24,19 @@ export type PanelBarFocus = 'panelBarFocus';
 export type SideDrawerFocus = 'sideDrawerFocus';
 export type ModuleDaemonFocus = 'moduleDaemonFocus';
 
-export type When =
-  | PanelTabsFocus
-  | PanelFocus
-  | LeftSidePanelFocus
-  | RightSidePanelFocus
-  | SidePanelFocus
-  | Operator
-  | PanelBarFocus
-  | SideDrawerFocus
-  | ModuleDaemonFocus;
+export const WhenSchema = z.union([
+  z.literal('panelTabsFocus'),
+  z.literal('panelFocus'),
+  z.literal('sidePanelFocus'),
+  z.literal('leftSidePanelFocus'),
+  z.literal('rightSidePanelFocus'),
+  z.literal('panelBarFocus'),
+  z.literal('sideDrawerFocus'),
+  z.literal('moduleDaemonFocus'),
+  ...operators.map((operator) => z.literal(operator)),
+]);
+
+export type When = z.infer<typeof WhenSchema>;
 
 export class Source {
   name: string;
@@ -83,6 +86,12 @@ export interface KeyboardShortcutJson {
   title: string;
   shouldAppearInCommandPalette: string;
 }
+
+export const KeyboardShortcutConfigSchema = z.object({
+  command: z.string(),
+  keys: z.array(z.array(z.string())), // Assuming KeyboardEventKey is a string type
+  when: WhenSchema,
+});
 
 export class KeyboardShortcut implements KeyboardShortcutJson {
   command: string;

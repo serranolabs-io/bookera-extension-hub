@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.88",
+  "version": "0.0.89",
   "type": "module",
   "private": false,
   "scripts": {
@@ -199,7 +199,8 @@
     "lit": "^3.2.1",
     "localforage": "^1.01.0",
     "shoelace": "^0.1.1",
-    "vite-plugin-dts": "^4.5.3"
+    "vite-plugin-dts": "^4.5.3",
+    "zod": "^3.25.46"
   },
   "publishConfig": {
     "access": "public"

@@ -500,7 +500,7 @@ export class ThemesElement extends BookeraModuleElement {
 
   private _sendConfig(
     customColorPalette: CustomColorPalette
-  ): SEND_CONFIG_EVENT_TYPE<string> {
+  ): SEND_CONFIG_EVENT_TYPE<CustomColorPalette> {
     return {
       config: {
         source: this._source,
@@ -523,10 +523,10 @@ export class ThemesElement extends BookeraModuleElement {
               <sl-icon-button
                 name="send"
                 @click=${() => {
-                  sendEvent<SEND_CONFIG_EVENT_TYPE<string>>(
+                  sendEvent<SEND_CONFIG_EVENT_TYPE<CustomColorPalette>>(
                     this,
                     SEND_CONFIG_EVENT,
-                    this._sendConfig(colorPalette)
+                    this._sendConfig(colorPalette as CustomColorPalette)
                   );
                 }}
               ></sl-icon-button>

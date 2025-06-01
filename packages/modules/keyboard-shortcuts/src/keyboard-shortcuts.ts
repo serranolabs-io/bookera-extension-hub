@@ -114,6 +114,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected _registerKeydownListener!: Function;
   protected _openCommandPaletteListener!: Function;
+  private _closeContextMenuListener!: Function;
 
   @query(`#${COMMAND_PALETTE_DIALOG}`)
   _commandPaletteDialog!: SlDialog;
@@ -127,6 +128,11 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       createHandleInDaemonListeners.bind(this)();
     }
 
+    this._setupState();
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
     if (
       this.renderMode === 'renderInPanel' ||
       this.renderMode === 'renderInSidePanel'
@@ -146,15 +152,21 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
         this._listenToContextMenuEvent.bind(this)
       );
     }
-
-    this._setupState();
   }
 
   disconnectedCallback(): void {
+    super.disconnectedCallback();
     // @ts-ignore
     document.removeEventListener('keydown', this._registerKeydownListener);
     // @ts-ignore
     document.removeEventListener('keydown', this._openCommandPaletteListener);
+  }
+
+  private _handleCloseContextMenu() {
+    document.removeEventListener('click', this._closeContextMenuListener);
+
+    this._contextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
+    this.requestUpdate();
   }
 
   private _listenToContextMenuEvent() {
@@ -371,9 +383,11 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected renderInPanel(): TemplateResult {
     return html`
+      <p>🙂 Right click a command for options!</p>
       <context-menu
         .bagManager=${this._bagManager}
         .contextMenuState=${this._contextMenuState}
+        .source=${this._source}
       ></context-menu>
       <formwrapper-element
         .assignKeybindingDialogState=${this.assignKeybindingDialogState}
@@ -429,6 +443,11 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
               keyboardShortcut: shortcut,
               coords: { x: e.x, y: e.y },
             };
+
+            this._closeContextMenuListener =
+              this._handleCloseContextMenu.bind(this);
+            document.addEventListener('click', this._closeContextMenuListener);
+
             this.requestUpdate();
           }}
         >

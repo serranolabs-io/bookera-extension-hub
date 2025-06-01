@@ -6,18 +6,27 @@ import {
   ContextMenuState,
 } from './keyboard-shortcuts';
 import { styleMap } from 'lit/directives/style-map.js';
-import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
+import {
+  KeyboardShortcut,
+  Source,
+} from '@serranolabs.io/shared/keyboard-shortcuts';
 import { SlSelect } from '@shoelace-style/shoelace';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { KeyboardShortcutsState } from './state';
 import { BagManager, CreateBagManager } from '@pb33f/saddlebag';
+import {
+  Config,
+  SEND_CONFIG_EVENT,
+  SEND_CONFIG_EVENT_TYPE,
+} from '@serranolabs.io/shared/extension-marketplace';
 
 type MenuOptionType =
   | 'copy-all'
   | 'copy-id'
   | 'copy-title'
   | 'remove-keybinding'
-  | 'reset-keybinding';
+  | 'reset-keybinding'
+  | 'share-keybinding';
 
 class MenuItem {
   value: MenuOptionType;
@@ -34,12 +43,14 @@ const copyCommandId = new MenuItem('copy-id', 'Copy Command Id');
 const copyCommandTitle = new MenuItem('copy-title', 'Copy Command Title');
 const removeKeybinding = new MenuItem('remove-keybinding', 'Remove Keybinding');
 const resetKeybinding = new MenuItem('reset-keybinding', 'Reset Keybinding');
+const shareKeybinding = new MenuItem('share-keybinding', 'Share Keybinding');
 const menuItems: MenuItem[] = [
   copyAll,
   copyCommandId,
   copyCommandTitle,
   removeKeybinding,
   resetKeybinding,
+  shareKeybinding,
 ];
 
 @customElement('context-menu')
@@ -62,6 +73,9 @@ export class ContextMenu extends LitElement {
 
   @property()
   bagManager!: BagManager;
+
+  @property()
+  source!: Source;
 
   constructor() {
     super();
@@ -136,10 +150,28 @@ export class ContextMenu extends LitElement {
     sendEvent(this, CONTEXT_MENU_EVENT);
   }
 
+  private _shareKeybinding(command: string) {
+    let c: Partial<KeyboardShortcut> = JSON.parse(command);
+
+    const payload: Config<Partial<KeyboardShortcut>> = new Config(
+      this.source,
+      c,
+      'command'
+    );
+
+    sendEvent<SEND_CONFIG_EVENT_TYPE<Partial<KeyboardShortcut>>>(
+      this,
+      SEND_CONFIG_EVENT,
+      {
+        config: payload,
+      }
+    );
+  }
+
   private _handleSelectMenuItem(e: SlSelect) {
     const menuOptionType: MenuOptionType = e.detail.item.value;
     if (menuOptionType === 'copy-all') {
-      this._handleCopyKeys(['title', 'command', 'when']);
+      this._handleCopyKeys(['title', 'command', 'when'], false);
     } else if (menuOptionType === 'copy-id') {
       this._handleCopyKeys(['command'], true);
     } else if (menuOptionType === 'copy-title') {
@@ -148,6 +180,10 @@ export class ContextMenu extends LitElement {
       this._handleRemoveKeybinding();
     } else if (menuOptionType === 'reset-keybinding') {
       this._handleResetKeybinding();
+    } else if (menuOptionType === 'share-keybinding') {
+      this._shareKeybinding(
+        this._extractKeys(['title', 'command', 'when'], false)
+      );
     }
 
     this.contextMenuState.isOpened = false;

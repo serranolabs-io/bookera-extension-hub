@@ -14,7 +14,7 @@ export const escapeHtml = (html: string) => {
 export const notify = (
   message: string,
   variant: 'primary' | 'success' | 'neutral' | 'warning' | 'danger' = 'primary',
-  icon: string | null,
+  icon: string | null = 'exclamation-lg',
   duration = 6000
 ) => {
   if (!icon) {

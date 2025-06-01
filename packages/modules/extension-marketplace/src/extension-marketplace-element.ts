@@ -19,6 +19,7 @@ import {
   Config,
   ExtensionConfig,
   SEND_CONFIG_EVENT,
+  SEND_CONFIG_EVENT_FROM_API,
   SEND_CONFIG_EVENT_TYPE,
 } from '@serranolabs.io/shared/extension-marketplace';
 import {
@@ -46,9 +47,7 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   ) {
     super(config);
 
-    if (this.renderMode === 'renderInDaemon') {
-      this._setupDaemonListeners();
-    } else if (this.renderMode === 'renderInSidePanel') {
+    if (this.renderMode === 'renderInSidePanel') {
       setupSidePanel.bind(this)();
     }
   }
@@ -72,19 +71,30 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   @state()
   _temporaryConfig: Config<any> | null = null;
 
-  @state()
   _sendConfigToManageConfigInstanceListener!: Function;
+
+  _listenToConfigEventsListener!: Function;
 
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
     const config = e.detail.config;
     upsertConfigPanel.bind(this)({ config });
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    if (this.renderMode === 'renderInDaemon') {
+      this._setupDaemonListeners();
+    }
+  }
+
   private _setupDaemonListeners() {
     // @ts-expect-error
+    this._listenToConfigEventsListener = this._listenToConfigEvents.bind(this);
+
     document.addEventListener(
       SEND_CONFIG_EVENT,
-      this._listenToConfigEvents.bind(this)
+      this._listenToConfigEventsListener
     );
 
     this._sendConfigToManageConfigInstanceListener =
@@ -97,6 +107,11 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   }
 
   disconnectedCallback(): void {
+    super.disconnectedCallback();
+    document.removeEventListener(
+      SEND_CONFIG_EVENT,
+      this._listenToConfigEventsListener
+    );
     document.removeEventListener(
       MANAGE_CONFIG_CONSTRUCTED_EVENT,
       this._sendConfigToManageConfigInstanceListener
@@ -107,10 +122,14 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     if (!this._temporaryConfig) {
       return;
     }
+    console.log('we are now sending config to instance');
 
-    sendEvent<SEND_CONFIG_EVENT_TYPE<any>>(this, SEND_CONFIG_EVENT, {
+    // the problem is that I am calling upsertConfigPanel AGAIN.
+    sendEvent<SEND_CONFIG_EVENT_TYPE<any>>(this, SEND_CONFIG_EVENT_FROM_API, {
       config: this._temporaryConfig,
     });
+
+    console.log(this._temporaryConfig);
 
     this._temporaryConfig = null;
   }

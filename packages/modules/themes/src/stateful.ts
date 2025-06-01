@@ -12,6 +12,7 @@ import { html } from 'lit';
 import { ColorMode, ThemesElement } from './theme-switcher-element';
 import { genShortID } from '@serranolabs.io/shared/util';
 import palettes from './palettes.json';
+import { z } from 'zod';
 
 export class ColorPalette {
   id?: string;
@@ -162,11 +163,22 @@ export function getShadeVariable(
   return this[theme][property][index];
 }
 
+const ModeSchema = z.object({
+  mode: z.enum(['Dark', 'Light']),
+  primaryColors: z.array(z.string()),
+  baseColors: z.array(z.string()),
+});
+
+export const CustomColorPaletteSchema = z.object({
+  darkMode: ModeSchema,
+  lightMode: ModeSchema,
+  name: z.string(),
+  id: z.string(),
+});
+
 export class CustomColorPalette extends ColorPalette {
   darkMode?: Mode;
   lightMode?: Mode;
-  primaryColors?: string[];
-  baseColors?: string[];
   constructor(lightMode?: Mode, darkMode?: Mode, name?: string, id?: string) {
     super(name, id);
     this.darkMode = darkMode;

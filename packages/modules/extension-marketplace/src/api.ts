@@ -33,6 +33,7 @@ export function upsertConfigPanel(
       // nothing goes here because 'the 'render-config' panel should handle the event
       break;
     default:
+      console.log('this is called');
       sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
         tab: new PanelTab('🧩🌐 Publish E️xtension', PanelTabs.Module),
         moduleId: this.module.id,
