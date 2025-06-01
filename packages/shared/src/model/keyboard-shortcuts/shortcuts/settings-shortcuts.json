@@ -14,7 +14,7 @@
   {
     "command": "studio.settings.openCommandPalette",
     "keys": [["Shift", "Meta", "P"]],
-    "when": ["panelFocus"],
+    "when": [],
     "description": "Opens the settings command palette",
     "title": "Open Command Palette",
     "source": {

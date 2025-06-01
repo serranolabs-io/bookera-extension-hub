@@ -32,8 +32,6 @@ export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
   return html`
     <ul class="extensions-list">
       ${this._extensions.map((extension: ExtensionConfig<string>) => {
-        console.log(extension);
-
         return html`
           <li>
             ${renderImageBox(extension.image)}

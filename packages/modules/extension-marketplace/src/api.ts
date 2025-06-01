@@ -30,8 +30,7 @@ export function upsertConfigPanel(
 ) {
   switch (this._config.instanceType as ExtensionMarketplaceModuleInstanceType) {
     case 'render-config':
-      console.log(config);
-      // sendEvent<Config>(this, SendConfig, moduleInst)
+      // nothing goes here because 'the 'render-config' panel should handle the event
       break;
     default:
       sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
@@ -40,5 +39,6 @@ export function upsertConfigPanel(
         moduleInstanceType: moduleInstances.renderConfig,
         instanceLimit: 1,
       });
+      this._temporaryConfig = config.config;
   }
 }

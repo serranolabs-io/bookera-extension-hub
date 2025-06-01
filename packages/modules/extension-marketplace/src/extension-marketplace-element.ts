@@ -11,7 +11,10 @@ import {
   type RenderMode,
 } from '@serranolabs.io/shared/module';
 import { html, TemplateResult } from 'lit';
-import { ManageConfigElement } from './manage-config-element';
+import {
+  MANAGE_CONFIG_CONSTRUCTED_EVENT,
+  ManageConfigElement,
+} from './manage-config-element';
 import {
   Config,
   ExtensionConfig,
@@ -29,6 +32,8 @@ import {
   ExtensionMarketplaceModuleInstanceType,
   upsertConfigPanel,
 } from './api';
+import { PANEL_CONSTRUCTION_EVENT } from '@serranolabs.io/shared/panel';
+import { sendEvent } from '@serranolabs.io/shared/util';
 
 export const elementName = 'extension-marketplace-element';
 
@@ -64,6 +69,12 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     },
   ];
 
+  @state()
+  _temporaryConfig: Config<any> | null = null;
+
+  @state()
+  _sendConfigToManageConfigInstanceListener!: Function;
+
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
     const config = e.detail.config;
     upsertConfigPanel.bind(this)({ config });
@@ -75,6 +86,33 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
       SEND_CONFIG_EVENT,
       this._listenToConfigEvents.bind(this)
     );
+
+    this._sendConfigToManageConfigInstanceListener =
+      this._sendConfigToManageConfigInstance.bind(this);
+
+    document.addEventListener(
+      MANAGE_CONFIG_CONSTRUCTED_EVENT,
+      this._sendConfigToManageConfigInstanceListener
+    );
+  }
+
+  disconnectedCallback(): void {
+    document.removeEventListener(
+      MANAGE_CONFIG_CONSTRUCTED_EVENT,
+      this._sendConfigToManageConfigInstanceListener
+    );
+  }
+
+  private _sendConfigToManageConfigInstance() {
+    if (!this._temporaryConfig) {
+      return;
+    }
+
+    sendEvent<SEND_CONFIG_EVENT_TYPE<any>>(this, SEND_CONFIG_EVENT, {
+      config: this._temporaryConfig,
+    });
+
+    this._temporaryConfig = null;
   }
 
   protected renderInSettings(): TemplateResult {

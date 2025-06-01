@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import baseCss from '@serranolabs.io/shared/base';
 import { TanStackFormController } from '@tanstack/lit-form';
@@ -20,6 +20,8 @@ import {
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { TABLES } from '@serranolabs.io/shared/supabase';
 import { ExtensionMarketplaceModuleInstanceType } from './api';
+import { sendEvent } from '@serranolabs.io/shared/util';
+import { PANEL_CONSTRUCTION_EVENT } from '@serranolabs.io/shared/panel';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -133,15 +135,20 @@ type SubmitType = 'publish' | 'save-as-draft';
 
 export const SendConfig = 'send-config';
 
+export const MANAGE_CONFIG_CONSTRUCTED_EVENT =
+  'manage-config-constructed-event';
+
 @customElement('manage-config-element')
 export class ManageConfigElement extends LitElement {
   static styles = [manageConfigElementStyles, baseCss];
 
-  private _config: BookeraModuleConfig;
+  private _config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>;
+
+  private _listenToConfigEventListener!: Function;
 
   #form = new TanStackFormController(this, {
     defaultValues: {
-      extensionConfig: mockData,
+      extensionConfig: defaults,
     },
     onSubmit: ({ value, meta }) => {
       // const extensionConfig: ExtensionConfig<any> =
@@ -176,16 +183,32 @@ export class ManageConfigElement extends LitElement {
 
     this._config = config;
 
+    this._listenToConfigEventListener = this._listenToConfigEvents.bind(this);
+
+    // @ts-ignore
     document.addEventListener(
       SEND_CONFIG_EVENT,
-      this._listenToConfigEvents.bind(this)
+      this._listenToConfigEventListener
     );
+  }
+
+  disconnectedCallback(): void {
+    // @ts-ignore
+    document.removeEventListener(
+      SEND_CONFIG_EVENT,
+      this._listenToConfigEventListener
+    );
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    sendEvent(this, MANAGE_CONFIG_CONSTRUCTED_EVENT);
   }
 
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
     const configs = this.#form.api.getFieldValue('extensionConfig.configs');
     configs.push(e.detail.config);
     this.#form.api.setFieldValue('extensionConfig.configs', configs);
+    this.requestUpdate();
   }
 
   private _hideTab(e: CustomEvent) {
@@ -376,5 +399,3 @@ declare global {
     'manage-config-element': ManageConfigElement;
   }
 }
-
-// pressing shared sends event and extensionMarketplace listens... and opens it as a panel

@@ -241,11 +241,15 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     `;
   }
 
-  private _renderMatches():
-    | FuseResult<KeyboardShortcut>[]
-    | KeyboardShortcut[] {
+  private _renderMatches(
+    applyShouldAppearInCommandPalette: boolean
+  ): FuseResult<KeyboardShortcut>[] | KeyboardShortcut[] {
+    const keyboardShortcuts = this._filterCommandPalette(
+      applyShouldAppearInCommandPalette
+    );
+
     const matches = renderMatches(
-      this._filterCommandPalette(false),
+      keyboardShortcuts,
       ['keys', 'command', 'title'],
       this._shortcutFilters
     );
@@ -254,7 +258,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       return matches;
     }
 
-    return this._keyboardShortcuts;
+    return keyboardShortcuts;
   }
 
   private _selectCommand(e: CustomEvent) {
@@ -270,14 +274,14 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   private _filterCommandPalette(
-    applyFilter: boolean = true
+    applyShouldAppearInCommandPalette: boolean
   ): KeyboardShortcut[] {
     return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
-      if (applyFilter) {
-        return true;
+      if (applyShouldAppearInCommandPalette) {
+        return shortcut.shouldAppearInCommandPalette === 'true';
       }
 
-      return shortcut.shouldAppearInCommandPalette === 'true';
+      return true;
     });
   }
 
@@ -290,7 +294,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
           e.preventDefault();
         }}></sl-input>
         <sl-menu class="command-palette-menu" @sl-select=${this._selectCommand.bind(this)}>
-          ${this._renderMatches().map(
+          ${this._renderMatches(true).map(
             (match: FuseResult<KeyboardShortcut> | KeyboardShortcut) => {
               if ('item' in match) {
                 return html`<sl-menu-item value=${match.item.id}
@@ -428,7 +432,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
             this.requestUpdate();
           }}
         >
-          ${this._renderMatches()?.map(
+          ${this._renderMatches(false)?.map(
             (
               shortcut: FuseResult<KeyboardShortcut> | KeyboardShortcut,
               index: number

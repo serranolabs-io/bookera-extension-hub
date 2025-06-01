@@ -701,7 +701,7 @@ export class ThemesElement extends BookeraModuleElement {
       ${this.createSidePanelSection(
         'Your Color Palettes!',
         '',
-        this.renderSelectedColorPalettes.bind(this, true)
+        this.renderSelectedColorPalettes.bind(this, false)
       )}
     `;
   }
