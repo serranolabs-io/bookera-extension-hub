@@ -153,7 +153,17 @@ export function handleSelectColorPalette(this: ThemesElement, e: Event) {
   const el = doesClickContainElement<SlMenuItem>(e, {
     nodeName: 'SL-MENU-ITEM',
   });
+
   if (!el) {
+    return;
+  }
+
+  // suffix button press does not trigger
+  const path = Array.from(e.composedPath());
+  if (
+    path.length > 2 &&
+    (path[2] as HTMLElement)?.nodeName === 'SL-ICON-BUTTON'
+  ) {
     return;
   }
 

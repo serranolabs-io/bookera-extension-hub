@@ -114,6 +114,38 @@ export abstract class BookeraModuleElement extends LitElement {
     );
   }
 
+  protected _getSyncedBag<T>(key: string): Bag<T> | undefined {
+    return this._bagManager.getBag<any>(key);
+  }
+
+  protected _saveSyncedLocalForage(
+    bagManager: BagManager,
+    bagKey: string,
+    valueKey: string,
+    value: any
+  ) {
+    const bag = bagManager.getBag(bagKey);
+    bag?.set(valueKey, value);
+
+    localforage.setItem(bagKey, bag?.export() as Map<string, any>);
+  }
+
+  protected async _runSyncedFlow<T>(
+    defaultsFunction: () => void,
+    key: string
+  ): Promise<Bag<T>> {
+    const bag = this._bagManager.createBag<T>(key)!;
+
+    const contents = await this._getLocalForage(key);
+
+    if (!contents) {
+      defaultsFunction();
+    } else {
+      bag?.populate(contents);
+    }
+    return bag;
+  }
+
   protected findKey(savingKeys: any, index: any) {
     Object.keys(savingKeys).find(
       (key) => savingKeys[key as keyof typeof savingKeys] === index
@@ -129,7 +161,13 @@ export abstract class BookeraModuleElement extends LitElement {
     );
   }
 
-  protected async _getLocalForage(): Promise<Map<string, any> | null> {
+  protected async _getLocalForage(
+    key?: string
+  ): Promise<Map<string, any> | null> {
+    if (key) {
+      return await localforage.getItem(key);
+    }
+
     return await localforage.getItem(this.instanceId!);
   }
 
@@ -327,6 +365,7 @@ export const moduleElementStyles = css`
   .title-description {
     margin-bottom: var(--spacing);
     font-size: var(--fontSizeSmall);
+    color: var(--slate-400);
   }
 
   .panel-container {

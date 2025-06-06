@@ -4,6 +4,18 @@ import { html, TemplateResult } from 'lit';
 import { ExtensionConfig } from '@serranolabs.io/shared/extension-marketplace';
 import { repeat } from 'lit/directives/repeat.js';
 import { TABLES } from '@serranolabs.io/shared/supabase';
+import {
+  doesClickContainElement,
+  sendEvent,
+} from '@serranolabs.io/shared/util';
+import { notify } from '@serranolabs.io/shared/lit';
+import {
+  NewPanelEventType,
+  NEW_PANEL_EVENT,
+  PanelTab,
+  PanelTabs,
+} from '@serranolabs.io/shared/panel';
+import { moduleInstances, windows } from './api';
 
 export const marketplace = 'marketplace';
 export const downloaded = 'downloaded';
@@ -28,18 +40,61 @@ function renderExtensionsList(this: ExtensionMarketplaceElement, filters) {
   return html``;
 }
 
+function selectExtensionFromMarketplace(
+  this: ExtensionMarketplaceElement,
+  e: Event
+) {
+  const el = doesClickContainElement<HTMLButtonElement>(e, {
+    nodeName: 'button',
+  });
+
+  if (!el) {
+    return;
+  }
+
+  const id = Number(el.id);
+
+  const extension = this._extensions.find((extension: ExtensionConfig<any>) => {
+    // todo: use zod
+    return extension.id === id;
+  });
+
+  if (!extension) {
+    notify(
+      'Could not find extension. If you got here, please file a report :3',
+      'warning'
+    );
+    return;
+  }
+
+  sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
+    tab: new PanelTab(windows.viewPublishedConfig, PanelTabs.Module),
+    moduleId: this.module.id,
+    moduleInstanceType: moduleInstances.publishedConfig,
+    instanceLimit: -1,
+  });
+
+  this._sidePanelSelectedExtension = extension;
+}
+
 export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
   return html`
-    <ul class="extensions-list">
+    <ul
+      class="extensions-list"
+      @click=${selectExtensionFromMarketplace.bind(this)}
+    >
       ${this._extensions.map((extension: ExtensionConfig<string>) => {
         return html`
           <li>
-            ${renderImageBox(extension.image)}
-            <div class="description-box">
-              <h5>${extension.title}</h5>
-              <small class="description">${extension.description}</small>
-              <small class="user-id">${extension.userId}</small>
-            </div>
+            <button id=${extension.id}>
+              ${renderImageBox(extension.image)}
+              <div class="description-box">
+                <h5>${extension.title}</h5>
+                <small class="description">${extension.description}</small>
+                <small class="user-id">${extension.userId}</small>
+              </div>
+              <span class="view-hover">&rarr;</span>
+            </button>
           </li>
         `;
       })}

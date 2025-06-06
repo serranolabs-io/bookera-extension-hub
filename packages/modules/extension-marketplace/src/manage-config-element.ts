@@ -1,5 +1,5 @@
 import { LitElement, html, css, PropertyValues } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, query } from 'lit/decorators.js';
 import baseCss from '@serranolabs.io/shared/base';
 import { TanStackFormController } from '@tanstack/lit-form';
 import { User } from '@serranolabs.io/shared/user';
@@ -18,18 +18,23 @@ import {
   SEND_CONFIG_EVENT_FROM_API,
   SEND_CONFIG_EVENT_TYPE,
   CustomColorPaletteSchema,
+  CustomColorPaletteSchemaArray,
+  KeyboardShortcutConfigArraySchema,
+  KeyboardShortcutConfigSchema,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { TABLES } from '@serranolabs.io/shared/supabase';
 import { ExtensionMarketplaceModuleInstanceType } from './api';
-import { sendEvent } from '@serranolabs.io/shared/util';
 import { notify } from '@serranolabs.io/shared/lit';
-import {
-  KeyboardShortcut,
-  KeyboardShortcutConfigSchema,
-} from '@serranolabs.io/shared/keyboard-shortcuts';
+import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { ZodObject } from 'zod/v4';
 import { key } from 'localforage';
+import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
+import { defaultExtensionConfig } from './manage-config-stateful';
+import { MANAGE_CONFIG_BAG_KEY } from './extension-marketplace-element';
+import { SlDialog } from '@shoelace-style/shoelace';
+import { sendEvent } from '@serranolabs.io/shared/util';
+import { renderConfig, schemas } from './config-schemas';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -129,22 +134,14 @@ const mockData: ExtensionConfig<any> = {
   isPublished: false,
 };
 
-const defaults: ExtensionConfig<any> = {
-  version: '',
-  title: '',
-  description: '',
-  configs: [] as Config<any>[],
-  markdown: '',
-  user: new User('', '', []),
-  isPublished: false,
-};
-
 type SubmitType = 'publish' | 'save-as-draft';
 
 export const SendConfig = 'send-config';
 
 export const MANAGE_CONFIG_CONSTRUCTED_EVENT =
   'manage-config-constructed-event';
+
+export const ARE_YOU_SURE_DIALOG = 'are-you-sure-dialog';
 
 @customElement('manage-config-element')
 export class ManageConfigElement extends LitElement {
@@ -155,25 +152,40 @@ export class ManageConfigElement extends LitElement {
   private _listenToConfigEventListener!: Function;
   private _listenToConfigFromApiEventListener!: Function;
 
+  @query(`#${ARE_YOU_SURE_DIALOG}`)
+  private _areYouSureDialog!: SlDialog;
+
   #form = new TanStackFormController(this, {
     defaultValues: {
-      extensionConfig: structuredClone(defaults),
+      extensionConfig: defaultExtensionConfig,
     },
     onSubmit: ({ value, meta }) => {
       // const extensionConfig: ExtensionConfig<any> =
       //   ExtensionConfig.FromInterface(value.extensionConfig).serialize();
 
       const handlePublish = async () => {
-        const { user, ...configWithoutUser } = value.extensionConfig;
+        const { user, id, ...configWithoutUser } = value.extensionConfig;
 
         configWithoutUser.configs = JSON.stringify(configWithoutUser.configs);
 
-        const { data, error } = await this._config.supabase
+        const { error } = await this._config.supabase
           .from(TABLES.ExtensionConfig)
           .insert([configWithoutUser])
           .select();
 
-        console.log(data, error);
+        if (error) {
+          notify(
+            `Error in creating extension ${error.message}`,
+            'warning',
+            'exclamation-lg'
+          );
+        } else {
+          notify(
+            `Succesfully created ${configWithoutUser.title}`,
+            'success',
+            'check-all'
+          );
+        }
       };
 
       switch (meta as SubmitType) {
@@ -185,12 +197,56 @@ export class ManageConfigElement extends LitElement {
     },
   });
 
+  private _manageConfigBag: Bag<ExtensionConfig<any>>;
+
+  private _saveSyncedLocalForage: any;
+
+  private _bagManager: BagManager;
+
+  private _selectedConfig: Config<any> | null = null;
+
   constructor(
-    config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>
+    config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>,
+    manageConfigBag: Bag<ExtensionConfig<any>>,
+    bagManager: BagManager,
+    runSyncedFlow: (
+      defaultsFunction: () => void,
+      key: string
+    ) => Promise<Bag<ExtensionConfig<any>>>,
+    saveSyncedLocalForage: any
   ) {
     super();
 
+    this._bagManager = bagManager;
     this._config = config;
+    this._manageConfigBag = manageConfigBag;
+    this._manageConfigBag.onAllChanges(this._setupExtensionConfig.bind(this));
+    this._setupExtensionConfig(MANAGE_CONFIG_BAG_KEY);
+
+    this._saveSyncedLocalForage = saveSyncedLocalForage;
+
+    this._setupState(runSyncedFlow);
+  }
+
+  private _setupExtensionConfig(id: string) {
+    const ec = this._manageConfigBag.get(id);
+
+    if (!ec) {
+      return;
+    }
+
+    this.#form.api.setFieldValue('extensionConfig', ec);
+    this.requestUpdate();
+  }
+
+  async _setupState(runSyncedFlow) {
+    await runSyncedFlow(this._setupDefaults.bind(this), MANAGE_CONFIG_BAG_KEY);
+  }
+
+  _setupDefaults() {
+    this._manageConfigBag.set(MANAGE_CONFIG_BAG_KEY, defaultExtensionConfig);
+
+    this._saveNewExtensionConfig();
   }
 
   connectedCallback(): void {
@@ -234,16 +290,50 @@ export class ManageConfigElement extends LitElement {
     sendEvent(this, MANAGE_CONFIG_CONSTRUCTED_EVENT);
   }
 
-  private _addToPreviousConfig(configs: Config[]) {
-    configs.forEach((config: Config) => {});
+  //   1. When you have only ONE config source, spread them out
+  // 2. When you have more than one config source, consolidate them
+
+  // ^ I am assuming that if there is an array being sent in, you must append it to
+  // ^ the config that already exists
+  private _addToPreviousConfig(
+    configs: Config<any>[],
+    newValue: any[]
+  ): boolean {
+    return configs.find((config: Config<any>) => {
+      // find schema
+      const schema = schemas.find((schema) => {
+        const { success } = schema.safeParse(config.values);
+        return success;
+      });
+
+      if (!schema) {
+        return false;
+      }
+
+      // does this schema match the value
+      const { success } = schema?.safeParse(newValue);
+
+      if (!success) {
+        return false;
+      }
+
+      // if so, add to previous
+      config.values.push(...newValue);
+
+      return true;
+    })
+      ? true
+      : false;
   }
 
   // to determine what is the config that came in, I need to create zod interfaces...
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
-    const configs = this.#form.api.getFieldValue('extensionConfig.configs');
+    let configs = this.#form.api.getFieldValue('extensionConfig.configs');
     if (
       configs
-        .map((config: Config<any>) => config.id)
+        .flatMap((config: Config<any>) =>
+          config.values.map((value) => value.id)
+        )
         .includes(e.detail.config.id)
     ) {
       notify(
@@ -254,65 +344,121 @@ export class ManageConfigElement extends LitElement {
       return;
     }
 
-    configs.push(e.detail.config);
+    if (!this._addToPreviousConfig(configs, e.detail.config.values)) {
+      configs.push(e.detail.config);
+    }
+
     this.#form.api.setFieldValue('extensionConfig.configs', configs);
+
+    this._saveNewExtensionConfig();
+
     this.requestUpdate();
   }
 
-  private _hideTab(e: CustomEvent) {
-    const target = e.target;
+  private _saveNewExtensionConfig() {
+    const newEc = this.#form.api.getFieldValue('extensionConfig');
+    this._saveSyncedLocalForage(
+      this._bagManager,
+      MANAGE_CONFIG_BAG_KEY,
+      MANAGE_CONFIG_BAG_KEY,
+      newEc
+    );
   }
 
-  private _setupSchemaAction(
-    schema: ZodObject,
-    action: Function
-  ): { schema: ZodObject; action: Function } {
-    return {
-      schema: schema,
-      action: action,
-    };
-  }
+  private _removeConfig(e: CustomEvent) {
+    const target = e.target as HTMLElement;
 
-  private _keyboardShortcutAction(keyboardShortcut: KeyboardShortcut) {
-    // Define the action for keyboard shortcuts
-    console.log('hell from keyboard shortcut', keyboardShortcut);
-  }
-
-  private _customColorPaletteAction(customColorPalette) {
-    // Define the action for custom color palettes
-    console.log('hello from customColorPalette', customColorPalette);
-  }
-
-  private _renderConfig(config: Config<any>) {
-    const ar = [
-      this._setupSchemaAction(
-        KeyboardShortcutConfigSchema,
-        this._keyboardShortcutAction
-      ),
-      this._setupSchemaAction(
-        CustomColorPaletteSchema,
-        this._customColorPaletteAction
-      ),
-    ];
-
-    let successfulParse = false;
-    let index = 0;
-    while (!successfulParse && index < ar.length) {
-      const { success: successfulParse, ...rest } =
-        ar[index].schema.safeParse(config);
-
-      if (!successfulParse) {
-        index++;
-        continue;
-      }
-
-      if (rest.data) {
-        ar[index].action(rest.data);
-      }
+    if (!target) {
+      return;
     }
 
-    if (index >= ar.length) {
-      console.error('Unfortunately this config cannot be rendered!');
+    const configs = this.#form.api.getFieldValue('extensionConfig.configs');
+
+    // when there is only "themes" | only "shortcuts"
+    if (configs.length === 1) {
+      console.log(configs[0]);
+      const newConfigs = configs[0].values.filter((oldConfig) => {
+        return oldConfig.id !== target.id;
+      });
+
+      configs[0].values = newConfigs;
+
+      this.#form.api.setFieldValue('extensionConfig.configs', configs);
+
+      this._saveNewExtensionConfig();
+      return;
+    }
+
+    this._areYouSureDialog.show();
+
+    const config = configs.find((config: Config<any>) => {
+      return config.id === (target as HTMLElement).id;
+    })!;
+
+    if (!config) {
+      return;
+    }
+
+    this._selectedConfig = config;
+    this.requestUpdate();
+
+    e.preventDefault();
+  }
+
+  private _renderConfigs(configs: Config<any>[]) {
+    if (configs.length === 0) {
+      return html``;
+    }
+
+    if (configs.length <= 1) {
+      const firstConfig = configs[0];
+      return html`
+        <sl-tab-group @sl-close=${this._removeConfig.bind(this)}>
+          ${firstConfig.values.map((config: any) => {
+            return html`
+              <sl-tab
+                slot="nav"
+                panel=${config.id}
+                ?closable=${firstConfig.values.length > 1}
+                id=${config.id}
+                >${config[firstConfig.nameIndex]}</sl-tab
+              >
+
+              <sl-tab-panel name=${config.id}>
+                ${renderConfig(config)}
+              </sl-tab-panel>
+            `;
+          })}
+        </sl-tab-group>
+      `;
+    } else {
+      return html` <div class="input-box">
+        <label>Configs</label>
+        <sl-tab-group @sl-close=${this._removeConfig.bind(this)}>
+          ${configs.map((config: Config<any>) => {
+            config = new Config(
+              config.source,
+              config.values,
+              config.nameIndex,
+              config.id
+            );
+
+            return html`
+              <sl-tab
+                id=${config.id}
+                slot="nav"
+                panel=${config.id}
+                closable=${true}
+                >${config.source.name}</sl-tab
+              >
+
+              <sl-tab-panel name=${config.id}>
+                ${renderConfig(config.values)}
+              </sl-tab-panel>
+            `;
+          })}
+        </sl-tab-group>
+      </div>`;
     }
   }
 
@@ -416,34 +562,7 @@ export class ManageConfigElement extends LitElement {
         ${this.#form.field(
           { name: 'extensionConfig.configs' },
           (configsField) => {
-            return html`
-              <div class="input-box">
-                <label>Configs</label>
-                <sl-tab-group @sl-close=${this._hideTab.bind(this)}>
-                  ${configsField.state.value.map((config: Config<any>) => {
-                    config = new Config(
-                      config.source,
-                      config.value,
-                      config.nameIndex,
-                      config.id
-                    );
-
-                    return html`
-                      <sl-tab
-                        slot="nav"
-                        panel=${config.id}
-                        ?closable=${configsField.state.value.length > 1}
-                        >${config.getConfigName()}</sl-tab
-                      >
-
-                      <sl-tab-panel name=${config.id}>
-                        ${this._renderConfig(config.value)}
-                      </sl-tab-panel>
-                    `;
-                  })}
-                </sl-tab-group>
-              </div>
-            `;
+            return this._renderConfigs(configsField.state.value);
           }
         )}
         <i>TODO: make markdown editor after you make WYSIWYG</i>
@@ -490,8 +609,50 @@ export class ManageConfigElement extends LitElement {
     `;
   }
 
+  private _renderDialog() {
+    return html`
+      <sl-dialog id=${ARE_YOU_SURE_DIALOG}>
+        <p style="text-align: center">
+          Are you sure you want to remove all configs from
+          ${this._selectedConfig?.source.name}?
+        </p>
+        <div class="button-box" slot="footer">
+          <sl-button
+            variant="danger"
+            @click=${() => {
+              const configs = this.#form.api.getFieldValue(
+                'extensionConfig.configs'
+              );
+
+              const newConfigs = configs.filter((oldConfig) => {
+                return oldConfig.id !== this._selectedConfig?.id;
+              });
+
+              this.#form.api.setFieldValue(
+                'extensionConfig.configs',
+                newConfigs
+              );
+
+              this._areYouSureDialog.hide();
+
+              this._saveNewExtensionConfig();
+            }}
+            >Delete</sl-button
+          >
+          <sl-button
+            variant=""
+            @click=${() => {
+              this._areYouSureDialog.hide();
+            }}
+            >No</sl-button
+          >
+        </div>
+      </sl-dialog>
+    `;
+  }
+
   render() {
-    return html` ${this._renderForm()} `;
+    return html` ${this._renderDialog()} ${this._renderForm()} `;
   }
 }
 

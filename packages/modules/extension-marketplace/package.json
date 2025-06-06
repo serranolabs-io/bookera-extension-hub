@@ -2,7 +2,7 @@
   "name": "@serranolabs.io/bookera-extension-marketplace",
   "description": "The Bookera Marketplace is your go-to hub for discovering, installing, and managing extensions that enhance your reading and writing experience. Whether you're looking for tools to improve productivity, customize your reading environment, or integrate with your favorite apps and platforms, the Extension Marketplace offers a wide variety of extensions built by the community.",
   "private": false,
-  "version": "0.0.12",
+  "version": "0.0.13",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -42,10 +42,11 @@
     }
   },
   "dependencies": {
+    "@pb33f/saddlebag": "^0.2.2",
+    "@serranolabs.io/shared": "workspace:*",
     "@shoelace-style/shoelace": "^2.20.1",
     "lit": "^3.3.0",
     "localforage": "^1.10.0",
-    "@serranolabs.io/shared": "workspace:*",
     "vite-plugin-dts": "^4.5.3",
     "zod": "^3.25.34"
   },

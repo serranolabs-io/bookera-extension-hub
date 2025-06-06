@@ -183,8 +183,7 @@ export class ThemesElement extends BookeraModuleElement {
   private _isSystemDirty = false;
   private _isCustomDirty = false;
 
-  constructor(config: BookeraModuleConfig) {
-    console.log(config);
+  constructor(config: BookeraModuleConfig<any>) {
     super(config);
 
     savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue(
@@ -504,14 +503,14 @@ export class ThemesElement extends BookeraModuleElement {
     return {
       config: {
         source: this._source,
-        value: customColorPalette,
+        values: [customColorPalette],
         id: customColorPalette.id,
         nameIndex: 'name',
       },
     };
   }
 
-  private renderSelectedColorPalettes(isSettings: boolean) {
+  private renderAllColorPalettes(isSettings: boolean) {
     const renderSendButton = (colorPalette: ColorPalette) => {
       if (
         isSettings &&
@@ -539,6 +538,7 @@ export class ThemesElement extends BookeraModuleElement {
     };
 
     return html`
+      <!-- I SHOULD BE USING THE FUCKING MENU. Wtf -->
       <div
         class="color-palettes flex"
         @click=${handleSelectColorPalette.bind(this)}
@@ -687,7 +687,7 @@ export class ThemesElement extends BookeraModuleElement {
       ${this.createSection(
         'Select Color Palettes!',
         'These are your color palettes!',
-        this.renderSelectedColorPalettes.bind(this, true)
+        this.renderAllColorPalettes.bind(this, true)
       )}
     `;
   }
@@ -701,7 +701,7 @@ export class ThemesElement extends BookeraModuleElement {
       ${this.createSidePanelSection(
         'Your Color Palettes!',
         '',
-        this.renderSelectedColorPalettes.bind(this, false)
+        this.renderAllColorPalettes.bind(this, false)
       )}
     `;
   }

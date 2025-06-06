@@ -89,15 +89,6 @@ export interface KeyboardShortcutJson {
   shouldAppearInCommandPalette: string;
 }
 
-export const KeyboardShortcutConfigSchema = z.array(
-  z.object({
-    command: z.string(),
-    keys: z.array(z.array(z.string())), // Assuming KeyboardEventKey is a string type
-    when: WhensSchema,
-    title: z.string(),
-  })
-);
-
 export class KeyboardShortcut implements KeyboardShortcutJson {
   command: string;
   keys: KeyboardEventKey[][];

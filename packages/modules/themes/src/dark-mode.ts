@@ -47,6 +47,8 @@ export class DarkMode extends LitElement {
   @state()
   appliedMode: boolean = true;
 
+  private _switchColorModeEventListener!: Function;
+
   constructor() {
     super();
 
@@ -65,10 +67,26 @@ export class DarkMode extends LitElement {
       this.applySelectedPallete();
       this.appliedMode = false;
     }, 100);
+  }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    if (!this.daemon) return;
+    this._switchColorModeEventListener = this._switchColorMode.bind(this);
     document.addEventListener(
       shortcuts[0].command,
-      this._switchColorMode.bind(this)
+      this._switchColorModeEventListener
+    );
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    if (!this.daemon) return;
+    document.removeEventListener(
+      shortcuts[0].command,
+      this._switchColorModeEventListener
     );
   }
 

@@ -156,7 +156,7 @@ export class ContextMenu extends LitElement {
     const payload: Config<Partial<KeyboardShortcut>> = new Config(
       this.source,
       [c],
-      ''
+      'command'
     );
 
     sendEvent<SEND_CONFIG_EVENT_TYPE<Partial<KeyboardShortcut>>>(
@@ -182,7 +182,7 @@ export class ContextMenu extends LitElement {
       this._handleResetKeybinding();
     } else if (menuOptionType === 'share-keybinding') {
       this._shareKeybinding(
-        this._extractKeys(['title', 'command', 'when', 'keys'], false)
+        this._extractKeys(['title', 'command', 'when', 'keys', 'id'], false)
       );
     }
 

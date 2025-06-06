@@ -31,16 +31,25 @@ import {
 } from './side-panel';
 import {
   ExtensionMarketplaceModuleInstanceType,
+  SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT,
   upsertConfigPanel,
 } from './api';
 import { PANEL_CONSTRUCTION_EVENT } from '@serranolabs.io/shared/panel';
 import { sendEvent } from '@serranolabs.io/shared/util';
+import { Bag } from '@pb33f/saddlebag';
+import {
+  PUBLISH_CONFIG_CONSTRUCTED_EVENT,
+  PublishConfigElement,
+} from './publish-config-element';
 
 export const elementName = 'extension-marketplace-element';
 
+export const MANAGE_CONFIG_BAG_KEY = 'manage-config-bag-key';
 @customElement(elementName)
 export class ExtensionMarketplaceElement extends BookeraModuleElement {
   static styles = [extensionMarketplaceStyles, baseCss, moduleElementStyles];
+
+  private _manageConfigBag: Bag<ExtensionConfig<any>> | undefined;
 
   constructor(
     config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>
@@ -49,8 +58,13 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInSidePanel') {
       setupSidePanel.bind(this)();
+    } else if (this.renderMode === 'renderInPanel') {
+      this._manageConfigBag = this._getSyncedBag(MANAGE_CONFIG_BAG_KEY);
     }
   }
+
+  protected _sidePanelSelectedExtension: ExtensionConfig<any> | null = null;
+  _sendConfigToPublishConfigListener!: Function;
 
   @state()
   protected _extensions: ExtensionConfig<any>[] = [];
@@ -85,7 +99,24 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInDaemon') {
       this._setupDaemonListeners();
+    } else if (this.renderMode === 'renderInSidePanel') {
+      this._sendConfigToPublishConfigListener =
+        this._listenToPublishConfigEvents.bind(this);
+
+      document.addEventListener(
+        PUBLISH_CONFIG_CONSTRUCTED_EVENT,
+        this._sendConfigToPublishConfigListener
+      );
     }
+  }
+
+  private _listenToPublishConfigEvents(
+    e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>
+  ) {
+    console.log('we found out that panel constructed');
+    sendEvent(this, SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT, {
+      config: this._sidePanelSelectedExtension,
+    });
   }
 
   private _setupDaemonListeners() {
@@ -115,6 +146,10 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     document.removeEventListener(
       MANAGE_CONFIG_CONSTRUCTED_EVENT,
       this._sendConfigToManageConfigInstanceListener
+    );
+    document.removeEventListener(
+      PUBLISH_CONFIG_CONSTRUCTED_EVENT,
+      this._sendConfigToPublishConfigListener
     );
   }
 
@@ -149,9 +184,21 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
       this._config.instanceType as ExtensionMarketplaceModuleInstanceType
     ) {
       case 'render-config':
-        return html`${new ManageConfigElement(this._config)}`;
+        return html`${new ManageConfigElement(
+          this._config,
+          this._manageConfigBag!,
+          this._bagManager,
+          this._runSyncedFlow.bind(this),
+          this._saveSyncedLocalForage.bind(this)
+        )}`;
       case 'published-config':
-        return html`published config!`;
+        return html`${new PublishConfigElement(
+          this._config,
+          this._bag!,
+          this._bagManager,
+          this._runLocalFlow.bind(this),
+          this._savePanelTabState.bind(this)
+        )}`;
       default:
     }
 

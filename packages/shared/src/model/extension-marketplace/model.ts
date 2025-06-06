@@ -5,7 +5,7 @@ import { genShortID } from '../util';
 
 export interface Config<T extends object> {
   source: Source; // name: Theme, link: blah blah
-  value: T; // CustomColorPalette
+  values: T[]; // CustomColorPalette
   id: string;
   nameIndex: keyof T | ''; // theme.name
 }
@@ -18,11 +18,16 @@ export const SEND_CONFIG_EVENT_FROM_API = 'send-config-from-api-event';
 
 export class Config<T> {
   source: Source; // name: Theme, link: blah blah
-  value: T; // CustomColorPalette
+  values: T[]; // CustomColorPalette
   id: string;
   nameIndex: keyof T | ''; // theme.name
 
-  constructor(source: Source, value: T, nameIndex: keyof T | '', id?: string) {
+  constructor(
+    source: Source,
+    values: T[],
+    nameIndex: keyof T | '',
+    id?: string
+  ) {
     this.source = source;
     if (id) {
       this.id = id;
@@ -31,30 +36,7 @@ export class Config<T> {
     }
     this.nameIndex = nameIndex;
 
-    if (typeof this.value === 'string') {
-      try {
-        this.value = JSON.parse(this.value);
-      } catch (error) {
-        console.error('Failed to parse value as JSON:', error);
-      }
-    } else {
-      this.value = value;
-    }
-  }
-
-  getConfigName() {
-    if (this.nameIndex === '') {
-      return this.source.name.toLocaleLowerCase();
-    }
-
-    return this.value[this.nameIndex];
-  }
-
-  serialize() {
-    return {
-      ...this,
-      value: JSON.stringify(this.value),
-    };
+    this.values = values;
   }
 }
 
@@ -86,7 +68,12 @@ export class ExtensionConfig<T extends object> implements ExtensionConfig<T> {
     this.version = version;
     this.title = title;
     this.description = description;
-    this.id = id;
+    if (id) {
+      this.id = id;
+    } else {
+      this.id = genShortID(10);
+    }
+
     this.configs = configs;
     this.markdown = markdown;
     this.user = user;

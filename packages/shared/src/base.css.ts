@@ -88,17 +88,12 @@ export default css`
   .lead {
     /* text-xl */
     font-size: 1.25rem; /* 20px */
-    line-height: 1.75; /* 35px */
-
-    /* text-muted-foreground */
-    color: #6b7280;
+   line-height: 1.75; /* 35px */
   }
 
   .muted {
     font-size: 0.875rem; /* 14px */
     line-height: 1.25; /* 17.5px */
-
-    color: #6b7280;
   }
 
   .hovered-element {

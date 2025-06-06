@@ -15,6 +15,14 @@ export interface UpsertConfigPanel {
   config: Config<any>;
 }
 
+export const SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT =
+  'send-downloaded-config-to-panel-event';
+
+export const windows = {
+  renderConfig: '🧩🌐 Publish E️xtension',
+  viewPublishedConfig: '📥 Download E️xtension',
+} as const;
+
 export const moduleInstances = {
   renderConfig: 'render-config',
   publishedConfig: 'published-config',
@@ -35,7 +43,7 @@ export function upsertConfigPanel(
     default:
       console.log('this is called');
       sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
-        tab: new PanelTab('🧩🌐 Publish E️xtension', PanelTabs.Module),
+        tab: new PanelTab(windows.renderConfig, PanelTabs.Module),
         moduleId: this.module.id,
         moduleInstanceType: moduleInstances.renderConfig,
         instanceLimit: 1,
