@@ -4,6 +4,6 @@
     "outDir": "dist",
     "rootDir": "src",
   },
-  "include": ["src"],
+  "include": ["src", "../modules/extension-marketplace/src/backend"],
   "exclude": ["node_modules", "dist"],
 }

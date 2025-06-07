@@ -146,8 +146,6 @@ export class PublishConfigElement extends LitElement {
   render() {
     if (!this._extension) return html``;
 
-    console.log('rendering config', this._extension.configs);
-
     return html`
       ${renderConfigs.bind(this)(this._extension.configs, 'publish')}
     `;

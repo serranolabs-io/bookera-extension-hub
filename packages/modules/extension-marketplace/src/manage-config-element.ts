@@ -35,6 +35,7 @@ import { MANAGE_CONFIG_BAG_KEY } from './extension-marketplace-element';
 import { SlDialog } from '@shoelace-style/shoelace';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { renderConfig, schemas } from './config-schemas';
+import { DefaultApi } from './backend/apis/DefaultApi';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -155,36 +156,52 @@ export class ManageConfigElement extends LitElement {
   @query(`#${ARE_YOU_SURE_DIALOG}`)
   private _areYouSureDialog!: SlDialog;
 
+  private _backendApi = new DefaultApi();
+
   #form = new TanStackFormController(this, {
     defaultValues: {
       extensionConfig: defaultExtensionConfig,
     },
+
     onSubmit: ({ value, meta }) => {
       // const extensionConfig: ExtensionConfig<any> =
       //   ExtensionConfig.FromInterface(value.extensionConfig).serialize();
 
       const handlePublish = async () => {
-        const { user, id, ...configWithoutUser } = value.extensionConfig;
+        const {
+          user,
+          configs,
+          id,
+          isPublished,
+          version,
+          title,
+          markdown,
+          ...configWithoutUser
+        } = value.extensionConfig;
 
-        configWithoutUser.configs = JSON.stringify(configWithoutUser.configs);
+        // const { error } = await this._config.supabase
+        //   .from(TABLES.ExtensionConfig)
+        //   .insert([configWithoutUser])
+        //   .select();
 
-        const { error } = await this._config.supabase
-          .from(TABLES.ExtensionConfig)
-          .insert([configWithoutUser])
-          .select();
+        this._backendApi.createExtension({
+          extension: {
+            config: JSON.stringify(configs),
+            userId: user.id,
+            userName: user.name,
+          },
+        });
+
+        const error = false;
 
         if (error) {
           notify(
-            `Error in creating extension ${error.message}`,
+            `Error in creating extension ${error?.message}`,
             'warning',
             'exclamation-lg'
           );
         } else {
-          notify(
-            `Succesfully created ${configWithoutUser.title}`,
-            'success',
-            'check-all'
-          );
+          notify(`Succesfully created ${title}`, 'success', 'check-all');
         }
       };
 
