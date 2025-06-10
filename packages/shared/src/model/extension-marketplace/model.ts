@@ -1,7 +1,10 @@
+import { z } from 'zod';
 import { BookeraModule } from '../../module/module';
 import { Source } from '../keyboard-shortcuts/model';
 import { User } from '../user/author';
 import { genShortID } from '../util';
+import { BookeraModuleSchema } from '../../module/module';
+import { version } from 'bun';
 
 export interface Config<T extends object> {
   source: Source; // name: Theme, link: blah blah
@@ -40,77 +43,55 @@ export class Config<T> {
   }
 }
 
-// when we press share, we want to share this to the modal
 export interface ExtensionConfig<T>
   extends Pick<BookeraModule, 'version' | 'title' | 'description' | 'id'> {
   configs: Config<T>[]; // pass in Theme[], or KeyboardShortcut[]
-  markdown: string; // description quickly describes the extension. markdown is used for Details, Features, Changelog
   user: User; // user who publishes -> for now, you are assigned a random session_id or some shit
   isPublished: boolean;
+  icon: string; // base64 encoded icon, shit
 }
 
-export class ExtensionConfig<T extends object> implements ExtensionConfig<T> {
-  configs: Config<T>[];
-  markdown: string;
-  user: User;
-  isPublished: boolean;
+const toKebabCase = (str: string) =>
+  str
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .toLowerCase()
+    .replace(/\s+/g, '-');
 
-  constructor(
-    version: string,
-    title: string,
-    description: string,
-    id: string,
-    configs: Config<T>[],
-    markdown: string,
-    user: User,
-    isPublished: boolean
-  ) {
-    this.version = version;
-    this.title = title;
-    this.description = description;
-    if (id) {
-      this.id = id;
-    } else {
-      this.id = genShortID(10);
-    }
+export const PackageJsonSchema = z.object({
+  name: z.string(),
+  displayName: z.string(),
+  version: z
+    .string()
+    .regex(
+      /^\d+\.\d+\.\d+$/,
+      'Version must follow the format number.number.number'
+    ),
+  private: z.boolean(),
+  description: z.string(),
+  icon: z.string(),
+  author: z.string(),
+});
 
-    this.configs = configs;
-    this.markdown = markdown;
-    this.user = user;
-    this.isPublished = isPublished;
-  }
+export type PackageJson = z.infer<typeof PackageJsonSchema>;
 
-  static FromInterface<T extends object>(
-    data: ExtensionConfig<T>
-  ): ExtensionConfig<T> {
-    const configs = data.configs.map(
-      (config) =>
-        new Config<T>(
-          config.source,
-          config.value as unknown as object,
-          config.nameIndex,
-          config.id
-        )
-    );
+export const getPackageJsonName = <T>(extensionConfig: ExtensionConfig<T>) => {
+  return {
+    name: toKebabCase(extensionConfig.title ? extensionConfig.title : ''),
+  };
+};
 
-    return new ExtensionConfig<T>(
-      data.version ? data.version : '',
-      data.title ? data.title : '',
-      data.description ? data.description : '',
-      data.id ? data.id : '',
-      configs,
-      data.markdown,
-      data.user,
-      data.isPublished
-    );
-  }
+export const createPackageJsonJson = <T>(
+  extensionConfig: ExtensionConfig<T>
+): string => {
+  const packageJson: PackageJson = {
+    ...getPackageJsonName(extensionConfig),
+    displayName: extensionConfig.title ? extensionConfig.title : '',
+    version: extensionConfig.version ? extensionConfig.version : '',
+    private: extensionConfig.isPublished,
+    author: extensionConfig.user.name,
+    description: extensionConfig.description ? extensionConfig.description : '',
+    icon: extensionConfig.icon,
+  };
 
-  serialize() {
-    return {
-      ...this,
-      configs: this.configs.map((config: Config<any>) => config.serialize()),
-    };
-  }
-
-  // Add any additional methods or logic here
-}
+  return JSON.stringify(packageJson);
+};

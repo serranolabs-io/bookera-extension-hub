@@ -1,6 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { genShortID } from '../model/util';
 import type { Tab } from './tab';
+import { z } from 'zod';
 
 export const UPDATE_BookeraModule_EVENT = 'update-BookeraModule-event';
 export type UPDATE_BookeraModule_EVENT_TYPE = BookeraModule;
@@ -34,7 +35,29 @@ export type RenderMode =
   | 'renderInPanel';
 
 // extensions are just extended functionality from the core system, BookeraModules
-export class BookeraModule<T = unknown> {
+
+export const BookeraModuleSchema = z.object({
+  version: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  tab: z.any().optional(), // Replace `z.any()` with a specific schema for `Tab` if available
+  id: z.string().optional(),
+  renderModes: z
+    .array(
+      z.enum([
+        'renderInSettings',
+        'renderInSidePanel',
+        'renderInDaemon',
+        'renderInPanel',
+      ])
+    )
+    .optional(),
+  instances: z.array(z.unknown()), // Replace `z.unknown()` with a specific schema for `T` if available
+});
+
+export type BookeraModuleI = z.infer<typeof BookeraModuleSchema>;
+
+export class BookeraModule<T = unknown> implements BookeraModuleI {
   version?: string;
   title?: string;
   description?: string;

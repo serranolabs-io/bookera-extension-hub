@@ -2,7 +2,7 @@ import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement, query } from 'lit/decorators.js';
 import baseCss from '@serranolabs.io/shared/base';
 import { TanStackFormController } from '@tanstack/lit-form';
-import { User } from '@serranolabs.io/shared/user';
+import { getUserId, getUsername, User } from '@serranolabs.io/shared/user';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/tab-panel/tab-panel.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/tab-group/tab-group.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/tab/tab.js';
@@ -17,19 +17,14 @@ import {
   SEND_CONFIG_EVENT,
   SEND_CONFIG_EVENT_FROM_API,
   SEND_CONFIG_EVENT_TYPE,
-  CustomColorPaletteSchema,
-  CustomColorPaletteSchemaArray,
-  KeyboardShortcutConfigArraySchema,
-  KeyboardShortcutConfigSchema,
+  createPackageJsonJson,
+  getPackageJsonName,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { TABLES } from '@serranolabs.io/shared/supabase';
 import { ExtensionMarketplaceModuleInstanceType } from './api';
 import { notify } from '@serranolabs.io/shared/lit';
-import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
-import { ZodObject } from 'zod/v4';
-import { key } from 'localforage';
-import { Bag, BagManager, CreateBagManager } from '@pb33f/saddlebag';
+import { Bag, BagManager } from '@pb33f/saddlebag';
 import { defaultExtensionConfig } from './manage-config-stateful';
 import { MANAGE_CONFIG_BAG_KEY } from './extension-marketplace-element';
 import { SlDialog } from '@shoelace-style/shoelace';
@@ -130,7 +125,6 @@ const mockData: ExtensionConfig<any> = {
   title: 'Title of your config',
   description: 'LOLOLOLO',
   configs: randomConfigs as Config<any>[],
-  markdown: '',
   user: new User('me', 'user.text', []),
   isPublished: false,
 };
@@ -164,35 +158,28 @@ export class ManageConfigElement extends LitElement {
     },
 
     onSubmit: ({ value, meta }) => {
-      // const extensionConfig: ExtensionConfig<any> =
-      //   ExtensionConfig.FromInterface(value.extensionConfig).serialize();
-
       const handlePublish = async () => {
-        const {
-          user,
-          configs,
-          id,
-          isPublished,
-          version,
-          title,
-          markdown,
-          ...configWithoutUser
-        } = value.extensionConfig;
+        const { configs, ...packageJson } = value.extensionConfig;
 
-        // const { error } = await this._config.supabase
-        //   .from(TABLES.ExtensionConfig)
-        //   .insert([configWithoutUser])
-        //   .select();
+        const { error } = await this._config.supabase
+          .from(TABLES.Extension)
+          .insert([
+            {
+              userId: getUserId(packageJson.user),
+              name: getPackageJsonName(value.extensionConfig).name,
+            },
+          ])
+          .select();
 
         this._backendApi.createExtension({
           extension: {
+            ...getPackageJsonName(value.extensionConfig),
             config: JSON.stringify(configs),
-            userId: user.id,
-            userName: user.name,
+            userId: getUserId(packageJson.user),
+            userName: getUsername(packageJson.user),
+            packageJson: createPackageJsonJson(value.extensionConfig),
           },
         });
-
-        const error = false;
 
         if (error) {
           notify(
@@ -201,7 +188,11 @@ export class ManageConfigElement extends LitElement {
             'exclamation-lg'
           );
         } else {
-          notify(`Succesfully created ${title}`, 'success', 'check-all');
+          notify(
+            `Succesfully created ${packageJson.title}`,
+            'success',
+            'check-all'
+          );
         }
       };
 

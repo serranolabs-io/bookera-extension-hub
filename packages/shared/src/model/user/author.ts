@@ -17,3 +17,11 @@ export class User {
     }
   }
 }
+
+export const getUsername = (user: User): string => {
+  return user.name === '' ? 'test_user' : user.name;
+};
+
+export const getUserId = (user: User) => {
+  return '52307a0e-5c7f-452a-a58f-e233e626c83d';
+};

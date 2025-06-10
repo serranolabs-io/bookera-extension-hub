@@ -6,6 +6,7 @@ import {
 } from '@serranolabs.io/shared/extension-marketplace';
 import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { html } from 'lit';
+import { z } from 'zod';
 import { ZodObject } from 'zod/v4';
 
 export const schemas = [

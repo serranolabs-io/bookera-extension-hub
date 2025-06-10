@@ -32,11 +32,23 @@ export interface Extension {
      */
     userId: string;
     /**
+     * this is a unique name of the package. On extension config, it is set to kebab-case of user's set name
+     * @type {string}
+     * @memberof Extension
+     */
+    name: string;
+    /**
      * 
      * @type {string}
      * @memberof Extension
      */
     config: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Extension
+     */
+    packageJson: string;
 }
 
 /**
@@ -45,7 +57,9 @@ export interface Extension {
 export function instanceOfExtension(value: object): value is Extension {
     if (!('userName' in value) || value['userName'] === undefined) return false;
     if (!('userId' in value) || value['userId'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     if (!('config' in value) || value['config'] === undefined) return false;
+    if (!('packageJson' in value) || value['packageJson'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +75,9 @@ export function ExtensionFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'userName': json['userName'],
         'userId': json['userId'],
+        'name': json['name'],
         'config': json['config'],
+        'packageJson': json['packageJson'],
     };
 }
 
@@ -78,7 +94,9 @@ export function ExtensionToJSONTyped(value?: Extension | null, ignoreDiscriminat
         
         'userName': value['userName'],
         'userId': value['userId'],
+        'name': value['name'],
         'config': value['config'],
+        'packageJson': value['packageJson'],
     };
 }
 

@@ -29,6 +29,11 @@ export interface CreateExtensionRequest {
     extension: Extension;
 }
 
+export interface GetExtensionRequest {
+    id: string;
+    userId: string;
+}
+
 /**
  * 
  */
@@ -67,6 +72,54 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async createExtension(requestParameters: CreateExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateExtension201Response> {
         const response = await this.createExtensionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Fetch an extension config
+     */
+    async getExtensionRaw(requestParameters: GetExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Extension>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getExtension().'
+            );
+        }
+
+        if (requestParameters['userId'] == null) {
+            throw new runtime.RequiredError(
+                'userId',
+                'Required parameter "userId" was null or undefined when calling getExtension().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['id'] != null) {
+            queryParameters['id'] = requestParameters['id'];
+        }
+
+        if (requestParameters['userId'] != null) {
+            queryParameters['userId'] = requestParameters['userId'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/extensions`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ExtensionFromJSON(jsonValue));
+    }
+
+    /**
+     * Fetch an extension config
+     */
+    async getExtension(requestParameters: GetExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Extension> {
+        const response = await this.getExtensionRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
