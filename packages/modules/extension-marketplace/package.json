@@ -42,6 +42,7 @@
     }
   },
   "dependencies": {
+    "@lit/task": "^1.0.2",
     "@pb33f/saddlebag": "^0.2.2",
     "@serranolabs.io/shared": "*",
     "@shoelace-style/shoelace": "^2.20.1",

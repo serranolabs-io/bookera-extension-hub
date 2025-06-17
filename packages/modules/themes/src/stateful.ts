@@ -250,12 +250,15 @@ export class ColorPalettesSingleton {
 
   static NewColorPaletteAndSelect(
     bagManager: BagManager,
-    newColorPalette: ColorPalette
+    newColorPalette: ColorPalette,
+    setSelected: boolean = true
   ) {
     const bag = bagManager.getBag<ColorPalette>(ColorPalettesKey);
     bag?.set(newColorPalette.id!, newColorPalette);
 
-    bag?.set(SelectedColorPaletteKey, newColorPalette);
+    if (setSelected) {
+      bag?.set(SelectedColorPaletteKey, newColorPalette);
+    }
 
     const map = bagManager.getBag<ColorPalette>(ColorPalettesKey)?.export();
     localforage.setItem(ColorPalettesKey, map);

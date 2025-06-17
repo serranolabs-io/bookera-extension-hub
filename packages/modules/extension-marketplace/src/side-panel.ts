@@ -1,7 +1,10 @@
 import { TemplateLiteral } from 'typescript';
 import { ExtensionMarketplaceElement } from './extension-marketplace-element';
 import { html, TemplateResult } from 'lit';
-import { ExtensionConfig } from '@serranolabs.io/shared/extension-marketplace';
+import {
+  ExtensionConfig,
+  PackageJson,
+} from '@serranolabs.io/shared/extension-marketplace';
 import { repeat } from 'lit/directives/repeat.js';
 import { TABLES } from '@serranolabs.io/shared/supabase';
 import {
@@ -16,6 +19,10 @@ import {
   PanelTabs,
 } from '@serranolabs.io/shared/panel';
 import { moduleInstances, windows } from './api';
+import { Extension } from './backend';
+import { User } from '@serranolabs.io/shared/user';
+import { Task } from '@lit/task';
+import { getExtensionIcon, renderImageBox } from './utils';
 
 export const marketplace = 'marketplace';
 export const downloaded = 'downloaded';
@@ -25,15 +32,6 @@ export interface TabGroup {
   name: string;
   value: TabOption;
   showPanel: () => TemplateResult;
-}
-
-function renderImageBox(extensionImg: string | null): TemplateResult {
-  let content = html`<sl-icon name="puzzle"></sl-icon>`;
-  if (extensionImg) {
-    content = html` <img src=${extensionImg} /> `;
-  }
-
-  return html` <div class="image-box">${content}</div> `;
 }
 
 function renderExtensionsList(this: ExtensionMarketplaceElement, filters) {
@@ -56,8 +54,10 @@ function selectExtensionFromMarketplace(
 
   const extension = this._extensions.find((extension: ExtensionConfig<any>) => {
     // todo: use zod
-    return extension.id === id;
+    return extension.id == id;
   });
+
+  console.log(extension, el);
 
   if (!extension) {
     notify(
@@ -68,7 +68,10 @@ function selectExtensionFromMarketplace(
   }
 
   sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
-    tab: new PanelTab(windows.viewPublishedConfig, PanelTabs.Module),
+    tab: new PanelTab(
+      windows.viewPublishedConfig + ': ' + extension.title,
+      PanelTabs.Module
+    ),
     moduleId: this.module.id,
     moduleInstanceType: moduleInstances.publishedConfig,
     instanceLimit: -1,
@@ -77,26 +80,44 @@ function selectExtensionFromMarketplace(
   this._sidePanelSelectedExtension = extension;
 }
 
+function renderExtension(extension: ExtensionConfig<any> & Extension) {
+  return html`
+    <li>
+      <button id=${extension.id}>
+        ${renderImageBox(extension, '48')}
+        <div class="description-box">
+          <h5>${extension.title}</h5>
+          <small class="description">${extension.description}</small>
+          <small class="user-id">${extension.userId}</small>
+        </div>
+        <span class="view-hover">&rarr;</span>
+      </button>
+    </li>
+  `;
+}
+
 export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
   return html`
     <ul
       class="extensions-list"
       @click=${selectExtensionFromMarketplace.bind(this)}
     >
-      ${this._extensions.map((extension: ExtensionConfig<string>) => {
-        return html`
-          <li>
-            <button id=${extension.id}>
-              ${renderImageBox(extension.image)}
-              <div class="description-box">
-                <h5>${extension.title}</h5>
-                <small class="description">${extension.description}</small>
-                <small class="user-id">${extension.userId}</small>
-              </div>
-              <span class="view-hover">&rarr;</span>
-            </button>
-          </li>
-        `;
+      ${this._extensionsTask?.render({
+        pending: () => {
+          return html`<p>Loading product...</p>`;
+        },
+        complete: (
+          extensions: readonly (ExtensionConfig<any> & Extension)[]
+        ) => {
+          this._extensions = extensions;
+
+          return extensions.map(
+            (extension: ExtensionConfig<string> & Extension) => {
+              return html`${renderExtension(extension)}`;
+            }
+          );
+        },
+        error: () => html`😿 could not get extensions`,
       })}
     </ul>
   `;
@@ -119,24 +140,60 @@ export function renderInSidePanel(
   `;
 }
 
+export const convertBackendExtensionIntoExtension = (
+  extensions: Extension[]
+): ExtensionConfig<any>[] => {
+  return extensions.map((extension: Extension) => {
+    const packageJson: PackageJson = JSON.parse(extension.packageJson);
+
+    return {
+      configs: extension.config,
+      version: packageJson.version,
+      userId: extension.userId,
+      description: packageJson.description,
+      hasIcon: extension.hasIcon,
+      title: packageJson.name,
+      author: packageJson.author,
+      isPublished: packageJson.private,
+      id: extension.id ? String(extension.id) : '',
+    } as ExtensionConfig<any>;
+  });
+};
+
 export async function setupSidePanel(this: ExtensionMarketplaceElement) {
   if (!this._supabase) {
     return;
   }
 
-  const { data: configs, error } = await this._supabase
-    .from<string, ExtensionConfig<string>>('ExtensionConfig')
-    .select('*');
+  this._extensionsTask = new Task(this, {
+    task: async () => {
+      let allExtensions, error;
+      try {
+        allExtensions = await this._backendApi.getAllExtensions();
+      } catch (e) {
+        error = e;
+      } finally {
+        if (!allExtensions) {
+          throw new Error(error as string);
+        }
 
-  if (error) {
-    console.error('Error fetching extension configs:', error);
-    return;
-  }
+        const converted = convertBackendExtensionIntoExtension(allExtensions);
+        return converted;
+      }
+    },
+    args: () => [],
+  });
+  // const { data: configs, error } = await this._supabase
+  //   .from<string, ExtensionConfig<string>>('ExtensionConfig')
+  //   .select('*');
 
-  if (!configs) {
-    console.warn('No extension configs found.');
-    return;
-  }
+  // if (error) {
+  //   console.error('Error fetching extension configs:', error);
+  //   return;
+  // }
 
-  this._extensions = configs as ExtensionConfig<string>;
+  // if (!configs) {
+  //   console.warn('No extension configs found.');
+  //   return;
+  // }
 }

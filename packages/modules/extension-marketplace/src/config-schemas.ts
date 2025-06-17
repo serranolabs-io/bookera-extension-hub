@@ -1,13 +1,15 @@
 import {
   CustomColorPaletteSchema,
   CustomColorPaletteSchemaArray,
+  ExtensionDownloadEndpoints,
   KeyboardShortcutConfigArraySchema,
   KeyboardShortcutConfigSchema,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
+import { sendEvent, sendGlobalEvent } from '@serranolabs.io/shared/util';
 import { html } from 'lit';
 import { z } from 'zod';
-import { ZodObject } from 'zod/v4';
+import { custom, ZodObject } from 'zod/v4';
 
 export const schemas = [
   CustomColorPaletteSchemaArray,
@@ -18,11 +20,11 @@ export const schemas = [
 
 const setupSchemaAction = (
   schema: ZodObject,
-  renderAction: Function
-): { schema: ZodObject; renderAction: Function } => {
+  action: Function
+): { schema: ZodObject; action: Function } => {
   return {
     schema,
-    renderAction,
+    action,
   };
 };
 
@@ -39,15 +41,41 @@ const keyboardShortcutActionArray = (keyboardShortcut: KeyboardShortcut[]) => {
   });
 };
 
+const renderColorCol = (colors: any) => {
+  return html`
+    <div class="col">
+      <div class="cols">
+        <div class="color-box">
+          ${colors.baseColors.map((color: string) => {
+            return html`<p>${color}</p>`;
+          })}
+        </div>
+        <div class="color-box">
+          ${colors.baseColors.map((color: string) => {
+            return html`<p>${color}</p>`;
+          })}
+        </div>
+      </div>
+    </div>
+  `;
+};
+
 const customColorPaletteAction = (customColorPalette) => {
-  return html`<p>${customColorPalette.name}</p>`;
+  return html`
+    <div class="palette">
+      <p>${customColorPalette.name}</p>
+      <div class="cols">
+        ${renderColorCol(customColorPalette.lightMode)}
+        ${renderColorCol(customColorPalette.darkMode)}
+      </div>
+    </div>
+  `;
 };
 
 const customColorPaletteActionArray = (customColorPalettes: any[]) => {
   // Define the action for custom color palettes
   return html`
     ${customColorPalettes.map((customColorPalette: any) => {
-      console.log(customColorPaletteAction);
       return html`${customColorPaletteAction(customColorPalette)}`;
     })}
   `;
@@ -59,6 +87,23 @@ export const actions = [
   keyboardShortcutActionArray.bind(this),
   keyboardShortcutAction.bind(this),
 ];
+
+function sendThemesConfig(config: any) {
+  sendGlobalEvent(ExtensionDownloadEndpoints.themes, config);
+}
+
+function sendKeyboardShortcutsConfig() {}
+
+export const sendActions = [
+  sendThemesConfig.bind(this),
+  sendThemesConfig.bind(this),
+  sendKeyboardShortcutsConfig.bind(this),
+  sendKeyboardShortcutsConfig.bind(this),
+];
+
+export const schemaSendActions = schemas.map((schema, index: number) => {
+  return setupSchemaAction(schema, sendActions[index]);
+});
 
 export const schemaActions = schemas.map((schema, index: number) => {
   return setupSchemaAction(schema, actions[index]);
@@ -75,5 +120,5 @@ export const renderConfig = (config: any[]) => {
     return;
   }
 
-  return rendered?.renderAction(config);
+  return rendered?.action(config);
 };

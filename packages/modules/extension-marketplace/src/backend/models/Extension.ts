@@ -32,6 +32,12 @@ export interface Extension {
      */
     userId: string;
     /**
+     * 
+     * @type {boolean}
+     * @memberof Extension
+     */
+    hasIcon?: boolean;
+    /**
      * this is a unique name of the package. On extension config, it is set to kebab-case of user's set name
      * @type {string}
      * @memberof Extension
@@ -49,6 +55,12 @@ export interface Extension {
      * @memberof Extension
      */
     packageJson: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Extension
+     */
+    id?: number;
 }
 
 /**
@@ -75,9 +87,11 @@ export function ExtensionFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'userName': json['userName'],
         'userId': json['userId'],
+        'hasIcon': json['hasIcon'] == null ? undefined : json['hasIcon'],
         'name': json['name'],
         'config': json['config'],
         'packageJson': json['packageJson'],
+        'id': json['id'] == null ? undefined : json['id'],
     };
 }
 
@@ -94,9 +108,11 @@ export function ExtensionToJSONTyped(value?: Extension | null, ignoreDiscriminat
         
         'userName': value['userName'],
         'userId': value['userId'],
+        'hasIcon': value['hasIcon'],
         'name': value['name'],
         'config': value['config'],
         'packageJson': value['packageJson'],
+        'id': value['id'],
     };
 }
 

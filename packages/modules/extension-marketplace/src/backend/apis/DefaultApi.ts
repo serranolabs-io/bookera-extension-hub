@@ -29,9 +29,14 @@ export interface CreateExtensionRequest {
     extension: Extension;
 }
 
-export interface GetExtensionRequest {
-    id: string;
-    userId: string;
+export interface UpdateUserExtensionRequest {
+    configId: string;
+    extension: Extension;
+}
+
+export interface UpdateUserExtensionImageRequest {
+    configId: string;
+    file?: Blob;
 }
 
 /**
@@ -76,32 +81,10 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Fetch an extension config
+     * Fetch all extension configs
      */
-    async getExtensionRaw(requestParameters: GetExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Extension>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling getExtension().'
-            );
-        }
-
-        if (requestParameters['userId'] == null) {
-            throw new runtime.RequiredError(
-                'userId',
-                'Required parameter "userId" was null or undefined when calling getExtension().'
-            );
-        }
-
+    async getAllExtensionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Extension>>> {
         const queryParameters: any = {};
-
-        if (requestParameters['id'] != null) {
-            queryParameters['id'] = requestParameters['id'];
-        }
-
-        if (requestParameters['userId'] != null) {
-            queryParameters['userId'] = requestParameters['userId'];
-        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -112,15 +95,110 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ExtensionFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ExtensionFromJSON));
     }
 
     /**
-     * Fetch an extension config
+     * Fetch all extension configs
      */
-    async getExtension(requestParameters: GetExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Extension> {
-        const response = await this.getExtensionRaw(requestParameters, initOverrides);
+    async getAllExtensions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Extension>> {
+        const response = await this.getAllExtensionsRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Update a user\'s extension
+     */
+    async updateUserExtensionRaw(requestParameters: UpdateUserExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['configId'] == null) {
+            throw new runtime.RequiredError(
+                'configId',
+                'Required parameter "configId" was null or undefined when calling updateUserExtension().'
+            );
+        }
+
+        if (requestParameters['extension'] == null) {
+            throw new runtime.RequiredError(
+                'extension',
+                'Required parameter "extension" was null or undefined when calling updateUserExtension().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/extensions/{config_id}`.replace(`{${"config_id"}}`, encodeURIComponent(String(requestParameters['configId']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ExtensionToJSON(requestParameters['extension']),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Update a user\'s extension
+     */
+    async updateUserExtension(requestParameters: UpdateUserExtensionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.updateUserExtensionRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Update a user\'s extension image
+     */
+    async updateUserExtensionImageRaw(requestParameters: UpdateUserExtensionImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['configId'] == null) {
+            throw new runtime.RequiredError(
+                'configId',
+                'Required parameter "configId" was null or undefined when calling updateUserExtensionImage().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['file'] != null) {
+            formParams.append('file', requestParameters['file'] as any);
+        }
+
+        const response = await this.request({
+            path: `/api/extensions/{config_id}/image`.replace(`{${"config_id"}}`, encodeURIComponent(String(requestParameters['configId']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Update a user\'s extension image
+     */
+    async updateUserExtensionImage(requestParameters: UpdateUserExtensionImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.updateUserExtensionImageRaw(requestParameters, initOverrides);
     }
 
 }

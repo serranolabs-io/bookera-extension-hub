@@ -3,7 +3,6 @@ export default css`
   /* SIDE PANEL */
 
   .extensions-list {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,6 +22,7 @@ export default css`
 
   .extensions-list li {
     width: 100%;
+    position: relative;
   }
 
   .extensions-list button:hover {

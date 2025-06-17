@@ -7,7 +7,16 @@ import {
   PanelTabs,
 } from '@serranolabs.io/shared/panel';
 import { ExtensionMarketplaceElement } from './extension-marketplace-element';
-import { SendConfig } from './manage-config-element';
+import { Configuration } from './backend';
+
+let backendServiceUrl = 'https://extension-marketplace-service.fly.dev';
+if (import.meta.env.MODE === 'development') {
+  backendServiceUrl = 'http://localhost:8080';
+}
+
+export const apiConfig: Configuration = new Configuration({
+  basePath: backendServiceUrl,
+});
 
 export const UPSERT_CONFIG_PANEL_EVENT = 'upsert-config-panel-event';
 

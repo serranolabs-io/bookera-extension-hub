@@ -30,6 +30,7 @@ import {
   TabGroup,
 } from './side-panel';
 import {
+  apiConfig,
   ExtensionMarketplaceModuleInstanceType,
   SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT,
   upsertConfigPanel,
@@ -41,8 +42,13 @@ import {
   PUBLISH_CONFIG_CONSTRUCTED_EVENT,
   PublishConfigElement,
 } from './publish-config-element';
+import { Configuration, DefaultApi } from './backend';
+import { Task } from '@lit/task';
+import { ExtensionMarketplaceTEst } from '@serranolabs.io/shared/extension-marketplace';
 
 export const elementName = 'extension-marketplace-element';
+
+console.log('TEST', ExtensionMarketplaceTEst);
 
 export const MANAGE_CONFIG_BAG_KEY = 'manage-config-bag-key';
 @customElement(elementName)
@@ -50,6 +56,8 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   static styles = [extensionMarketplaceStyles, baseCss, moduleElementStyles];
 
   private _manageConfigBag: Bag<ExtensionConfig<any>> | undefined;
+
+  protected _backendApi = new DefaultApi(apiConfig);
 
   constructor(
     config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>
@@ -68,6 +76,8 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
   @state()
   protected _extensions: ExtensionConfig<any>[] = [];
+
+  protected _extensionsTask: null | Task = null;
 
   protected _tabs: TabGroup[] = [
     {

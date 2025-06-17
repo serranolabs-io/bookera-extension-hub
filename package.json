@@ -5,6 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "publish": "turbo build && changeset version && changeset publish && git add . && git commit -am 'fuck ' ",
+    "publish-2": "changeset version && changeset publish && git add . && git commit -am 'fuck ' ",
     "lint": "turbo run lint -- --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

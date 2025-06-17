@@ -22,15 +22,18 @@ import {
 } from '@serranolabs.io/shared/extension-marketplace';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { TABLES } from '@serranolabs.io/shared/supabase';
-import { ExtensionMarketplaceModuleInstanceType } from './api';
+import { apiConfig, ExtensionMarketplaceModuleInstanceType } from './api';
 import { notify } from '@serranolabs.io/shared/lit';
 import { Bag, BagManager } from '@pb33f/saddlebag';
 import { defaultExtensionConfig } from './manage-config-stateful';
 import { MANAGE_CONFIG_BAG_KEY } from './extension-marketplace-element';
-import { SlDialog } from '@shoelace-style/shoelace';
+import { SlDialog, SlInput } from '@shoelace-style/shoelace';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { renderConfig, schemas } from './config-schemas';
 import { DefaultApi } from './backend/apis/DefaultApi';
+import { Task } from '@lit/task';
+import { renderConfigs } from './render-logic';
+import configSchemasStyles from './config-schemas.styles';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -127,6 +130,7 @@ const mockData: ExtensionConfig<any> = {
   configs: randomConfigs as Config<any>[],
   user: new User('me', 'user.text', []),
   isPublished: false,
+  icon: null,
 };
 
 type SubmitType = 'publish' | 'save-as-draft';
@@ -140,7 +144,7 @@ export const ARE_YOU_SURE_DIALOG = 'are-you-sure-dialog';
 
 @customElement('manage-config-element')
 export class ManageConfigElement extends LitElement {
-  static styles = [manageConfigElementStyles, baseCss];
+  static styles = [manageConfigElementStyles, baseCss, configSchemasStyles];
 
   private _config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>;
 
@@ -150,7 +154,7 @@ export class ManageConfigElement extends LitElement {
   @query(`#${ARE_YOU_SURE_DIALOG}`)
   private _areYouSureDialog!: SlDialog;
 
-  private _backendApi = new DefaultApi();
+  private _backendApi = new DefaultApi(apiConfig);
 
   #form = new TanStackFormController(this, {
     defaultValues: {
@@ -159,9 +163,9 @@ export class ManageConfigElement extends LitElement {
 
     onSubmit: ({ value, meta }) => {
       const handlePublish = async () => {
-        const { configs, ...packageJson } = value.extensionConfig;
+        const { configs, icon, ...packageJson } = value.extensionConfig;
 
-        const { error } = await this._config.supabase
+        const { data: insertedRow, error } = await this._config.supabase
           .from(TABLES.Extension)
           .insert([
             {
@@ -171,29 +175,67 @@ export class ManageConfigElement extends LitElement {
           ])
           .select();
 
-        this._backendApi.createExtension({
-          extension: {
-            ...getPackageJsonName(value.extensionConfig),
-            config: JSON.stringify(configs),
-            userId: getUserId(packageJson.user),
-            userName: getUsername(packageJson.user),
-            packageJson: createPackageJsonJson(value.extensionConfig),
-          },
-        });
+        let data,
+          backendError = null;
+        try {
+          console.log('trying to create extension');
+          data = await this._backendApi.createExtension({
+            extension: {
+              ...getPackageJsonName(value.extensionConfig),
+              config: JSON.stringify(configs),
+              userId: getUserId(packageJson.user),
+              userName: getUsername(packageJson.user),
+              packageJson: createPackageJsonJson(value.extensionConfig),
+            },
+          });
+        } catch (e) {
+          backendError = e;
 
-        if (error) {
+          // for some reason it does not properly work in a try block
+          try {
+            await this._config.supabase
+              ?.from(TABLES.Extension)
+              .delete()
+              .eq('id', insertedRow[0]?.id);
+          } catch (e) {
+            console.log(e);
+          }
+        }
+
+        if (error || backendError) {
           notify(
-            `Error in creating extension ${error?.message}`,
+            `Error in creating extension ${backendError ? 'error in backend, please report this to help me debug your issue <3' : error?.message}`,
             'warning',
             'exclamation-lg'
           );
-        } else {
-          notify(
-            `Succesfully created ${packageJson.title}`,
-            'success',
-            'check-all'
-          );
+          return;
         }
+
+        if (!icon) {
+          return;
+        }
+        const iconBlob = new Blob([await icon.arrayBuffer()], {
+          type: icon.type,
+        });
+
+        let image, imageErr;
+        try {
+          image = this._backendApi.updateUserExtensionImage({
+            userId: getUserId(packageJson.user),
+            configId: insertedRow[0]?.id,
+            file: iconBlob,
+          });
+        } catch (e) {
+          imageErr = e;
+        }
+
+        console.log(image, imageErr);
+
+        notify(
+          `Succesfully created ${packageJson.title}`,
+          'success',
+          'check-all'
+        );
       };
 
       switch (meta as SubmitType) {
@@ -373,8 +415,10 @@ export class ManageConfigElement extends LitElement {
     );
   }
 
-  private _removeConfig(e: CustomEvent) {
+  removeConfig(e: CustomEvent) {
     const target = e.target as HTMLElement;
+
+    console.log('bounded ', e);
 
     if (!target) {
       return;
@@ -384,7 +428,6 @@ export class ManageConfigElement extends LitElement {
 
     // when there is only "themes" | only "shortcuts"
     if (configs.length === 1) {
-      console.log(configs[0]);
       const newConfigs = configs[0].values.filter((oldConfig) => {
         return oldConfig.id !== target.id;
       });
@@ -411,63 +454,6 @@ export class ManageConfigElement extends LitElement {
     this.requestUpdate();
 
     e.preventDefault();
-  }
-
-  private _renderConfigs(configs: Config<any>[]) {
-    if (configs.length === 0) {
-      return html``;
-    }
-
-    if (configs.length <= 1) {
-      const firstConfig = configs[0];
-      return html`
-        <sl-tab-group @sl-close=${this._removeConfig.bind(this)}>
-          ${firstConfig.values.map((config: any) => {
-            return html`
-              <sl-tab
-                slot="nav"
-                panel=${config.id}
-                ?closable=${firstConfig.values.length > 1}
-                id=${config.id}
-                >${config[firstConfig.nameIndex]}</sl-tab
-              >
-
-              <sl-tab-panel name=${config.id}>
-                ${renderConfig(config)}
-              </sl-tab-panel>
-            `;
-          })}
-        </sl-tab-group>
-      `;
-    } else {
-      return html` <div class="input-box">
-        <label>Configs</label>
-        <sl-tab-group @sl-close=${this._removeConfig.bind(this)}>
-          ${configs.map((config: Config<any>) => {
-            config = new Config(
-              config.source,
-              config.values,
-              config.nameIndex,
-              config.id
-            );
-
-            return html`
-              <sl-tab
-                id=${config.id}
-                slot="nav"
-                panel=${config.id}
-                closable=${true}
-                >${config.source.name}</sl-tab
-              >
-
-              <sl-tab-panel name=${config.id}>
-                ${renderConfig(config.values)}
-              </sl-tab-panel>
-            `;
-          })}
-        </sl-tab-group>
-      </div>`;
-    }
   }
 
   private _renderForm() {
@@ -562,15 +548,52 @@ export class ManageConfigElement extends LitElement {
             return html`
               <div class="input-box">
                 <label>Version</label>
-                <p>${titleField.state.value}</p>
+                <p>${titleField.state.value === '' ? '0.0.0' : ''}</p>
               </div>
             `;
           }
         )}
+        ${this.#form.field({ name: 'extensionConfig.icon' }, (iconField) => {
+          let inputBox = html`<div class="success-box">
+            <sl-icon name="check2-all"></sl-icon>
+            <span class="label"
+              >${iconField.state.value?.name.length > 8
+                ? iconField.state.value?.name.slice(0, 8) + '...'
+                : iconField.state.value?.name}</span
+            >
+          </div>`;
+          if (!iconField.state.value) {
+            inputBox = html` <sl-input
+              help-text="96x96 only"
+              type="file"
+              class="icon"
+              @sl-change=${(e: Event) => {
+                const slInput = e.target as SlInput;
+
+                const input = slInput.shadowRoot?.querySelector(
+                  'input[type="file"]'
+                ) as HTMLInputElement;
+
+                const files = input.files;
+
+                if (files && files.length > 0) {
+                  iconField.setValue(files[0]);
+                }
+              }}
+            ></sl-input>`;
+          }
+
+          return html`
+            <div class="input-box">
+              <label>Icon</label>
+              <div class="input-box">${inputBox}</div>
+            </div>
+          `;
+        })}
         ${this.#form.field(
           { name: 'extensionConfig.configs' },
           (configsField) => {
-            return this._renderConfigs(configsField.state.value);
+            return renderConfigs.bind(this)(configsField.state.value, 'manage');
           }
         )}
         <i>TODO: make markdown editor after you make WYSIWYG</i>

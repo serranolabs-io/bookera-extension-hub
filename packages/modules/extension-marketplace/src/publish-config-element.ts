@@ -20,6 +20,10 @@ import manageConfigElementStyles from './manage-config-element.styles';
 import { defaultExtensionConfig } from './manage-config-stateful';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { renderConfigs } from './render-logic';
+import configSchemasStyles from './config-schemas.styles';
+import { renderImageBox } from './utils';
+import { schemaActions, schemaSendActions } from './config-schemas';
+import { notify } from '@serranolabs.io/shared/lit';
 
 export const PUBLISH_CONFIG_CONSTRUCTED_EVENT =
   'publish-config-constructed-event';
@@ -30,7 +34,7 @@ export const ExtensionKey = 'extension-key';
 
 @customElement('publish-config-element')
 export class PublishConfigElement extends LitElement {
-  static styles = [manageConfigElementStyles, baseCss];
+  static styles = [manageConfigElementStyles, baseCss, configSchemasStyles];
 
   private _config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>;
 
@@ -143,11 +147,47 @@ export class PublishConfigElement extends LitElement {
     });
   }
 
+  _downloadExtension() {
+    this._extension.configs.forEach((config: Config<any>) => {
+      const sendAction = schemaSendActions.find((sa) => {
+        const { success } = sa.schema.safeParse(config.values[0]);
+        return success;
+      });
+
+      if (!sendAction) {
+        notify('could not download extension :(', 'warning');
+        return;
+      }
+
+      sendAction.action(config);
+    });
+  }
+
   render() {
     if (!this._extension) return html``;
 
     return html`
-      ${renderConfigs.bind(this)(this._extension.configs, 'publish')}
+      <div class="center">
+        <div>
+          <div class="header">
+            ${renderImageBox(this._extension, '96')}
+            <div class="description-box">
+              <h4>${this._extension.title}</h4>
+              <p>${this._extension.description}</p>
+              <sl-button
+                size="small"
+                variant="primary"
+                class="install-button"
+                @click=${this._downloadExtension.bind(this)}
+                >download</sl-button
+              >
+            </div>
+          </div>
+          <div class="center-configs">
+            ${renderConfigs.bind(this)(this._extension.configs, 'publish')}
+          </div>
+        </div>
+      </div>
     `;
   }
 }

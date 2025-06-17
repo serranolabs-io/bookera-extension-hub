@@ -51,10 +51,13 @@ import {
 
 import { genShortID, sendEvent } from '@serranolabs.io/shared/util';
 import {
+  Config,
+  ExtensionConfig,
   SEND_CONFIG_EVENT,
   SEND_CONFIG_EVENT_TYPE,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { Source } from '@serranolabs.io/shared/keyboard-shortcuts';
+import { ExtensionDownloadEndpoints } from '@serranolabs.io/shared/extension-marketplace';
 
 export type ColorMode = 'Light' | 'Dark';
 
@@ -182,6 +185,26 @@ export class ThemesElement extends BookeraModuleElement {
   @state()
   private _isSystemDirty = false;
   private _isCustomDirty = false;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    if (this._config.renderMode === 'renderInDaemon') {
+      document.addEventListener(
+        ExtensionDownloadEndpoints.themes,
+        (e: CustomEvent<Config<any>>) => {
+          const configs = e.detail.values;
+          configs.forEach((config: Config<any>) => {
+            ColorPalettesSingleton.NewColorPaletteAndSelect(
+              this.bagManager,
+              config,
+              false
+            );
+          });
+        }
+      );
+    }
+  }
 
   constructor(config: BookeraModuleConfig<any>) {
     super(config);

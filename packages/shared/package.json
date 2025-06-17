@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/shared",
-  "version": "0.0.92",
+  "version": "0.0.93",
   "type": "module",
   "private": false,
   "scripts": {
@@ -91,19 +91,7 @@
         "types": "./dist/model/keyboard-shortcuts/model.d.ts"
       }
     },
-    "./extension-marketplace": {
-      "default": {
-        "import": "./dist/extension-marketplace.js",
-        "types": "./dist/model/extension-marketplace/main.d.ts"
-      },
-      "development": {
-        "import": "./src/model/extension-marketplace/main.ts"
-      },
-      "production": {
-        "import": "./dist/extension-marketplace.js",
-        "types": "./dist/model/extension-marketplace/main.d.ts"
-      }
-    },
+    "./extension-marketplace": "./src/model/extension-marketplace/main.ts",
     "./util": {
       "default": {
         "import": "./dist/util.js",

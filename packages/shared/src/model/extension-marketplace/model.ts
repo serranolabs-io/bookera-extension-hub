@@ -6,6 +6,11 @@ import { genShortID } from '../util';
 import { BookeraModuleSchema } from '../../module/module';
 import { version } from 'bun';
 
+export const ExtensionDownloadEndpoints = {
+  themes: 'themes-download-endpoint',
+  keyboardShortcuts: 'keyboard-shortcuts-download-endpoint',
+};
+
 export interface Config<T extends object> {
   source: Source; // name: Theme, link: blah blah
   values: T[]; // CustomColorPalette
@@ -18,6 +23,8 @@ export interface SEND_CONFIG_EVENT_TYPE<T extends object> {
 }
 export const SEND_CONFIG_EVENT = 'send-config-event';
 export const SEND_CONFIG_EVENT_FROM_API = 'send-config-from-api-event';
+
+export const ExtensionMarketplaceTEst = 'worldiiiidd';
 
 export class Config<T> {
   source: Source; // name: Theme, link: blah blah
@@ -48,7 +55,7 @@ export interface ExtensionConfig<T>
   configs: Config<T>[]; // pass in Theme[], or KeyboardShortcut[]
   user: User; // user who publishes -> for now, you are assigned a random session_id or some shit
   isPublished: boolean;
-  icon: string; // base64 encoded icon, shit
+  icon: File | null; // base64 encoded icon, shit
 }
 
 const toKebabCase = (str: string) =>
