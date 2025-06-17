@@ -98,7 +98,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected _contextMenuState: ContextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
 
   @state()
-  private _shortcutsBag!: Bag<KeyboardShortcut>;
+  private accessor _shortcutsBag!: Bag<KeyboardShortcut>;
 
   protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
@@ -129,7 +129,6 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     }
 
     this._setupState();
-    console.log('helo from keyboard');
   }
 
   connectedCallback(): void {
