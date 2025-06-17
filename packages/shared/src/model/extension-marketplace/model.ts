@@ -24,8 +24,6 @@ export interface SEND_CONFIG_EVENT_TYPE<T extends object> {
 export const SEND_CONFIG_EVENT = 'send-config-event';
 export const SEND_CONFIG_EVENT_FROM_API = 'send-config-from-api-event';
 
-export const ExtensionMarketplaceTEst = 'worldiiiidd';
-
 export class Config<T> {
   source: Source; // name: Theme, link: blah blah
   values: T[]; // CustomColorPalette

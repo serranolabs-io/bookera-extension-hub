@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/bookera-keyboard-shortcuts",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "type": "module",
   "scripts": {
     "build": "vite build",
@@ -9,7 +9,7 @@
     "test": "vitest"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "dependencies": {
     "@pb33f/saddlebag": "^0.2.2",
@@ -20,8 +20,9 @@
     "localforage": "^1.10.0",
     "vite-plugin-dts": "^4.5.3"
   },
-  "main": "./dist/bookera-keyboard-shortcuts.js",
-  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": "./src/main.ts"
+  },
   "private": false,
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.25.9",

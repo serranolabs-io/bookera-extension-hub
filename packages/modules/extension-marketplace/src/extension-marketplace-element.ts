@@ -44,11 +44,8 @@ import {
 } from './publish-config-element';
 import { Configuration, DefaultApi } from './backend';
 import { Task } from '@lit/task';
-import { ExtensionMarketplaceTEst } from '@serranolabs.io/shared/extension-marketplace';
 
 export const elementName = 'extension-marketplace-element';
-
-console.log('TEST', ExtensionMarketplaceTEst);
 
 export const MANAGE_CONFIG_BAG_KEY = 'manage-config-bag-key';
 @customElement(elementName)

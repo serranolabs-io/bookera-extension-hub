@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/bookera-themes",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "type": "module",
   "scripts": {
     "build": "vite build",
@@ -8,36 +8,11 @@
     "preview": "vite preview"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "exports": {
-    ".": {
-      "default": {
-        "import": "./dist/bookera-themes.js",
-        "types": "./dist/main.d.ts"
-      },
-      "development": {
-        "import": "./src/bookera-themes.ts",
-        "types": "./dist/main.d.ts"
-      },
-      "production": {
-        "import": "./dist/shortcuts.js",
-        "types": "./dist/main.d.ts"
-      }
-    },
-    "./shortcuts": {
-      "default": {
-        "import": "./dist/shortcuts.js",
-        "types": "./dist/shortcuts.json.d.ts"
-      },
-      "development": {
-        "import": "./src/shortcuts.json"
-      },
-      "production": {
-        "import": "./dist/shortcuts.js",
-        "types": "./dist/shortcuts.json.d.ts"
-      }
-    }
+    ".": "./src/bookera-themes.ts",
+    "./shortcuts": "./src/shortcuts.json"
   },
   "dependencies": {
     "@pb33f/saddlebag": "^0.2.2",

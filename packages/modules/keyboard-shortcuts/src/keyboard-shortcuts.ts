@@ -129,6 +129,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     }
 
     this._setupState();
+    console.log('helo from keyboard');
   }
 
   connectedCallback(): void {
