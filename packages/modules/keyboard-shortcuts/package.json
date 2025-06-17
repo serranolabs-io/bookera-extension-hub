@@ -1,6 +1,6 @@
 {
   "name": "@serranolabs.io/bookera-keyboard-shortcuts",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "type": "module",
   "scripts": {
     "build": "vite build",
@@ -12,6 +12,7 @@
     "src"
   ],
   "dependencies": {
+    "fuse.js": "^7.1.0",
     "@pb33f/saddlebag": "^0.2.2",
     "@serranolabs.io/shared": "*",
     "@shoelace-style/shoelace": "^2.20.1",

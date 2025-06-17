@@ -27,7 +27,6 @@
   ],
   "dependencies": {
     "@changesets/cli": "^2.29.2",
-    "@tanstack/lit-form": "^1.11.1",
-    "fuse.js": "^7.1.0"
+    "@tanstack/lit-form": "^1.11.1"
   }
 }
