@@ -72,7 +72,7 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   _sendConfigToPublishConfigListener!: Function;
 
   @state()
-  protected _extensions: ExtensionConfig<any>[] = [];
+  protected accessor _extensions: ExtensionConfig<any>[] = [];
 
   protected _extensionsTask: null | Task = null;
 
@@ -90,7 +90,7 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   ];
 
   @state()
-  _temporaryConfig: Config<any> | null = null;
+  accessor _temporaryConfig: Config<any> | null = null;
 
   _sendConfigToManageConfigInstanceListener!: Function;
 
