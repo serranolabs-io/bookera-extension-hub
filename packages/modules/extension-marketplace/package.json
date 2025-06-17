@@ -13,7 +13,7 @@
     "src"
   ],
   "exports": {
-    ".": "./src/extension-marketplace.ts",
+    ".": "./src/main.ts",
     "./shortcuts": "./src/shortcuts.json"
   },
   "dependencies": {
