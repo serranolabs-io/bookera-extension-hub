@@ -36,16 +36,16 @@ export class DarkMode extends LitElement {
   daemon: boolean = false;
 
   @state()
-  bagManager!: BagManager;
+  accessor bagManager!: BagManager;
 
   @state()
-  bag!: Bag<ColorMode>;
+  accessor bag!: Bag<ColorMode>;
 
   @property()
-  colorMode!: ColorMode;
+  accessor colorMode!: ColorMode;
 
   @state()
-  appliedMode: boolean = true;
+  accessor appliedMode: boolean = true;
 
   private _switchColorModeEventListener!: Function;
 

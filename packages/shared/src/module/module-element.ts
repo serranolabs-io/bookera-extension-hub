@@ -51,23 +51,20 @@ export abstract class BookeraModuleElement extends LitElement {
   @state()
   accessor module!: BookeraModule;
 
-  @state() title!: string;
+  @state() accessor title!: string;
 
   @state()
-  renderMode: RenderMode;
-
-  @state()
-  u: boolean = false;
+  accessor renderMode: RenderMode;
 
   private _panelTabId: string | undefined;
 
   protected _source?: Source;
 
   @state()
-  instanceId: string | undefined;
+  accessor instanceId: string | undefined;
 
   @state()
-  protected _isInstanceDirty: boolean = false;
+  protected accessor _isInstanceDirty: boolean = false;
 
   protected _bagManager: BagManager;
   protected _bag: Bag | undefined;
