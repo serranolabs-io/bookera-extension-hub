@@ -123,10 +123,10 @@ export class Formwrapper extends LitElement {
   ];
 
   @property()
-  keybindingsInput!: HTMLInputElement;
+  accessor keybindingsInput!: HTMLInputElement;
 
   @state()
-  assignKeybindingDialogState: AssignKeybindingDialog =
+  accessor assignKeybindingDialogState: AssignKeybindingDialog =
     ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
 
   private _modifiers: KeyboardEventKey[] = [];
