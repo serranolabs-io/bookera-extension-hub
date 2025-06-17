@@ -43,7 +43,7 @@ import { calculateValue } from './formwrapper';
 import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 import { SlDialog } from '@shoelace-style/shoelace';
 import { FuseResult } from 'fuse.js';
-import { renderMatches } from './fuse';
+import { renderMatches } from './fuzzy';
 
 export const elementName = 'keyboard-shortcuts-element';
 

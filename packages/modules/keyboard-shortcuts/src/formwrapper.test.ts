@@ -17,7 +17,7 @@ import {
 } from './handle-keyboard-shortcut';
 import { html } from 'lit';
 import { KeyboardShortcutsState } from './state';
-import { renderMatches } from './fuse';
+import { renderMatches } from './fuzzy';
 vi.mock(
   'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/dialog/dialog.js',
   () => ({
