@@ -49,7 +49,7 @@ customElement('bookera-module-element');
  */
 export abstract class BookeraModuleElement extends LitElement {
   @state()
-  module!: BookeraModule;
+  accessor module!: BookeraModule;
 
   @state() title!: string;
 
