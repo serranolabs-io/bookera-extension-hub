@@ -52,7 +52,7 @@ export const MANAGE_CONFIG_BAG_KEY = 'manage-config-bag-key';
 export class ExtensionMarketplaceElement extends BookeraModuleElement {
   static styles = [extensionMarketplaceStyles, baseCss, moduleElementStyles];
 
-  private _manageConfigBag: Bag<ExtensionConfig<any>> | undefined;
+  private _manageConfigBag: Bag<ExtensionConfig> | undefined;
 
   protected _backendApi = new DefaultApi(apiConfig);
 
@@ -68,11 +68,11 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     }
   }
 
-  protected _sidePanelSelectedExtension: ExtensionConfig<any> | null = null;
+  protected _sidePanelSelectedExtension: ExtensionConfig | null = null;
   _sendConfigToPublishConfigListener!: Function;
 
   @state()
-  protected _extensions: ExtensionConfig<any>[] = [];
+  protected _extensions: ExtensionConfig[] = [];
 
   protected _extensionsTask: null | Task = null;
 
@@ -90,7 +90,7 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   ];
 
   @state()
-  _temporaryConfig: Config<any> | null = null;
+  _temporaryConfig: Config | null = null;
 
   _sendConfigToManageConfigInstanceListener!: Function;
 

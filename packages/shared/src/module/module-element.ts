@@ -75,9 +75,9 @@ export abstract class BookeraModuleElement extends LitElement {
     return this.module.id! + this._panelTabId;
   }
 
-  protected _config: BookeraModuleConfig<any>;
+  protected _config: BookeraModuleConfig;
 
-  constructor(config: BookeraModuleConfig<any>) {
+  constructor(config: BookeraModuleConfig) {
     super();
     this.renderMode = config.renderMode;
     this.module = config.module;

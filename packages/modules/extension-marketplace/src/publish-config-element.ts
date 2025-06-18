@@ -24,6 +24,7 @@ import configSchemasStyles from './config-schemas.styles';
 import { renderImageBox } from './utils';
 import { schemaActions, schemaSendActions } from './config-schemas';
 import { notify } from '@serranolabs.io/shared/lit';
+import { Extension } from './backend';
 
 export const PUBLISH_CONFIG_CONSTRUCTED_EVENT =
   'publish-config-constructed-event';
@@ -43,13 +44,13 @@ export class PublishConfigElement extends LitElement {
   @query(`#${ARE_YOU_SURE_DIALOG}`)
   private _areYouSureDialog!: SlDialog;
 
-  private _bag: Bag<ExtensionConfig<any>>;
+  private _bag: Bag<ExtensionConfig>;
 
   private _bagManager: BagManager;
 
-  private _selectedConfig: Config<any> | null = null;
+  private _selectedConfig: Config | null = null;
 
-  private _extension!: ExtensionConfig<any>;
+  private _extension!: ExtensionConfig & Extension;
 
   private _runLocalFlow: (defaultFunction: () => void) => void;
 
@@ -57,7 +58,7 @@ export class PublishConfigElement extends LitElement {
 
   constructor(
     config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>,
-    bag: Bag<ExtensionConfig<any>>,
+    bag: Bag<ExtensionConfig>,
     bagManager: BagManager,
     runLocalFlow: (defaultsFunction: () => void) => void,
     savePanelTabState: any
@@ -96,15 +97,11 @@ export class PublishConfigElement extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    console.log('panel cosntructed');
-
     sendEvent(this, PUBLISH_CONFIG_CONSTRUCTED_EVENT);
     this._kickOffLocalFlow();
   }
 
   private _listenToConfigEvents(e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>) {
-    console.log('config sent!!! publish config', e.detail.config);
-
     if (!e.detail.config) return;
 
     this._extension = e.detail.config;
@@ -134,11 +131,7 @@ export class PublishConfigElement extends LitElement {
       console.log(key);
     });
 
-    console.log('bag', this._bag);
-
     Array.from(this._bag?.export().entries()).forEach(([key, newValue]) => {
-      console.log(key, newValue);
-
       if (key === ExtensionKey) {
         this._extension = newValue;
       }
@@ -148,7 +141,7 @@ export class PublishConfigElement extends LitElement {
   }
 
   _downloadExtension() {
-    this._extension.configs.forEach((config: Config<any>) => {
+    this._extension.configs.forEach((config: Config) => {
       const sendAction = schemaSendActions.find((sa) => {
         const { success } = sa.schema.safeParse(config.values[0]);
         return success;

@@ -98,7 +98,7 @@ const lilChigga = {
   },
 };
 
-const randomConfigs: Config<any>[] = [
+const randomConfigs: Config[] = [
   new Config({ name: 'Themes', link: 'https://' }, lilChigga, 'name', '1'),
   // new Config(
   //   { name: 'Themes', link: 'https://' },
@@ -123,11 +123,11 @@ const randomConfigs: Config<any>[] = [
 
 // keyboard shortcuts dont have a label
 
-const mockData: ExtensionConfig<any> = {
+const mockData: ExtensionConfig = {
   version: '0.0.0',
   title: 'Title of your config',
   description: 'LOLOLOLO',
-  configs: randomConfigs as Config<any>[],
+  configs: randomConfigs as Config[],
   user: new User('me', 'user.text', []),
   isPublished: false,
   icon: null,
@@ -247,22 +247,22 @@ export class ManageConfigElement extends LitElement {
     },
   });
 
-  private _manageConfigBag: Bag<ExtensionConfig<any>>;
+  private _manageConfigBag: Bag<ExtensionConfig>;
 
   private _saveSyncedLocalForage: any;
 
   private _bagManager: BagManager;
 
-  private _selectedConfig: Config<any> | null = null;
+  private _selectedConfig: Config | null = null;
 
   constructor(
     config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>,
-    manageConfigBag: Bag<ExtensionConfig<any>>,
+    manageConfigBag: Bag<ExtensionConfig>,
     bagManager: BagManager,
     runSyncedFlow: (
       defaultsFunction: () => void,
       key: string
-    ) => Promise<Bag<ExtensionConfig<any>>>,
+    ) => Promise<Bag<ExtensionConfig>>,
     saveSyncedLocalForage: any
   ) {
     super();
@@ -345,11 +345,8 @@ export class ManageConfigElement extends LitElement {
 
   // ^ I am assuming that if there is an array being sent in, you must append it to
   // ^ the config that already exists
-  private _addToPreviousConfig(
-    configs: Config<any>[],
-    newValue: any[]
-  ): boolean {
-    return configs.find((config: Config<any>) => {
+  private _addToPreviousConfig(configs: Config[], newValue: any[]): boolean {
+    return configs.find((config: Config) => {
       // find schema
       const schema = schemas.find((schema) => {
         const { success } = schema.safeParse(config.values);
@@ -381,9 +378,7 @@ export class ManageConfigElement extends LitElement {
     let configs = this.#form.api.getFieldValue('extensionConfig.configs');
     if (
       configs
-        .flatMap((config: Config<any>) =>
-          config.values.map((value) => value.id)
-        )
+        .flatMap((config: Config) => config.values.map((value) => value.id))
         .includes(e.detail.config.id)
     ) {
       notify(
@@ -442,7 +437,7 @@ export class ManageConfigElement extends LitElement {
 
     this._areYouSureDialog.show();
 
-    const config = configs.find((config: Config<any>) => {
+    const config = configs.find((config: Config) => {
       return config.id === (target as HTMLElement).id;
     })!;
 

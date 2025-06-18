@@ -52,7 +52,7 @@ function selectExtensionFromMarketplace(
 
   const id = Number(el.id);
 
-  const extension = this._extensions.find((extension: ExtensionConfig<any>) => {
+  const extension = this._extensions.find((extension: ExtensionConfig) => {
     // todo: use zod
     return extension.id == id;
   });
@@ -80,7 +80,7 @@ function selectExtensionFromMarketplace(
   this._sidePanelSelectedExtension = extension;
 }
 
-function renderExtension(extension: ExtensionConfig<any> & Extension) {
+function renderExtension(extension: ExtensionConfig & Extension) {
   return html`
     <li>
       <button id=${extension.id}>
@@ -106,9 +106,7 @@ export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
         pending: () => {
           return html`<p>Loading product...</p>`;
         },
-        complete: (
-          extensions: readonly (ExtensionConfig<any> & Extension)[]
-        ) => {
+        complete: (extensions: readonly (ExtensionConfig & Extension)[]) => {
           this._extensions = extensions;
 
           return extensions.map(
@@ -142,7 +140,7 @@ export function renderInSidePanel(
 
 export const convertBackendExtensionIntoExtension = (
   extensions: Extension[]
-): ExtensionConfig<any>[] => {
+): ExtensionConfig[] => {
   return extensions.map((extension: Extension) => {
     const packageJson: PackageJson = JSON.parse(extension.packageJson);
 
@@ -156,7 +154,7 @@ export const convertBackendExtensionIntoExtension = (
       author: packageJson.author,
       isPublished: packageJson.private,
       id: extension.id ? String(extension.id) : '',
-    } as ExtensionConfig<any>;
+    } as ExtensionConfig;
   });
 };
 

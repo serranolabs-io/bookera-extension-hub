@@ -21,7 +21,7 @@ export const apiConfig: Configuration = new Configuration({
 export const UPSERT_CONFIG_PANEL_EVENT = 'upsert-config-panel-event';
 
 export interface UpsertConfigPanel {
-  config: Config<any>;
+  config: Config;
 }
 
 export const SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT =

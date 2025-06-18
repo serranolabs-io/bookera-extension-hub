@@ -191,9 +191,9 @@ export class ThemesElement extends BookeraModuleElement {
     if (this._config.renderMode === 'renderInDaemon') {
       document.addEventListener(
         ExtensionDownloadEndpoints.themes,
-        (e: CustomEvent<Config<any>>) => {
+        (e: CustomEvent<Config>) => {
           const configs = e.detail.values;
-          configs.forEach((config: Config<any>) => {
+          configs.forEach((config: Config) => {
             ColorPalettesSingleton.NewColorPaletteAndSelect(
               this.bagManager,
               config,
@@ -205,7 +205,7 @@ export class ThemesElement extends BookeraModuleElement {
     }
   }
 
-  constructor(config: BookeraModuleConfig<any>) {
+  constructor(config: BookeraModuleConfig) {
     super(config);
 
     savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue(

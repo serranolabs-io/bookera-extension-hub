@@ -9,7 +9,7 @@ type RenderConfigsMode = 'publish' | 'manage';
 // we can reuse the way we render extensions
 export function renderConfigs(
   this: ManageConfigElement | PublishConfigElement,
-  configs: Config<any>[],
+  configs: Config[],
   mode: RenderConfigsMode
 ) {
   if (configs.length === 0) {
@@ -50,7 +50,7 @@ export function renderConfigs(
           ? (this as ManageConfigElement).removeConfig.bind(this)
           : undefined}
       >
-        ${configs.map((config: Config<any>) => {
+        ${configs.map((config: Config) => {
           config = new Config(
             config.source,
             config.values,

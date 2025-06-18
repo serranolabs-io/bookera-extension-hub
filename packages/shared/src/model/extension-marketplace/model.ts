@@ -3,8 +3,6 @@ import { BookeraModule } from '../../module/module';
 import { Source } from '../keyboard-shortcuts/model';
 import { User } from '../user/author';
 import { genShortID } from '../util';
-import { BookeraModuleSchema } from '../../module/module';
-import { version } from 'bun';
 
 export const ExtensionDownloadEndpoints = {
   themes: 'themes-download-endpoint',
@@ -24,7 +22,7 @@ export interface SEND_CONFIG_EVENT_TYPE<T extends object> {
 export const SEND_CONFIG_EVENT = 'send-config-event';
 export const SEND_CONFIG_EVENT_FROM_API = 'send-config-from-api-event';
 
-export class Config<T> {
+export class Config<T extends object = {}> {
   source: Source; // name: Theme, link: blah blah
   values: T[]; // CustomColorPalette
   id: string;
@@ -48,7 +46,7 @@ export class Config<T> {
   }
 }
 
-export interface ExtensionConfig<T>
+export interface ExtensionConfig<T extends object = {}>
   extends Pick<BookeraModule, 'version' | 'title' | 'description' | 'id'> {
   configs: Config<T>[]; // pass in Theme[], or KeyboardShortcut[]
   user: User; // user who publishes -> for now, you are assigned a random session_id or some shit

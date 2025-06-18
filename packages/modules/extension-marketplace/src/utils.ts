@@ -11,7 +11,7 @@ export const getExtensionIcon = (
 };
 
 export function renderImageBox(
-  extension: ExtensionConfig<any> & Extension,
+  extension: ExtensionConfig & Extension,
   size = '48'
 ): TemplateResult {
   let content = html`<sl-icon name="puzzle"></sl-icon>`;

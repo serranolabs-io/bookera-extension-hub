@@ -6,11 +6,11 @@ import {
 import { User } from '@serranolabs.io/shared/user';
 import { genShortID } from '@serranolabs.io/shared/util';
 
-export const defaultExtensionConfig: ExtensionConfig<any> = {
+export const defaultExtensionConfig: ExtensionConfig = {
   version: '',
   title: '',
   description: '',
-  configs: [] as Config<any>[],
+  configs: [] as Config[],
   markdown: '',
   user: new User('', '', []),
   isPublished: false,
