@@ -89,16 +89,16 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   static styles = [keyboardShortcutsStyle, moduleElementStyles, baseCss];
 
   @state()
-  protected accessor _keyboardShortcuts: KeyboardShortcut[] = [];
+  protected _keyboardShortcuts: KeyboardShortcut[] = [];
 
   @state()
-  accessor assignKeybindingDialogState: AssignKeybindingDialog =
+  assignKeybindingDialogState: AssignKeybindingDialog =
     ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
 
   protected _contextMenuState: ContextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
 
   @state()
-  private accessor _shortcutsBag!: Bag<KeyboardShortcut>;
+  private _shortcutsBag!: Bag<KeyboardShortcut>;
 
   protected _allKeyPressSets: KeyboardEventKey[][] = [];
 
@@ -117,7 +117,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   private _closeContextMenuListener!: Function;
 
   @query(`#${COMMAND_PALETTE_DIALOG}`)
-  accessor _commandPaletteDialog!: SlDialog;
+  _commandPaletteDialog!: SlDialog;
 
   constructor(config: BookeraModuleConfig) {
     super(config);

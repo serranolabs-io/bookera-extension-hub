@@ -11,7 +11,7 @@
     "src"
   ],
   "exports": {
-    ".": "./src/bookera-themes.ts",
+    ".": "./src/main.ts",
     "./shortcuts": "./src/shortcuts.json"
   },
   "dependencies": {

@@ -49,22 +49,22 @@ customElement('bookera-module-element');
  */
 export abstract class BookeraModuleElement extends LitElement {
   @state()
-  accessor module!: BookeraModule;
+  module!: BookeraModule;
 
-  @state() accessor title!: string;
+  @state() title!: string;
 
   @state()
-  accessor renderMode: RenderMode;
+  renderMode: RenderMode;
 
   private _panelTabId: string | undefined;
 
   protected _source?: Source;
 
   @state()
-  accessor instanceId: string | undefined;
+  instanceId: string | undefined;
 
   @state()
-  protected accessor _isInstanceDirty: boolean = false;
+  protected _isInstanceDirty: boolean = false;
 
   protected _bagManager: BagManager;
   protected _bag: Bag | undefined;

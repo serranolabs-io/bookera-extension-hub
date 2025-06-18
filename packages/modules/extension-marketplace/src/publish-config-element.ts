@@ -41,7 +41,7 @@ export class PublishConfigElement extends LitElement {
   private _listenToPublishConfigEventListener!: Function;
 
   @query(`#${ARE_YOU_SURE_DIALOG}`)
-  private accessor _areYouSureDialog!: SlDialog;
+  private _areYouSureDialog!: SlDialog;
 
   private _bag: Bag<ExtensionConfig<any>>;
 

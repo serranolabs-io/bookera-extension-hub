@@ -23,7 +23,8 @@
     "packages/modules/*",
     "packages/extensions/*",
     "packages/shared",
-    "packages/typescript-config"
+    "packages/typescript-config",
+    "apps/*"
   ],
   "dependencies": {
     "@changesets/cli": "^2.29.2",

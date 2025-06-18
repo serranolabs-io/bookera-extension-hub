@@ -66,16 +66,16 @@ export class ContextMenu extends LitElement {
   ];
 
   @property()
-  accessor contextMenuState: ContextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
+  contextMenuState: ContextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
 
   @state()
-  accessor rect!: DOMRect;
+  rect!: DOMRect;
 
   @property()
-  accessor bagManager!: BagManager;
+  bagManager!: BagManager;
 
   @property()
-  accessor source!: Source;
+  source!: Source;
 
   constructor() {
     super();

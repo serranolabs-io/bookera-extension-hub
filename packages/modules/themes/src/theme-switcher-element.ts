@@ -120,67 +120,67 @@ export const savingProperties = {
 export class ThemesElement extends BookeraModuleElement {
   static styles = [themeSwitcherElementStyles, baseCss, moduleElementStyles];
 
-  @query('#color-selector') accessor colorSelect!: SlSelect;
+  @query('#color-selector') colorSelect!: SlSelect;
 
-  @query('#primary-color-picker') accessor primaryColorPicker!: SlColorPicker;
+  @query('#primary-color-picker') primaryColorPicker!: SlColorPicker;
 
   @property()
-  accessor bagManager: BagManager = CreateBagManager(true);
+  bagManager: BagManager = CreateBagManager(true);
 
   @state()
-  accessor createColorPaletteMode: boolean = savingKeys.createColorPaletteMode;
+  createColorPaletteMode: boolean = savingKeys.createColorPaletteMode;
 
   // only consume what I want from the singleton
   @state()
-  accessor colorPalettes: ColorPalette[] = [];
+  colorPalettes: ColorPalette[] = [];
 
   // system color palette mode
   @state()
-  accessor systemName: string = savingKeys.systemName;
+  systemName: string = savingKeys.systemName;
 
   @state()
-  accessor systemColorPaletteMode: boolean = savingKeys.systemColorPaletteMode;
+  systemColorPaletteMode: boolean = savingKeys.systemColorPaletteMode;
 
   @state()
-  accessor primaryColor: string = savingKeys.primaryColor;
+  primaryColor: string = savingKeys.primaryColor;
 
   @state()
-  accessor backgroundColor: SystemColorSets = savingKeys.backgroundColor;
+  backgroundColor: SystemColorSets = savingKeys.backgroundColor;
   // end system color palette mode
 
   // begin custom color palettes
   @state()
-  accessor lightMode: Mode = savingKeys.lightMode;
+  lightMode: Mode = savingKeys.lightMode;
 
   @state()
-  accessor darkMode: Mode = savingKeys.darkMode;
+  darkMode: Mode = savingKeys.darkMode;
 
   @state()
-  accessor customName: string = savingKeys.customName;
+  customName: string = savingKeys.customName;
 
   @state()
-  accessor colorPalettesBag!: Bag<ColorPalette>;
+  colorPalettesBag!: Bag<ColorPalette>;
 
   @state()
-  accessor selectedColorPalette: ColorPalette | null = null;
+  selectedColorPalette: ColorPalette | null = null;
 
   @state()
-  accessor customPaletteStep: CustomColorStep = 'LightMode';
+  customPaletteStep: CustomColorStep = 'LightMode';
 
   @state()
-  accessor darkModeElement!: DarkMode;
+  darkModeElement!: DarkMode;
 
   @state()
-  accessor modeBag!: Bag<ColorMode>;
+  modeBag!: Bag<ColorMode>;
 
   @state()
-  accessor _currentColorMode!: ColorMode;
+  _currentColorMode!: ColorMode;
 
   @state()
-  accessor hasFirstUpdated: boolean = false;
+  hasFirstUpdated: boolean = false;
 
   @state()
-  private accessor _hasAppliedChanges: boolean = false;
+  private _hasAppliedChanges: boolean = false;
 
   private _isSystemDirty = false;
   private _isCustomDirty = false;

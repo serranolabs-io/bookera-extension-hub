@@ -152,7 +152,7 @@ export class ManageConfigElement extends LitElement {
   private _listenToConfigFromApiEventListener!: Function;
 
   @query(`#${ARE_YOU_SURE_DIALOG}`)
-  private accessor _areYouSureDialog!: SlDialog;
+  private _areYouSureDialog!: SlDialog;
 
   private _backendApi = new DefaultApi(apiConfig);
 
