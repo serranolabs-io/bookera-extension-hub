@@ -19,6 +19,11 @@ import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Source } from '../model/keyboard-shortcuts/model';
+import {
+  AuthChangeEvent,
+  Session,
+  User as SupabaseUser,
+} from '@supabase/supabase-js';
 
 customElement('bookera-module-element');
 /**
@@ -71,6 +76,12 @@ export abstract class BookeraModuleElement extends LitElement {
 
   protected _supabase!: SupabaseClient | null;
 
+  @state()
+  protected _user: SupabaseUser | undefined;
+
+  @state()
+  protected _signedIn: boolean = false;
+
   private _formInstanceId() {
     return this.module.id! + this._panelTabId;
   }
@@ -104,11 +115,45 @@ export abstract class BookeraModuleElement extends LitElement {
       );
     }
 
+    this._getSupabase();
     // @ts-expect-error addEventListener sucks
     document.addEventListener(
       RequestUpdateEvent,
       this.listenToUpdates.bind(this)
     );
+  }
+
+  private async _getSupabase() {
+    this._config.supabase?.auth.onAuthStateChange(
+      this._onAuthStateChange.bind(this)
+    );
+
+    const session = await this._config.supabase?.auth.getSession();
+    if (session?.error) {
+      return;
+    }
+
+    if (session?.data.session) {
+      this._user = session.data.session?.user;
+      this._signedIn = true;
+    }
+  }
+
+  _onAuthStateChange(
+    event: AuthChangeEvent,
+    session: Session | null
+  ): void | Promise<void> {
+    if (event === 'SIGNED_IN') {
+      this._signedIn = true;
+      if (session) {
+        this._user = session.user;
+      }
+    } else if (event === 'SIGNED_OUT') {
+      this._user = undefined;
+      this._signedIn = false;
+    }
+
+    console.log(event, session);
   }
 
   protected _getSyncedBag<T>(key: string): Bag<T> | undefined {

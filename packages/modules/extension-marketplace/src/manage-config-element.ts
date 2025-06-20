@@ -34,6 +34,7 @@ import { DefaultApi } from './backend/apis/DefaultApi';
 import { Task } from '@lit/task';
 import { renderConfigs } from './render-logic';
 import configSchemasStyles from './config-schemas.styles';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 const lilChigga = {
   name: 'LilChigga',
@@ -255,6 +256,8 @@ export class ManageConfigElement extends LitElement {
 
   private _selectedConfig: Config | null = null;
 
+  private _user: SupabaseUser;
+
   constructor(
     config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>,
     manageConfigBag: Bag<ExtensionConfig>,
@@ -263,18 +266,18 @@ export class ManageConfigElement extends LitElement {
       defaultsFunction: () => void,
       key: string
     ) => Promise<Bag<ExtensionConfig>>,
-    saveSyncedLocalForage: any
+    saveSyncedLocalForage: any,
+    user: SupabaseUser
   ) {
     super();
 
+    this._user = user;
     this._bagManager = bagManager;
     this._config = config;
     this._manageConfigBag = manageConfigBag;
     this._manageConfigBag.onAllChanges(this._setupExtensionConfig.bind(this));
     this._setupExtensionConfig(MANAGE_CONFIG_BAG_KEY);
-
     this._saveSyncedLocalForage = saveSyncedLocalForage;
-
     this._setupState(runSyncedFlow);
   }
 
@@ -456,8 +459,6 @@ export class ManageConfigElement extends LitElement {
       <form
         @submit=${(e: SubmitEvent) => {
           e.preventDefault();
-          console.log('submti');
-          // this.#form.api.handleSubmit = this._submitForm.bind(this);
         }}
       >
         ${this.#form.field(
@@ -596,7 +597,8 @@ export class ManageConfigElement extends LitElement {
         ${this.#form.field(
           { name: 'extensionConfig.isPublished' },
           (isPublishedField) => {
-            if (!isPublishedField.state.value) {
+            console.log(this._user);
+            if (this._user) {
               return html`
                 <div class="horizontal">
                   <sl-button
@@ -621,14 +623,8 @@ export class ManageConfigElement extends LitElement {
                 </div>
               `;
             }
-            //  else if (isPublishedField.state.value) {
 
-            //   return html`
-            //     <div class="horizontal">
-            //       <sl-button variant="primary">Save Changes</sl-button>
-            //     </div>
-            //   `;
-            // }
+            return html` <p>Must be signed in to create an extension!</p> `;
           }
         )}
       </form>

@@ -18,11 +18,12 @@ import {
   PanelTab,
   PanelTabs,
 } from '@serranolabs.io/shared/panel';
-import { moduleInstances, windows } from './api';
+import { moduleInstances, upsertConfigPanel, windows } from './api';
 import { Extension } from './backend';
 import { User } from '@serranolabs.io/shared/user';
 import { Task } from '@lit/task';
 import { getExtensionIcon, renderImageBox } from './utils';
+import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/skeleton/skeleton.js';
 
 export const marketplace = 'marketplace';
 export const downloaded = 'downloaded';
@@ -96,6 +97,19 @@ function renderExtension(extension: ExtensionConfig & Extension) {
   `;
 }
 
+function renderSkeleton() {
+  return html`<div class="skeleton-overview">
+    <header>
+      <sl-skeleton effect="pulse"></sl-skeleton>
+    </header>
+    <div>
+      <sl-skeleton effect="pulse"></sl-skeleton>
+      <sl-skeleton effect="pulse"></sl-skeleton>
+      <sl-skeleton effect="pulse"></sl-skeleton>
+    </div>
+  </div> `;
+}
+
 export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
   return html`
     <ul
@@ -104,10 +118,16 @@ export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
     >
       ${this._extensionsTask?.render({
         pending: () => {
-          return html`<p>Loading product...</p>`;
+          return html`<div class="skeleton-list">
+            ${Array.from({ length: 5 }, () => renderSkeleton())}
+          </div> `;
         },
         complete: (extensions: readonly (ExtensionConfig & Extension)[]) => {
           this._extensions = extensions;
+
+          if (extensions.length === 0) {
+            return html`🙅‍♀️ No extensions`;
+          }
 
           return extensions.map(
             (extension: ExtensionConfig<string> & Extension) => {
@@ -125,10 +145,28 @@ export function renderDownloadedPanel(this: ExtensionMarketplaceElement) {
   return html`hello from panel`;
 }
 
+export function handleCreateExtension(this: ExtensionMarketplaceElement) {
+  upsertConfigPanel.bind(this)(null);
+}
+
 export function renderInSidePanel(
   this: ExtensionMarketplaceElement
 ): TemplateResult {
+  const renderCreateExtensionButton = () => {
+    return html`
+      <div class="create-extension-box">
+        <sl-tooltip content="Create extension!"></sl-tooltip>
+        <sl-icon-button
+          name="plus-circle"
+          @click=${handleCreateExtension.bind(this)}
+        >
+        </sl-icon-button>
+      </div>
+    `;
+  };
+
   return html`
+    ${renderCreateExtensionButton()}
     <sl-tab-group>
       ${this._tabs.map((tab: TabGroup) => {
         return html`<sl-tab slot="nav" panel=${tab.value}>${tab.name}</sl-tab>
@@ -181,17 +219,4 @@ export async function setupSidePanel(this: ExtensionMarketplaceElement) {
     },
     args: () => [],
   });
-  // const { data: configs, error } = await this._supabase
-  //   .from<string, ExtensionConfig<string>>('ExtensionConfig')
-  //   .select('*');
-
-  // if (error) {
-  //   console.error('Error fetching extension configs:', error);
-  //   return;
-  // }
-
-  // if (!configs) {
-  //   console.warn('No extension configs found.');
-  //   return;
-  // }
 }

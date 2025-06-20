@@ -43,20 +43,22 @@ export type ExtensionMarketplaceModuleInstanceType =
 // send the config, and also send the panel, which is of panelTab type
 export function upsertConfigPanel(
   this: ExtensionMarketplaceElement,
-  config: UpsertConfigPanel
+  config: UpsertConfigPanel | null
 ) {
   switch (this._config.instanceType as ExtensionMarketplaceModuleInstanceType) {
     case 'render-config':
       // nothing goes here because 'the 'render-config' panel should handle the event
       break;
     default:
-      console.log('this is called');
       sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
         tab: new PanelTab(windows.renderConfig, PanelTabs.Module),
         moduleId: this.module.id,
         moduleInstanceType: moduleInstances.renderConfig,
         instanceLimit: 1,
       });
-      this._temporaryConfig = config.config;
+
+      if (config?.config) {
+        this._temporaryConfig = config.config;
+      }
   }
 }

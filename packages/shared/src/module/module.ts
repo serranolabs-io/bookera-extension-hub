@@ -12,7 +12,7 @@ export interface RequestUpdateEventType {
 }
 
 export const DEFAULT_VERSION = '0.0.1';
-export interface BookeraModuleConfig<T> {
+export interface BookeraModuleConfig<T = unknown> {
   renderMode: RenderMode;
   module: BookeraModule<T>;
   _panelTabId?: string;
@@ -20,7 +20,7 @@ export interface BookeraModuleConfig<T> {
   instanceType?: T;
 }
 
-export type BookeraModuleClass<T = unknown> = new (
+export type BookeraModuleClass<T extends object = {}> = new (
   config: BookeraModuleConfig<T>
 ) => object;
 
@@ -28,11 +28,14 @@ export const BookeraModuleRegistryClasses: Record<
   string,
   BookeraModuleClass<any>
 > = {};
-export type RenderMode =
-  | 'renderInSettings'
-  | 'renderInSidePanel'
-  | 'renderInDaemon'
-  | 'renderInPanel';
+
+const RenderModeSchema = z.enum([
+  'renderInSettings',
+  'renderInSidePanel',
+  'renderInDaemon',
+  'renderInPanel',
+]);
+export type RenderMode = z.infer<typeof RenderModeSchema>;
 
 // extensions are just extended functionality from the core system, BookeraModules
 
@@ -42,16 +45,7 @@ export const BookeraModuleSchema = z.object({
   description: z.string().optional(),
   tab: z.any().optional(), // Replace `z.any()` with a specific schema for `Tab` if available
   id: z.string().optional(),
-  renderModes: z
-    .array(
-      z.enum([
-        'renderInSettings',
-        'renderInSidePanel',
-        'renderInDaemon',
-        'renderInPanel',
-      ])
-    )
-    .optional(),
+  renderModes: z.array(RenderModeSchema).optional(),
   instances: z.array(z.unknown()), // Replace `z.unknown()` with a specific schema for `T` if available
 });
 

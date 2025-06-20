@@ -2,6 +2,48 @@ import { css } from 'lit';
 export default css`
   /* SIDE PANEL */
 
+  .create-extension-box {
+    right: 0;
+    display: flex;
+    justify-content: end;
+    padding: 0 var(--spacingXXSmall);
+  }
+
+  .skeleton-overview {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacingSmall);
+    padding: 0 var(--spacingSmall);
+  }
+
+  .skeleton-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacingSmall);
+  }
+
+  .skeleton-overview div {
+    width: 100%;
+  }
+
+  .skeleton-overview header sl-skeleton {
+    --border-radius: 50%;
+    width: 50px;
+    height: 50px;
+  }
+
+  sl-skeleton {
+    margin-bottom: 1rem;
+    font-size: 20px;
+    width: 100%;
+    height: 10px;
+  }
+
+  .icon-skeleton {
+  }
+
   .extensions-list {
     display: flex;
     align-items: center;

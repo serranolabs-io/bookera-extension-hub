@@ -31,7 +31,9 @@ export function renderConfigs(
             <sl-tab
               slot="nav"
               panel=${config.id}
-              ?closable=${firstConfig.values.length > 1}
+              ?closable=${mode === 'manage'
+                ? firstConfig.values.length > 1
+                : false}
               id=${config.id}
               >${config[firstConfig.nameIndex]}</sl-tab
             >
@@ -63,7 +65,7 @@ export function renderConfigs(
               id=${config.id}
               slot="nav"
               panel=${config.id}
-              closable=${true}
+              ?closable=${mode === 'manage' ? true : false}
               >${config.source.name}</sl-tab
             >
 

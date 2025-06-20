@@ -1,15 +1,11 @@
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import extensionMarketplaceStyles from './extension-marketplace-element.styles';
 import baseCss from '@serranolabs.io/shared/base';
 import {
   BookeraModuleElement,
   moduleElementStyles,
 } from '@serranolabs.io/shared/module-element';
-import {
-  BookeraModule,
-  BookeraModuleConfig,
-  type RenderMode,
-} from '@serranolabs.io/shared/module';
+import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { html, TemplateResult } from 'lit';
 import {
   MANAGE_CONFIG_CONSTRUCTED_EVENT,
@@ -35,14 +31,13 @@ import {
   SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT,
   upsertConfigPanel,
 } from './api';
-import { PANEL_CONSTRUCTION_EVENT } from '@serranolabs.io/shared/panel';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { Bag } from '@pb33f/saddlebag';
 import {
   PUBLISH_CONFIG_CONSTRUCTED_EVENT,
   PublishConfigElement,
 } from './publish-config-element';
-import { Configuration, DefaultApi } from './backend';
+import { DefaultApi } from './backend';
 import { Task } from '@lit/task';
 
 export const elementName = 'extension-marketplace-element';
@@ -166,12 +161,9 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     }
     console.log('we are now sending config to instance');
 
-    // the problem is that I am calling upsertConfigPanel AGAIN.
     sendEvent<SEND_CONFIG_EVENT_TYPE<any>>(this, SEND_CONFIG_EVENT_FROM_API, {
       config: this._temporaryConfig,
     });
-
-    console.log(this._temporaryConfig);
 
     this._temporaryConfig = null;
   }
@@ -196,7 +188,8 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
           this._manageConfigBag!,
           this._bagManager,
           this._runSyncedFlow.bind(this),
-          this._saveSyncedLocalForage.bind(this)
+          this._saveSyncedLocalForage.bind(this),
+          this._user
         )}`;
       case 'published-config':
         return html`${new PublishConfigElement(

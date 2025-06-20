@@ -6,6 +6,10 @@ export default css`
     outline-offset: -2px;
   }
 
+  .full {
+    width: 100%;
+  }
+
   *::-webkit-scrollbar {
     width: 6px;
   }
