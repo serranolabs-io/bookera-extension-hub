@@ -1,27 +1,10 @@
 import { genShortID } from '../util';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
-export class User {
-  name: string;
-  email: string;
-  links: string[];
-  id: string;
-  constructor(name: string, email: string, links: string[], id?: string) {
-    this.name = name;
-    this.email = email;
-    this.links = links;
-
-    if (id) {
-      this.id = id;
-    } else {
-      this.id = genShortID(6);
-    }
-  }
-}
-
-export const getUsername = (user: User): string => {
-  return user.name === '' ? 'test_user' : user.name;
+export const getUsername = (user: SupabaseUser): string => {
+  return user?.name === '' ? user.email : user.name;
 };
 
-export const getUserId = (user: User) => {
-  return '52307a0e-5c7f-452a-a58f-e233e626c83d';
+export const getUserId = (user: SupabaseUser) => {
+  return user.id;
 };

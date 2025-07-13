@@ -6,6 +6,7 @@ import {
   KeyboardShortcutConfigSchema,
 } from '@serranolabs.io/shared/extension-marketplace';
 import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
+import { notify } from '@serranolabs.io/shared/lit';
 import { sendEvent, sendGlobalEvent } from '@serranolabs.io/shared/util';
 import { html } from 'lit';
 import { z } from 'zod';
@@ -92,7 +93,13 @@ function sendThemesConfig(config: any) {
   sendGlobalEvent(ExtensionDownloadEndpoints.themes, config);
 }
 
-function sendKeyboardShortcutsConfig() {}
+function sendKeyboardShortcutsConfig() {
+  // sendGlobalEvent(ExtensionDownloadEndpoints.themes, config);
+  notify(
+    'Feature is not fully complete yet! please report this if found',
+    'warning'
+  );
+}
 
 export const sendActions = [
   sendThemesConfig.bind(this),

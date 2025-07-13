@@ -140,48 +140,8 @@ export class PublishConfigElement extends LitElement {
     });
   }
 
-  _downloadExtension() {
-    this._extension.configs.forEach((config: Config) => {
-      const sendAction = schemaSendActions.find((sa) => {
-        const { success } = sa.schema.safeParse(config.values[0]);
-        return success;
-      });
-
-      if (!sendAction) {
-        notify('could not download extension :(', 'warning');
-        return;
-      }
-
-      sendAction.action(config);
-    });
-  }
-
   render() {
     if (!this._extension) return html``;
-
-    return html`
-      <div class="center">
-        <div>
-          <div class="header">
-            ${renderImageBox(this._extension, '96')}
-            <div class="description-box">
-              <h4>${this._extension.title}</h4>
-              <p>${this._extension.description}</p>
-              <sl-button
-                size="small"
-                variant="primary"
-                class="install-button"
-                @click=${this._downloadExtension.bind(this)}
-                >download</sl-button
-              >
-            </div>
-          </div>
-          <div class="center-configs">
-            ${renderConfigs.bind(this)(this._extension.configs, 'publish')}
-          </div>
-        </div>
-      </div>
-    `;
   }
 }
 

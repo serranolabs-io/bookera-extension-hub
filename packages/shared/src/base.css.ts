@@ -11,7 +11,7 @@ export default css`
   }
 
   *::-webkit-scrollbar {
-    width: 6px;
+    width: 3px !important;
   }
 
   /* Track */

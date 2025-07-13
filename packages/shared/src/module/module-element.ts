@@ -82,14 +82,17 @@ export abstract class BookeraModuleElement extends LitElement {
   @state()
   protected _signedIn: boolean = false;
 
-  private _formInstanceId() {
+  _formInstanceId() {
     return this.module.id! + this._panelTabId;
   }
 
-  protected _config: BookeraModuleConfig;
+  protected _config: BookeraModuleConfig | undefined;
 
   constructor(config: BookeraModuleConfig) {
     super();
+
+    if (!config) return;
+
     this.renderMode = config.renderMode;
     this.module = config.module;
 
@@ -152,8 +155,6 @@ export abstract class BookeraModuleElement extends LitElement {
       this._user = undefined;
       this._signedIn = false;
     }
-
-    console.log(event, session);
   }
 
   protected _getSyncedBag<T>(key: string): Bag<T> | undefined {

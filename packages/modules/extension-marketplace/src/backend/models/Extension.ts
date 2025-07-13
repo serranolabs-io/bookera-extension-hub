@@ -21,6 +21,12 @@ import { mapValues } from '../runtime';
 export interface Extension {
     /**
      * 
+     * @type {boolean}
+     * @memberof Extension
+     */
+    isDownloaded?: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof Extension
      */
@@ -61,6 +67,12 @@ export interface Extension {
      * @memberof Extension
      */
     id?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Extension
+     */
+    isPublished?: boolean;
 }
 
 /**
@@ -85,6 +97,7 @@ export function ExtensionFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
+        'isDownloaded': json['isDownloaded'] == null ? undefined : json['isDownloaded'],
         'userName': json['userName'],
         'userId': json['userId'],
         'hasIcon': json['hasIcon'] == null ? undefined : json['hasIcon'],
@@ -92,6 +105,7 @@ export function ExtensionFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'config': json['config'],
         'packageJson': json['packageJson'],
         'id': json['id'] == null ? undefined : json['id'],
+        'isPublished': json['isPublished'] == null ? undefined : json['isPublished'],
     };
 }
 
@@ -106,6 +120,7 @@ export function ExtensionToJSONTyped(value?: Extension | null, ignoreDiscriminat
 
     return {
         
+        'isDownloaded': value['isDownloaded'],
         'userName': value['userName'],
         'userId': value['userId'],
         'hasIcon': value['hasIcon'],
@@ -113,6 +128,7 @@ export function ExtensionToJSONTyped(value?: Extension | null, ignoreDiscriminat
         'config': value['config'],
         'packageJson': value['packageJson'],
         'id': value['id'],
+        'isPublished': value['isPublished'],
     };
 }
 

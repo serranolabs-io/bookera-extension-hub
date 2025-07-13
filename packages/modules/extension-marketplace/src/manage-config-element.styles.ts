@@ -16,9 +16,21 @@ export default css`
   .horizontal {
     display: flex;
     gap: var(--spacingSmall);
+    margin-top: var(--spacingMedium);
+    justify-content: space-between;
   }
+
+  .horizontal sl-button,
+  .horizontal sl-button::part(base) {
+    width: 100%;
+  }
+
   .red {
     color: var(--sl-color-red-500);
+  }
+
+  .icon-box {
+    font-size: 48px;
   }
 
   sl-dialog .button-box {
@@ -47,6 +59,25 @@ export default css`
 
   .icon::part(input) {
     position: relative;
+  }
+
+  .title-version {
+    position: relative;
+    color: var(--slate-500);
+    margin-bottom: var(--spacingSmall);
+  }
+
+  .version-field {
+    position: absolute;
+    bottom: 0;
+    top: 50%;
+    transform: translateY(50%);
+    font-size: var(--text-sm);
+    font-style: italic;
+  }
+
+  .version-field {
+    color: var(--slate-400);
   }
 
   .success-box {

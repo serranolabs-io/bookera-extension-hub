@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { BookeraModule } from '../../module/module';
 import { Source } from '../keyboard-shortcuts/model';
-import { User } from '../user/author';
 import { genShortID } from '../util';
+import { User } from '@supabase/supabase-js';
 
 export const ExtensionDownloadEndpoints = {
   themes: 'themes-download-endpoint',
@@ -17,7 +17,7 @@ export interface Config<T extends object> {
 }
 
 export interface SEND_CONFIG_EVENT_TYPE<T extends object> {
-  config: Config<T>;
+  config: Config<T> | ExtensionConfig<T>;
 }
 export const SEND_CONFIG_EVENT = 'send-config-event';
 export const SEND_CONFIG_EVENT_FROM_API = 'send-config-from-api-event';
@@ -49,7 +49,6 @@ export class Config<T extends object = {}> {
 export interface ExtensionConfig<T extends object = {}>
   extends Pick<BookeraModule, 'version' | 'title' | 'description' | 'id'> {
   configs: Config<T>[]; // pass in Theme[], or KeyboardShortcut[]
-  user: User; // user who publishes -> for now, you are assigned a random session_id or some shit
   isPublished: boolean;
   icon: File | null; // base64 encoded icon, shit
 }
@@ -84,14 +83,15 @@ export const getPackageJsonName = <T>(extensionConfig: ExtensionConfig<T>) => {
 };
 
 export const createPackageJsonJson = <T>(
-  extensionConfig: ExtensionConfig<T>
+  extensionConfig: ExtensionConfig<T>,
+  user: User
 ): string => {
   const packageJson: PackageJson = {
     ...getPackageJsonName(extensionConfig),
     displayName: extensionConfig.title ? extensionConfig.title : '',
     version: extensionConfig.version ? extensionConfig.version : '',
-    private: extensionConfig.isPublished,
-    author: extensionConfig.user.name,
+    private: extensionConfig.isPublished!,
+    author: user.email,
     description: extensionConfig.description ? extensionConfig.description : '',
     icon: extensionConfig.icon,
   };

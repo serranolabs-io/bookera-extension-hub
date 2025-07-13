@@ -10,34 +10,9 @@ import { html, TemplateResult } from 'lit';
 import './login-element';
 import { LoginElement } from './login-element';
 import { StatisticalCategory, statsCategories, Statistic } from './statistics';
+import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/tag/tag.js';
 
 export const elementName = 'user-element';
-
-interface ProfileStats {
-  manuscriptCount: number;
-  minutesSpentWriting: number;
-  totalReaders: number;
-  totalLikes: number;
-  totalBooks: number;
-}
-
-const profileStats: ProfileStats = {
-  manuscriptCount: 5,
-  minutesSpentWriting: 30,
-  totalReaders: 3000,
-  totalLikes: 2039,
-  totalBooks: 5,
-};
-
-// AuthorStats
-// readers
-// likes
-// books
-
-// WriterStats
-// manuscripts
-// writingMinutes
-
 @customElement(elementName)
 export class UserElement extends BookeraModuleElement {
   static styles = [userStyles, baseCss, moduleElementStyles];
@@ -143,7 +118,7 @@ export class UserElement extends BookeraModuleElement {
   }
 
   protected renderInModuleDaemon(): TemplateResult {
-    return html`hello from module daemon`;
+    return html``;
   }
 }
 

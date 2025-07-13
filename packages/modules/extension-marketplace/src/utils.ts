@@ -1,5 +1,5 @@
 import { ExtensionConfig } from '@serranolabs.io/shared/extension-marketplace';
-import { html } from 'lit';
+import { html, TemplateResult } from 'lit';
 import { Extension } from './backend';
 
 export const getExtensionIcon = (
@@ -12,11 +12,11 @@ export const getExtensionIcon = (
 
 export function renderImageBox(
   extension: ExtensionConfig & Extension,
-  size = '48'
+  size = '48',
+  hasIcon: boolean
 ): TemplateResult {
   let content = html`<sl-icon name="puzzle"></sl-icon>`;
-  console.log(extension);
-  if (extension.hasIcon) {
+  if (extension.hasIcon || hasIcon) {
     content = html`
       <img
         width=${`${size}px`}

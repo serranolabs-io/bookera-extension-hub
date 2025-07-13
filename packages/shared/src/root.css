@@ -65,8 +65,10 @@ body {
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
 
-  --zIndex-handles: 5;
-  --zIndex-nav: 10;
+  --zIndex-base: 1;
+  --zIndex-inputs: 100;
+  --zIndex-text: 1000;
+  --zIndex-modals: 10000; 
 
   --success-50: #f0fdf4;
   --success-100: #dcfce7;
@@ -125,9 +127,10 @@ body {
   --error-700: #ef4444;
   --error-800: #ef4444;
   --error-900: #ef4444;
+
 }
 
-*::-webkit-scrollbar {
+*::-webkit-scrollbar { 
 width: 6px;
 }
 
@@ -140,7 +143,7 @@ background: transparent;
 *::-webkit-scrollbar-thumb {
 background: var(--slate-400);
 border-radius: 20px;
-}
+} 
 
 
 

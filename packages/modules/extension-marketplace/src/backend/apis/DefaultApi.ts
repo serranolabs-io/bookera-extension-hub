@@ -29,6 +29,13 @@ export interface CreateExtensionRequest {
     extension: Extension;
 }
 
+export interface GetAllExtensionsRequest {
+    isPublished: boolean;
+    userId?: string;
+    isDownloaded?: boolean;
+    filterByUserId?: string;
+}
+
 export interface UpdateUserExtensionRequest {
     configId: string;
     extension: Extension;
@@ -83,8 +90,31 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Fetch all extension configs
      */
-    async getAllExtensionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Extension>>> {
+    async getAllExtensionsRaw(requestParameters: GetAllExtensionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Extension>>> {
+        if (requestParameters['isPublished'] == null) {
+            throw new runtime.RequiredError(
+                'isPublished',
+                'Required parameter "isPublished" was null or undefined when calling getAllExtensions().'
+            );
+        }
+
         const queryParameters: any = {};
+
+        if (requestParameters['isPublished'] != null) {
+            queryParameters['isPublished'] = requestParameters['isPublished'];
+        }
+
+        if (requestParameters['userId'] != null) {
+            queryParameters['userId'] = requestParameters['userId'];
+        }
+
+        if (requestParameters['isDownloaded'] != null) {
+            queryParameters['isDownloaded'] = requestParameters['isDownloaded'];
+        }
+
+        if (requestParameters['filterByUserId'] != null) {
+            queryParameters['filterByUserId'] = requestParameters['filterByUserId'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -101,8 +131,8 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Fetch all extension configs
      */
-    async getAllExtensions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Extension>> {
-        const response = await this.getAllExtensionsRaw(initOverrides);
+    async getAllExtensions(requestParameters: GetAllExtensionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Extension>> {
+        const response = await this.getAllExtensionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

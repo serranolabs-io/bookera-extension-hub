@@ -1,6 +1,18 @@
 import { css } from 'lit';
 export default css`
   /* SIDE PANEL */
+  .extension-icon-identifier {
+    position: absolute;
+    right: 3%;
+    top: 10%;
+    font-size: var(--text-md);
+  }
+
+  .must-be-logged-in {
+    padding: 0 var(--spacingSmall);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
 
   .create-extension-box {
     right: 0;

@@ -13,12 +13,11 @@ export function renderConfigs(
   mode: RenderConfigsMode
 ) {
   if (configs.length === 0) {
-    return html``;
+    return html`<p>Add some configs!</p>`;
   }
 
   if (configs.length <= 1) {
     const firstConfig = configs[0];
-    console.log(firstConfig);
 
     return html`
       <sl-tab-group
@@ -66,11 +65,11 @@ export function renderConfigs(
               slot="nav"
               panel=${config.id}
               ?closable=${mode === 'manage' ? true : false}
-              >${config.source.name}</sl-tab
+              >${config.source?.name}</sl-tab
             >
 
             <sl-tab-panel name=${config.id}>
-              ${config.values.map((value: any) => {
+              ${config.values?.map((value: any) => {
                 return renderConfig(value);
               })}
             </sl-tab-panel>

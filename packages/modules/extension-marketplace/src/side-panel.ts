@@ -1,12 +1,9 @@
-import { TemplateLiteral } from 'typescript';
 import { ExtensionMarketplaceElement } from './extension-marketplace-element';
 import { html, TemplateResult } from 'lit';
 import {
   ExtensionConfig,
   PackageJson,
 } from '@serranolabs.io/shared/extension-marketplace';
-import { repeat } from 'lit/directives/repeat.js';
-import { TABLES } from '@serranolabs.io/shared/supabase';
 import {
   doesClickContainElement,
   sendEvent,
@@ -19,24 +16,60 @@ import {
   PanelTabs,
 } from '@serranolabs.io/shared/panel';
 import { moduleInstances, upsertConfigPanel, windows } from './api';
-import { Extension } from './backend';
-import { User } from '@serranolabs.io/shared/user';
+import { Extension, GetAllExtensionsRequest } from './backend';
 import { Task } from '@lit/task';
-import { getExtensionIcon, renderImageBox } from './utils';
+import { renderImageBox } from './utils';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/skeleton/skeleton.js';
 
 export const marketplace = 'marketplace';
 export const downloaded = 'downloaded';
-export type TabOption = typeof downloaded | typeof marketplace;
+export const myDrafts = 'my-drafts';
+export const myExtensions = 'my-extensions';
+export type TabOption =
+  | typeof downloaded
+  | typeof marketplace
+  | typeof myDrafts
+  | typeof myExtensions;
 
 export interface TabGroup {
-  name: string;
-  value: TabOption;
   showPanel: () => TemplateResult;
+  setupTask: () => void;
+  value: TabOption;
+  name: string;
 }
 
-function renderExtensionsList(this: ExtensionMarketplaceElement, filters) {
-  return html``;
+function sendSelectedExtension(
+  this: ExtensionMarketplaceElement,
+  extension: ExtensionConfig & Extension
+) {
+  let tabNamePrefix;
+  let moduleInstanceType;
+  let instanceLimit = -1;
+  if (this._selectedTabOption === 'my-extensions') {
+    tabNamePrefix = windows.myExtension;
+    moduleInstanceType = moduleInstances.myExtension;
+  } else if (this._selectedTabOption === 'my-drafts') {
+    tabNamePrefix = windows.myDraft;
+    moduleInstanceType = moduleInstances.renderConfig;
+    instanceLimit = 1;
+  } else if (this._selectedTabOption === 'marketplace') {
+    if (this._user?.id === extension.userId) {
+      tabNamePrefix = windows.myExtension;
+      moduleInstanceType = moduleInstances.myExtension;
+    } else {
+      tabNamePrefix = windows.downloadExtension;
+      moduleInstanceType = moduleInstances.downloadExtension;
+    }
+  }
+
+  sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
+    tab: new PanelTab(tabNamePrefix + ': ' + extension.title, PanelTabs.Module),
+    moduleId: this.module.id,
+    moduleInstanceType: moduleInstanceType,
+    instanceLimit: instanceLimit,
+  });
+
+  this._sidePanelSelectedExtension = extension;
 }
 
 function selectExtensionFromMarketplace(
@@ -58,8 +91,6 @@ function selectExtensionFromMarketplace(
     return extension.id == id;
   });
 
-  console.log(extension, el);
-
   if (!extension) {
     notify(
       'Could not find extension. If you got here, please file a report :3',
@@ -68,20 +99,36 @@ function selectExtensionFromMarketplace(
     return;
   }
 
-  sendEvent<NewPanelEventType<string>>(document, NEW_PANEL_EVENT, {
-    tab: new PanelTab(
-      windows.viewPublishedConfig + ': ' + extension.title,
-      PanelTabs.Module
-    ),
-    moduleId: this.module.id,
-    moduleInstanceType: moduleInstances.publishedConfig,
-    instanceLimit: -1,
-  });
-
-  this._sidePanelSelectedExtension = extension;
+  sendSelectedExtension.bind(this)(extension);
 }
 
-function renderExtension(extension: ExtensionConfig & Extension) {
+function renderExtensionIconIdentifier(
+  this: ExtensionMarketplaceElement,
+  extension: ExtensionConfig & Extension
+) {
+  let personIcon;
+  if (this._user?.id === extension.userId) {
+    personIcon = html` <sl-icon name="person"> </sl-icon> `;
+  }
+
+  let isDownloadedIcon;
+  if (!extension?.isDownloaded && this._user?.id !== extension.userId) {
+    isDownloadedIcon = html`
+      <sl-tag size="small" variant="secondary">Install</sl-tag>
+    `;
+  }
+
+  return html`
+    <div class="extension-icon-identifier">
+      ${personIcon}${isDownloadedIcon}
+    </div>
+  `;
+}
+
+function renderExtension(
+  this: ExtensionMarketplaceElement,
+  extension: ExtensionConfig & Extension
+) {
   return html`
     <li>
       <button id=${extension.id}>
@@ -92,6 +139,7 @@ function renderExtension(extension: ExtensionConfig & Extension) {
           <small class="user-id">${extension.userId}</small>
         </div>
         <span class="view-hover">&rarr;</span>
+        ${renderExtensionIconIdentifier.bind(this)(extension)}
       </button>
     </li>
   `;
@@ -110,7 +158,7 @@ function renderSkeleton() {
   </div> `;
 }
 
-export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
+function renderExtensionsTask(this: ExtensionMarketplaceElement) {
   return html`
     <ul
       class="extensions-list"
@@ -131,7 +179,7 @@ export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
 
           return extensions.map(
             (extension: ExtensionConfig<string> & Extension) => {
-              return html`${renderExtension(extension)}`;
+              return html`${renderExtension.bind(this)(extension)}`;
             }
           );
         },
@@ -141,8 +189,38 @@ export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
   `;
 }
 
+export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
+  return renderExtensionsTask.bind(this)();
+}
+
 export function renderDownloadedPanel(this: ExtensionMarketplaceElement) {
-  return html`hello from panel`;
+  if (!this._user) {
+    return html`<p class="must-be-logged-in">
+      Must be logged in to view downloaded extensions!
+    </p>`;
+  }
+
+  return renderExtensionsTask.bind(this)();
+}
+
+export function renderMyExtensionsPanel(this: ExtensionMarketplaceElement) {
+  if (!this._user) {
+    return html`<p class="must-be-logged-in">
+      Must be logged in to view your extensions!
+    </p>`;
+  }
+
+  return renderExtensionsTask.bind(this)();
+}
+
+export function renderMyDraftsPanel(this: ExtensionMarketplaceElement) {
+  if (!this._user) {
+    return html`<p class="must-be-logged-in">
+      Must be logged in to view your drafts!
+    </p>`;
+  }
+
+  return renderExtensionsTask.bind(this)();
 }
 
 export function handleCreateExtension(this: ExtensionMarketplaceElement) {
@@ -167,7 +245,18 @@ export function renderInSidePanel(
 
   return html`
     ${renderCreateExtensionButton()}
-    <sl-tab-group>
+    <sl-tab-group
+      @sl-tab-show=${(e) => {
+        const value: TabOption = e.detail.name;
+        const selectedTab = this._tabs.find((tab: TabGroup) => {
+          return tab.value === value;
+        })!;
+
+        this._selectedTabOption = selectedTab?.value;
+
+        selectedTab?.setupTask();
+      }}
+    >
       ${this._tabs.map((tab: TabGroup) => {
         return html`<sl-tab slot="nav" panel=${tab.value}>${tab.name}</sl-tab>
           <sl-tab-panel name=${tab.value}> ${tab.showPanel()} </sl-tab-panel>`;
@@ -189,23 +278,26 @@ export const convertBackendExtensionIntoExtension = (
       description: packageJson.description,
       hasIcon: extension.hasIcon,
       title: packageJson.name,
+      isDownloaded: extension.isDownloaded,
       author: packageJson.author,
-      isPublished: packageJson.private,
+      isPublished: extension.isPublished ? true : false,
       id: extension.id ? String(extension.id) : '',
     } as ExtensionConfig;
   });
 };
 
-export async function setupSidePanel(this: ExtensionMarketplaceElement) {
-  if (!this._supabase) {
-    return;
-  }
-
+export function setupExtensionsTask(this: ExtensionMarketplaceElement) {
   this._extensionsTask = new Task(this, {
-    task: async () => {
+    task: async ([isPublished, userId, isDownloaded]) => {
       let allExtensions, error;
+
       try {
-        allExtensions = await this._backendApi.getAllExtensions();
+        allExtensions = await this._backendApi.getAllExtensions({
+          isPublished: isPublished,
+          filterByUserId: userId,
+          userId: this._user?.id,
+          isDownloaded: isDownloaded,
+        });
       } catch (e) {
         error = e;
       } finally {
@@ -217,6 +309,12 @@ export async function setupSidePanel(this: ExtensionMarketplaceElement) {
         return converted;
       }
     },
-    args: () => [],
+    args: () => [this._isPublished, this._userIdTask, this._isDownloadedTask],
   });
+}
+
+export async function setupSidePanel(this: ExtensionMarketplaceElement) {
+  if (!this._supabase) {
+    return;
+  }
 }

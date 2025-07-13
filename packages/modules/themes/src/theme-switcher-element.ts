@@ -212,7 +212,9 @@ export class ThemesElement extends BookeraModuleElement {
       '--primary'
     );
 
-    this._kickOffLocalFlow();
+    if (this._config.renderMode === 'renderInSettings') {
+      this._kickOffLocalFlow();
+    }
   }
 
   private _runDirtyValidation(

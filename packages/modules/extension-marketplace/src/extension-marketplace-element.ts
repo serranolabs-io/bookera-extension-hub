@@ -1,4 +1,5 @@
 import { customElement, state } from 'lit/decorators.js';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import extensionMarketplaceStyles from './extension-marketplace-element.styles';
 import baseCss from '@serranolabs.io/shared/base';
 import {
@@ -19,25 +20,24 @@ import {
   SEND_CONFIG_EVENT_TYPE,
 } from '@serranolabs.io/shared/extension-marketplace';
 import {
+  marketplace,
   renderDownloadedPanel,
   renderInSidePanel,
   renderMarketplacePanel,
+  renderMyDraftsPanel,
+  renderMyExtensionsPanel,
+  setupExtensionsTask,
   setupSidePanel,
   TabGroup,
+  TabOption,
 } from './side-panel';
 import {
   apiConfig,
   ExtensionMarketplaceModuleInstanceType,
-  SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT,
   upsertConfigPanel,
 } from './api';
 import { sendEvent } from '@serranolabs.io/shared/util';
-import { Bag } from '@pb33f/saddlebag';
-import {
-  PUBLISH_CONFIG_CONSTRUCTED_EVENT,
-  PublishConfigElement,
-} from './publish-config-element';
-import { DefaultApi } from './backend';
+import { DefaultApi, Extension } from './backend';
 import { Task } from '@lit/task';
 
 export const elementName = 'extension-marketplace-element';
@@ -46,8 +46,6 @@ export const MANAGE_CONFIG_BAG_KEY = 'manage-config-bag-key';
 @customElement(elementName)
 export class ExtensionMarketplaceElement extends BookeraModuleElement {
   static styles = [extensionMarketplaceStyles, baseCss, moduleElementStyles];
-
-  private _manageConfigBag: Bag<ExtensionConfig> | undefined;
 
   protected _backendApi = new DefaultApi(apiConfig);
 
@@ -58,8 +56,21 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInSidePanel') {
       setupSidePanel.bind(this)();
+      this._config.supabase?.auth.onAuthStateChange(
+        this._onAuthStateChange.bind(this)
+      );
+
+      setupExtensionsTask.bind(this)();
     } else if (this.renderMode === 'renderInPanel') {
-      this._manageConfigBag = this._getSyncedBag(MANAGE_CONFIG_BAG_KEY);
+    }
+  }
+
+  _onAuthStateChange(
+    event: AuthChangeEvent,
+    session: Session | null
+  ): void | Promise<void> {
+    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      setupExtensionsTask.bind(this)();
     }
   }
 
@@ -67,20 +78,61 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
   _sendConfigToPublishConfigListener!: Function;
 
   @state()
-  protected _extensions: ExtensionConfig[] = [];
+  protected _extensions: ExtensionConfig & Extension[] = [];
 
   protected _extensionsTask: null | Task = null;
+
+  @state()
+  _selectedTabOption: TabOption = marketplace;
+
+  @state()
+  _isPublished: boolean = true;
+
+  @state()
+  _isDownloadedTask: boolean | undefined = undefined;
+
+  @state()
+  _userIdTask: undefined | string = undefined;
 
   protected _tabs: TabGroup[] = [
     {
       name: 'Marketplace',
       value: 'marketplace',
       showPanel: renderMarketplacePanel.bind(this),
+      setupTask: () => {
+        this._isPublished = true;
+        this._userIdTask = undefined;
+        this._isDownloadedTask = undefined;
+      },
     },
     {
       name: 'Downloaded',
       value: 'downloaded',
       showPanel: renderDownloadedPanel.bind(this),
+      setupTask: () => {
+        this._isPublished = true;
+        this._userIdTask = undefined;
+        this._isDownloadedTask = true;
+      },
+    },
+    {
+      name: 'My Extensions',
+      value: 'my-extensions',
+      showPanel: renderMyExtensionsPanel.bind(this),
+      setupTask: () => {
+        this._isPublished = true;
+        this._userIdTask = this._user?.id;
+        this._isDownloadedTask = undefined;
+      },
+    },
+    {
+      name: 'My Drafts',
+      value: 'my-drafts',
+      showPanel: renderMyDraftsPanel.bind(this),
+      setupTask: () => {
+        this._isPublished = false;
+        this._userId = this._user?.id;
+      },
     },
   ];
 
@@ -101,24 +153,22 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
     if (this.renderMode === 'renderInDaemon') {
       this._setupDaemonListeners();
+      this._tabs[0].setupTask();
     } else if (this.renderMode === 'renderInSidePanel') {
-      this._sendConfigToPublishConfigListener =
-        this._listenToPublishConfigEvents.bind(this);
+    }
+
+    if (
+      this.renderMode === 'renderInDaemon' ||
+      this.renderMode === 'renderInSidePanel'
+    ) {
+      this._sendConfigToManageConfigInstanceListener =
+        this._sendConfigToManageConfigInstance.bind(this);
 
       document.addEventListener(
-        PUBLISH_CONFIG_CONSTRUCTED_EVENT,
-        this._sendConfigToPublishConfigListener
+        MANAGE_CONFIG_CONSTRUCTED_EVENT,
+        this._sendConfigToManageConfigInstanceListener
       );
     }
-  }
-
-  private _listenToPublishConfigEvents(
-    e: CustomEvent<SEND_CONFIG_EVENT_TYPE<any>>
-  ) {
-    console.log('we found out that panel constructed');
-    sendEvent(this, SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT, {
-      config: this._sidePanelSelectedExtension,
-    });
   }
 
   private _setupDaemonListeners() {
@@ -128,14 +178,6 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     document.addEventListener(
       SEND_CONFIG_EVENT,
       this._listenToConfigEventsListener
-    );
-
-    this._sendConfigToManageConfigInstanceListener =
-      this._sendConfigToManageConfigInstance.bind(this);
-
-    document.addEventListener(
-      MANAGE_CONFIG_CONSTRUCTED_EVENT,
-      this._sendConfigToManageConfigInstanceListener
     );
   }
 
@@ -149,23 +191,24 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
       MANAGE_CONFIG_CONSTRUCTED_EVENT,
       this._sendConfigToManageConfigInstanceListener
     );
-    document.removeEventListener(
-      PUBLISH_CONFIG_CONSTRUCTED_EVENT,
-      this._sendConfigToPublishConfigListener
-    );
   }
 
   private _sendConfigToManageConfigInstance() {
-    if (!this._temporaryConfig) {
-      return;
+    if (this._sidePanelSelectedExtension) {
+      sendEvent(this, SEND_CONFIG_EVENT_FROM_API, {
+        config: this._sidePanelSelectedExtension,
+      });
+
+      this._sidePanelSelectedExtension = null;
     }
-    console.log('we are now sending config to instance');
 
-    sendEvent<SEND_CONFIG_EVENT_TYPE<any>>(this, SEND_CONFIG_EVENT_FROM_API, {
-      config: this._temporaryConfig,
-    });
+    if (this._temporaryConfig) {
+      sendEvent(this, SEND_CONFIG_EVENT_FROM_API, {
+        config: this._temporaryConfig,
+      });
 
-    this._temporaryConfig = null;
+      this._temporaryConfig = null;
+    }
   }
 
   protected renderInSettings(): TemplateResult {
@@ -183,21 +226,16 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
       this._config.instanceType as ExtensionMarketplaceModuleInstanceType
     ) {
       case 'render-config':
+      case 'published-config':
+      case 'my-draft':
+      case 'my-extension':
         return html`${new ManageConfigElement(
           this._config,
-          this._manageConfigBag!,
-          this._bagManager,
-          this._runSyncedFlow.bind(this),
-          this._saveSyncedLocalForage.bind(this),
-          this._user
-        )}`;
-      case 'published-config':
-        return html`${new PublishConfigElement(
-          this._config,
-          this._bag!,
+          this._bag,
           this._bagManager,
           this._runLocalFlow.bind(this),
-          this._savePanelTabState.bind(this)
+          this._savePanelTabState.bind(this),
+          this._user
         )}`;
       default:
     }

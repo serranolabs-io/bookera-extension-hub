@@ -28,13 +28,18 @@ export const SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT =
   'send-downloaded-config-to-panel-event';
 
 export const windows = {
-  renderConfig: '🧩🌐 Publish E️xtension',
-  viewPublishedConfig: '📥 Download E️xtension',
+  renderConfig: '🧩🌐 Publish Extension',
+  downloadExtension: '📥 Download Extension',
+  myExtension: '📦 My Extension',
+  myDraft: '📝 My Draft',
+  manageExtension: '⚙️ Manage Extension',
 } as const;
 
 export const moduleInstances = {
-  renderConfig: 'render-config',
-  publishedConfig: 'published-config',
+  renderConfig: 'render-config', // creating an extension
+  downloadExtension: 'published-config', //
+  myExtension: 'my-extension', // a published extension that's mine.
+  myDraft: 'my-draft', // my extension Im editing
 } as const;
 
 export type ExtensionMarketplaceModuleInstanceType =
