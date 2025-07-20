@@ -258,3 +258,5 @@ export function swapBasedOnKey<T extends Record<string, unknown>, V>(
 }
 
 export const MANUSCRIPT_ELEMENT_SELECTOR = 'manuscript-element';
+
+export const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
