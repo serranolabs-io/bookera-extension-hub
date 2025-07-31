@@ -13,7 +13,7 @@ import type {
   RenderMode,
 } from './module';
 import { Tab } from './tab';
-import { sendEvent } from '../model/util';
+import { MOBILE_MEDIA_QUERY, sendEvent } from '../model/util';
 import { notify } from '../model/lit';
 import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
@@ -81,6 +81,13 @@ export abstract class BookeraModuleElement extends LitElement {
 
   @state()
   protected _signedIn: boolean = false;
+
+  @state()
+  _renderInDaemonMode = true;
+
+  doNotRenderInDaemonMode() {
+    this._renderInDaemonMode = false;
+  }
 
   _formInstanceId() {
     return this.module.id! + this._panelTabId;
@@ -347,12 +354,21 @@ export abstract class BookeraModuleElement extends LitElement {
   }
 
   protected renderSidePanelTitleSection() {
+    const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
+    if (mediaQuery.matches) {
+      return html``;
+    }
+
     return html` <div class="title-box">
       <h5>${this.title}</h5>
     </div>`;
   }
 
   protected renderDaemonWrapper() {
+    if (!this._renderInDaemonMode) {
+      return html``;
+    }
+
     return html`
       <sl-tooltip content=${this.module.title}>
         <div class="daemon">${this.renderInModuleDaemon()}</div>

@@ -13,6 +13,7 @@
     "src"
   ],
   "exports": {
+    "./studio": "./src/model/studioApi.ts",
     "./panel": "./src/model/panel.ts",
     "./base": "./src/base.css.ts",
     "./root": "./src/root.css",

@@ -1,4 +1,4 @@
-import { html, type TemplateResult } from 'lit';
+import { html, PropertyValues, type TemplateResult } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import {
   BookeraModuleElement,
@@ -13,6 +13,7 @@ import './formwrapper';
 import keyboardShortcutsStyle from './keyboard-shortcuts.style';
 import baseCss from '@serranolabs.io/shared/base';
 import {
+  KEYBOARD_SHORTCUTS_BOTTOM_DRAWER_KEY,
   KeyboardEventKey,
   KeyboardShortcut,
   When,
@@ -22,6 +23,7 @@ import {
 import {
   doesClickContainElement,
   sendEvent,
+  sendGlobalEvent,
 } from '@serranolabs.io/shared/util';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
@@ -44,6 +46,10 @@ import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 import { SlDialog } from '@shoelace-style/shoelace';
 import { FuseResult } from 'fuse.js';
 import { renderMatches } from './fuzzy';
+import {
+  AppendBottomDrawerType,
+  APPEND_HTML_TO_BOTTOM_DRAWER,
+} from '@serranolabs.io/shared/studio';
 
 export const elementName = 'keyboard-shortcuts-element';
 
@@ -285,6 +291,20 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     sendEvent(this, shortcut?.command);
   }
 
+  private _sendCommandPaletteToBottomDrawer() {
+    console.log('sending...');
+    sendGlobalEvent<AppendBottomDrawerType>(APPEND_HTML_TO_BOTTOM_DRAWER, {
+      type: KEYBOARD_SHORTCUTS_BOTTOM_DRAWER_KEY,
+      insertedHtml: this._renderCommandPalette(false),
+    });
+  }
+
+  protected updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('_keyboardShortcuts')) {
+      this._sendCommandPaletteToBottomDrawer();
+    }
+  }
+
   private _filterCommandPalette(
     applyShouldAppearInCommandPalette: boolean
   ): KeyboardShortcut[] {
@@ -297,31 +317,48 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     });
   }
 
-  private _renderCommandPalette() {
+  private _renderDialog() {
     return html`
-        <sl-dialog id=${COMMAND_PALETTE_DIALOG}>
-        <sl-input autofocus @sl-input=${(e: CustomEvent) => {
-          // @ts-ignore
-          this._shortcutFilters = e.target.value;
-          e.preventDefault();
-        }}></sl-input>
-        <sl-menu class="command-palette-menu" @sl-select=${this._selectCommand.bind(this)}>
-          ${this._renderMatches(true).map(
-            (match: FuseResult<KeyboardShortcut> | KeyboardShortcut) => {
-              if ('item' in match) {
-                return html`<sl-menu-item value=${match.item.id}
-                  >${match.item.renderTitleCommand()}
-                  <p slot="suffix">${match.item.renderKeys()}</p></sl-menu-item
-                >`;
-              }
-              return html`<sl-menu-item value=${match.id}
-                >${match.renderTitleCommand()}
-                <p slot="suffix">${match.renderKeys()}</p></sl-menu-item
+      <sl-dialog id=${COMMAND_PALETTE_DIALOG}>
+        ${this._renderCommandPalette(true)}
+      </sl-dialog>
+    `;
+  }
+
+  protected _renderCommandPalette(withInput: boolean) {
+    return html`
+      ${withInput
+        ? html`
+            <sl-input
+              autofocus
+              @sl-input=${(e: CustomEvent) => {
+                // @ts-ignore
+                this._shortcutFilters = e.target.value;
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            ></sl-input>
+          `
+        : html``}
+      <sl-menu
+        class="command-palette-menu"
+        @sl-select=${this._selectCommand.bind(this)}
+      >
+        ${this._renderMatches(true).map(
+          (match: FuseResult<KeyboardShortcut> | KeyboardShortcut) => {
+            if ('item' in match) {
+              return html`<sl-menu-item value=${match.item.id}
+                >${match.item.renderTitleCommand()}
+                <p slot="suffix">${match.item.renderKeys()}</p></sl-menu-item
               >`;
             }
-          )}
-        </sl-dialog>
-      </div>
+            return html`<sl-menu-item value=${match.id}
+              >${match.renderTitleCommand()}
+              <p slot="suffix">${match.renderKeys()}</p></sl-menu-item
+            >`;
+          }
+        )}
+      </sl-menu>
     `;
   }
 
@@ -348,7 +385,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   protected renderInModuleDaemon(): TemplateResult {
     return html`
-      ${this._renderCommandPalette()} ${this._renderContextInModuleDaemon()}
+      ${this._renderDialog()} ${this._renderContextInModuleDaemon()}
       ${this._renderKeyPressesInModuleDaemon(
         this._allKeyPressSets,
         this._modifiers

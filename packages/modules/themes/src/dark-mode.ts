@@ -6,7 +6,6 @@ import { DarkModeKey, DarkModeSingleton } from './dark-mode-state';
 import { ColorPalette, ColorPalettesSingleton } from './stateful';
 import baseCss from '@serranolabs.io/shared/base';
 import shortcuts from './shortcuts.json';
-import { KeyboardShortcut } from '@serranolabs.io/shared/keyboard-shortcuts';
 
 @customElement('dark-mode')
 export class DarkMode extends LitElement {
@@ -47,9 +46,7 @@ export class DarkMode extends LitElement {
   @state()
   appliedMode: boolean = true;
 
-  private _switchColorModeEventListener!: Function;
-
-  constructor() {
+  constructor(daemon: boolean) {
     super();
 
     this.bagManager = CreateBagManager(true);
@@ -71,23 +68,10 @@ export class DarkMode extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-
-    if (!this.daemon) return;
-    this._switchColorModeEventListener = this._switchColorMode.bind(this);
-    document.addEventListener(
-      shortcuts[0].command,
-      this._switchColorModeEventListener
-    );
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-
-    if (!this.daemon) return;
-    document.removeEventListener(
-      shortcuts[0].command,
-      this._switchColorModeEventListener
-    );
   }
 
   applySelectedPallete() {
@@ -110,14 +94,10 @@ export class DarkMode extends LitElement {
     DarkModeSingleton.SetAppliedMode(this.colorMode);
   }
 
-  private _switchColorMode() {
-    this.colorMode = this.colorMode === 'Light' ? 'Dark' : 'Light';
-    document.documentElement.setAttribute(
-      'prefers-scheme',
-      this.colorMode.toLowerCase()
-    );
+  switchColorMode() {
+    DarkModeSingleton.SwitchMode();
+
     this.requestUpdate();
-    DarkModeSingleton.SetAppliedMode(this.colorMode);
   }
 
   static GetColorMode(): ColorMode {
@@ -143,7 +123,7 @@ export class DarkMode extends LitElement {
       <sl-icon-button
         class="${this.daemon ? 'daemon' : ''}"
         name=${DarkMode.SetIconFromColorMode(this.colorMode)}
-        @click=${this._switchColorMode}
+        @click=${this.switchColorMode}
       >
       </sl-icon-button>
     `;

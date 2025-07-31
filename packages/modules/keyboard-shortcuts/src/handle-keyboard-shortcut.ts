@@ -1,5 +1,4 @@
 import {
-  ActiveElementState,
   KeyboardEventKey,
   KeyboardShortcut,
   Operator,
@@ -243,6 +242,7 @@ function registerKeydownListener(
 }
 
 export function openCommandPalette(this: KeyboardShortcutsElement, e: Event) {
+  if (!this._commandPaletteDialog) return;
   this._commandPaletteDialog.show();
   this.requestUpdate();
   e.preventDefault();

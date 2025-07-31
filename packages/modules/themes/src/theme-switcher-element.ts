@@ -2,6 +2,8 @@ import { html, PropertyValues, TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import themeSwitcherElementStyles from './theme-switcher-element.styles';
 
+import shortcuts from './shortcuts.json';
+
 import {
   BaseColor,
   ColorSet,
@@ -179,14 +181,19 @@ export class ThemesElement extends BookeraModuleElement {
   @state()
   hasFirstUpdated: boolean = false;
 
+  _darkModeElement!: DarkMode;
+
   @state()
   private _hasAppliedChanges: boolean = false;
 
   private _isSystemDirty = false;
   private _isCustomDirty = false;
 
+  private _switchColorModeEventListener!: Function;
+
   connectedCallback(): void {
     super.connectedCallback();
+    console.log('connected', this._config?.renderMode);
 
     if (this._config.renderMode === 'renderInDaemon') {
       document.addEventListener(
@@ -202,6 +209,14 @@ export class ThemesElement extends BookeraModuleElement {
           });
         }
       );
+
+      console.log('registered');
+      this._switchColorModeEventListener =
+        this._darkModeElement.switchColorMode.bind(this);
+      document.addEventListener(
+        shortcuts[0].command,
+        this._switchColorModeEventListener
+      );
     }
   }
 
@@ -212,9 +227,20 @@ export class ThemesElement extends BookeraModuleElement {
       '--primary'
     );
 
-    if (this._config.renderMode === 'renderInSettings') {
+    if (this._config?.renderMode === 'renderInSettings') {
       this._kickOffLocalFlow();
+    } else if (this._config?.renderMode === 'renderInDaemon') {
+      this._darkModeElement = new DarkMode(true);
     }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    document.removeEventListener(
+      shortcuts[0].command,
+      this._switchColorModeEventListener
+    );
   }
 
   private _runDirtyValidation(

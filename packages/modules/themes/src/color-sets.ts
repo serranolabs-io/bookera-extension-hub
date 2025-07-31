@@ -1,3 +1,5 @@
+import { ColorMode } from './theme-switcher-element';
+
 export const shadePercents = [
   50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
 ];
@@ -49,11 +51,18 @@ export class ColorSet {
 
   applyColorWithMode(colorMode: ColorMode) {
     for (let i = 0; i < this.colors.length; i++) {
-      document.documentElement.style.setProperty(
-        `--slate-${shadePercents[i]}`,
+      const value =
         colorMode === 'Dark'
           ? this.colors[this.colors.length - 1 - i]
-          : this.colors[i]
+          : this.colors[i];
+
+      if (i === 0) {
+        ColorSet.SetMetaThemeColor(value);
+      }
+
+      document.documentElement.style.setProperty(
+        `--slate-${shadePercents[i]}`,
+        value
       );
     }
   }
@@ -200,8 +209,18 @@ export class ColorSet {
     return name;
   }
 
+  static SetMetaThemeColor(value: string) {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', value);
+  }
+
   static SetStyle(name: string, shade: number, value: string) {
     name = ColorSet.FixProperty(name);
+
+    if (name === 'slate' && shade === 50) {
+      ColorSet.SetMetaThemeColor(value);
+    }
 
     document.documentElement.style.setProperty(`--${name}-${shade}`, value);
 
@@ -247,6 +266,8 @@ export class ColorSet {
         values[i]
       );
     }
+
+    ColorSet.SetMetaThemeColor(values[values.length - 3]);
   }
 }
 

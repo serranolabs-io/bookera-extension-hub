@@ -7,6 +7,21 @@ export const DarkModeKey = 'dark-mode-key';
 export class DarkModeSingleton {
   static DarkModeKey: ColorMode = 'Light'; // should be system
 
+  static SwitchMode() {
+    const bagManager = CreateBagManager(true);
+    const bag = bagManager.getBag<ColorMode>(DarkModeKey);
+
+    const key: ColorMode = bag?.get(DarkModeKey) as ColorMode;
+    if (!key) return;
+
+    const newKey = key === 'Light' ? 'Dark' : 'Light';
+
+    document.documentElement.setAttribute('prefers-scheme', newKey);
+
+    DarkModeSingleton.SetAppliedMode(newKey);
+    return;
+  }
+
   static SetAppliedMode(colorMode: ColorMode) {
     const bagManager = CreateBagManager(true);
     const bag = bagManager.getBag(DarkModeKey);

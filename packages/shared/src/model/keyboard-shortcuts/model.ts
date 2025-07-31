@@ -232,3 +232,6 @@ export class ActiveElementState {
     localforage.setItem<ActiveElement>(ACTIVE_ELEMENT_KEY, activeElement);
   }
 }
+
+export const KEYBOARD_SHORTCUTS_BOTTOM_DRAWER_KEY =
+  'keyboard-shortcuts-bottom-drawer-key';
