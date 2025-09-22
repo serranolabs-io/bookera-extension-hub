@@ -6,6 +6,9 @@ export default css`
     outline-offset: -2px;
   }
 
+a {
+  text-decoration: none;
+}
   .full {
     width: 100%;
   }
@@ -95,9 +98,11 @@ export default css`
    line-height: 1.75; /* 35px */
   }
 
-  .muted {
-    font-size: 0.875rem; /* 14px */
+  small, .muted {
+    font-size: var(--text-xs);
     line-height: 1.25; /* 17.5px */
+    color: var(--slate-300);
+    font-style: italic;
   }
 
   .hovered-element {

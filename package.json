@@ -23,6 +23,7 @@
     "packages/modules/*",
     "packages/extensions/*",
     "packages/shared",
+    "packages/editor",
     "packages/typescript-config",
     "apps/*"
   ],

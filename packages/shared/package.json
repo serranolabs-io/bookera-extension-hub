@@ -26,7 +26,9 @@
     "./module": "./src/module/module.ts",
     "./tab": "./src/module/tab.ts",
     "./module-element": "./src/module/module-element.ts",
-    "./supabase": "./src/model/supabase.ts"
+    "./supabase": "./src/model/supabase.ts",
+    "./editor": "./src/editor/types.ts",
+    "./editor-api": "./src/editor/api/index.ts"
   },
   "devDependencies": {
     "@serranolabs.io/typescript-config": "*",
@@ -38,6 +40,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "prosemirror-model": "^1.25.2",
     "@pb33f/saddlebag": "^0.2.2",
     "@shoelace-style/shoelace": "^2.20.1",
     "@supabase/supabase-js": "^2.49.8",
