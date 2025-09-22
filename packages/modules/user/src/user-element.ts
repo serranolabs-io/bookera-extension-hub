@@ -10,7 +10,7 @@ import { html, TemplateResult } from 'lit';
 import './login-element';
 import { LoginElement } from './login-element';
 import { StatisticalCategory, statsCategories, Statistic } from './statistics';
-import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/tag/tag.js';
+import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 
 export const elementName = 'user-element';
 @customElement(elementName)
@@ -26,7 +26,7 @@ export class UserElement extends BookeraModuleElement {
 
   private async _signOut() {
     this._isSigningOut = true;
-    const data = await this._config.supabase?.auth.signOut();
+    const data = await this._config?.supabase?.auth.signOut();
 
     if (!data?.error) {
       this._signedIn = false;
@@ -102,7 +102,7 @@ export class UserElement extends BookeraModuleElement {
   private _renderUser() {
     console.log('WE ARE', this._signedIn ? 'SIGNED IN' : 'SIGNED OUT');
     if (!this._signedIn) {
-      return new LoginElement(this._config);
+      return new LoginElement(this._config!);
     }
 
     return html`${this._renderProfileCard()}`;

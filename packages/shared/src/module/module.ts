@@ -140,6 +140,6 @@ export class BookeraModule<T = unknown> implements BookeraModuleI {
   }
 
   getConstructorTypeName() {
-    return this.title?.replaceAll(' ', '').concat('Element');
+    return this.title?.replace(/ /g, '').concat('Element');
   }
 }

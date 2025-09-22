@@ -113,7 +113,7 @@ export const acceptedImageTypes = [
 ];
 
 export const dashedCase = (item: string): string => {
-  return item.replaceAll(' ', '-').toLowerCase();
+  return item.replace(/ /g, '-').toLowerCase();
 };
 
 export const doesClickContainElement = <T = HTMLElement>(

@@ -9,7 +9,6 @@ import {
 } from './module';
 import type {
   BookeraModuleConfig,
-  ModuleInstanceType,
   RenderMode,
 } from './module';
 import { Tab } from './tab';
@@ -59,7 +58,7 @@ export abstract class BookeraModuleElement extends LitElement {
   @state() title!: string;
 
   @state()
-  renderMode: RenderMode;
+  renderMode: RenderMode = 'renderInSettings';
 
   private _panelTabId: string | undefined;
 
@@ -71,7 +70,7 @@ export abstract class BookeraModuleElement extends LitElement {
   @state()
   protected _isInstanceDirty: boolean = false;
 
-  protected _bagManager: BagManager;
+  protected _bagManager!: BagManager;
   protected _bag: Bag | undefined;
 
   protected _supabase!: SupabaseClient | null;
@@ -134,11 +133,11 @@ export abstract class BookeraModuleElement extends LitElement {
   }
 
   private async _getSupabase() {
-    this._config.supabase?.auth.onAuthStateChange(
+    this._config?.supabase?.auth.onAuthStateChange(
       this._onAuthStateChange.bind(this)
     );
 
-    const session = await this._config.supabase?.auth.getSession();
+    const session = await this._config?.supabase?.auth.getSession();
     if (session?.error) {
       return;
     }

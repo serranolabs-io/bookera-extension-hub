@@ -87,6 +87,7 @@ export interface KeyboardShortcutJson {
   description: string;
   title: string;
   shouldAppearInCommandPalette: string;
+  id?: string;
 }
 
 export class KeyboardShortcut implements KeyboardShortcutJson {

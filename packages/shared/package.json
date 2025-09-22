@@ -7,7 +7,8 @@
     "build": "vite build",
     "dev": "vite",
     "lint": "eslint  . --ext .ts,.tsx --fix",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "vitest"
   },
   "files": [
     "src"
@@ -34,7 +35,8 @@
     "@serranolabs.io/typescript-config": "*",
     "@types/bun": "latest",
     "vite-plugin-babel": "^1.3.0",
-    "@babel/plugin-proposal-decorators": "^7.25.9"
+    "@babel/plugin-proposal-decorators": "^7.25.9",
+    "vitest": "^3.1.3"
   },
   "peerDependencies": {
     "typescript": "^5"

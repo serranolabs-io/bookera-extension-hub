@@ -1,7 +1,7 @@
 import baseCss from '@serranolabs.io/shared/base';
 import { moduleElementStyles } from '@serranolabs.io/shared/module-element';
-import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { LitElement, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 import loginElementStyles from './login-element.styles';
 import { TanStackFormController } from '@tanstack/lit-form';
 import { repeat } from 'lit/directives/repeat.js';
@@ -27,15 +27,13 @@ export class LoginElement extends LitElement {
   });
   private _config: BookeraModuleConfig;
 
+
   constructor(config: BookeraModuleConfig) {
     super();
     this._config = config;
 
     this._handleSupabase();
   }
-
-  @state()
-  private _isLoggedIn: boolean = false;
 
   private async _handleSupabase() {
     const user = await this._config.supabase?.auth.getUser();
@@ -44,7 +42,7 @@ export class LoginElement extends LitElement {
       return;
     }
 
-    this._isLoggedIn = true;
+    // User is logged in
   }
 
   @state()
