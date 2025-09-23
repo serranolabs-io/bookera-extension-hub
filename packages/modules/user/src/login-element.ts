@@ -5,7 +5,7 @@ import { customElement, state } from 'lit/decorators.js';
 import loginElementStyles from './login-element.styles';
 import { TanStackFormController } from '@tanstack/lit-form';
 import { repeat } from 'lit/directives/repeat.js';
-import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
+import { ModuleConfig } from '@serranolabs.io/shared/module';
 import { notify } from '@serranolabs.io/shared/lit';
 
 interface LoginForm {
@@ -25,9 +25,9 @@ export class LoginElement extends LitElement {
       } as LoginForm,
     },
   });
-  private _config: BookeraModuleConfig;
+  private _config: ModuleConfig;
 
-  constructor(config: BookeraModuleConfig) {
+  constructor(config: ModuleConfig) {
     super();
     this._config = config;
 

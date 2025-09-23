@@ -2,7 +2,7 @@ import { customElement, state } from 'lit/decorators.js';
 import userStyles from './user-element.styles';
 import baseCss from '@serranolabs.io/shared/base';
 import { BookeraModuleElement, moduleElementStyles } from '@serranolabs.io/shared/module-element';
-import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
+import { ModuleConfig } from '@serranolabs.io/shared/module';
 import { html, TemplateResult } from 'lit';
 import './login-element';
 import { LoginElement } from './login-element';
@@ -14,7 +14,7 @@ export const elementName = 'user-element';
 export class UserElement extends BookeraModuleElement {
   static styles = [userStyles, baseCss, moduleElementStyles];
 
-  constructor(config: BookeraModuleConfig) {
+  constructor(config: ModuleConfig) {
     super(config);
   }
 
@@ -23,7 +23,7 @@ export class UserElement extends BookeraModuleElement {
 
   private async _signOut() {
     this._isSigningOut = true;
-    const data = await this._config?.supabase?.auth.signOut();
+    const data = await this._supabase?.auth.signOut();
 
     if (!data?.error) {
       this._signedIn = false;
@@ -94,7 +94,11 @@ export class UserElement extends BookeraModuleElement {
   private _renderUser() {
     console.log('WE ARE', this._signedIn ? 'SIGNED IN' : 'SIGNED OUT');
     if (!this._signedIn) {
-      return new LoginElement(this._config!);
+      return new LoginElement({ 
+        renderMode: this.renderMode, 
+        module: this.module,
+        supabase: this._supabase 
+      });
     }
 
     return html`${this._renderProfileCard()}`;

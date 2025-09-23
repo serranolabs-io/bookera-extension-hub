@@ -1,7 +1,7 @@
 // Clean user module - OOP BULLSHIT OBLITERATED 🔥
 import { createModule, ModuleRegistry } from '@serranolabs.io/shared/module';
 import { createTab } from '@serranolabs.io/shared/tab';
-import { UserElement, elementName } from './user-element';
+import { UserElement } from './user-element';
 
 const description = 'Manage your account here!';
 
@@ -17,7 +17,12 @@ export const userModule = createModule({
   title: 'User',
   description,
   version: '1.0.0',
-  renderModes: ['renderInSidePanel', 'renderInDaemon', 'renderInPanel', 'renderInSettings'],
+  renderModes: [
+    'renderInSidePanel',
+    'renderInDaemon',
+    'renderInPanel',
+    'renderInSettings',
+  ],
   tab: userTab,
 });
 

@@ -1,20 +1,24 @@
 // Clean module element base class - simplified and focused
 import { LitElement, html, css, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import type { 
-  BookeraModule as CleanBookeraModule, 
+import type {
+  BookeraModule as CleanBookeraModule,
   ModuleConfig,
-  RenderMode 
-} from './clean-module';
-import { hasSidePanel } from './clean-module';
-import { appendTab, removeTab, type CleanTab } from './tab';
+  RenderMode,
+} from './module';
+import { hasSidePanel } from './module';
+import { appendTab, removeTab } from './tab';
 import { MOBILE_MEDIA_QUERY, sendEvent } from '../model/util';
 import { notify } from '../model/lit';
 import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Source } from '../model/keyboard-shortcuts/model';
-import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
+import type {
+  AuthChangeEvent,
+  Session,
+  User as SupabaseUser,
+} from '@supabase/supabase-js';
 
 // Legacy events for backward compatibility
 export const UPDATE_BookeraModule_EVENT = 'update-BookeraModule-event';
@@ -65,9 +69,9 @@ export abstract class BookeraModuleElement extends LitElement {
 
     this.renderMode = config.renderMode;
     this.module = config.module;
-    this.instanceId = config.panelTabId ? 
-      `${config.module.metadata.id}-${config.panelTabId}` : 
-      config.module.metadata.id;
+    this.instanceId = config.panelTabId
+      ? `${config.module.metadata.id}-${config.panelTabId}`
+      : config.module.metadata.id;
 
     this._bagManager = CreateBagManager();
     this._supabase = config.supabase;
@@ -80,7 +84,7 @@ export abstract class BookeraModuleElement extends LitElement {
     if (this.module.metadata.title) {
       this._source = {
         name: this.module.metadata.title,
-        link: 'https://github.com/serranolabs-io/bookera-extension-hub'
+        link: 'https://github.com/serranolabs-io/bookera-extension-hub',
       } as Source;
     }
 
@@ -104,10 +108,16 @@ export abstract class BookeraModuleElement extends LitElement {
 
   private _setupEventListeners(): void {
     // @ts-expect-error - Custom event types
-    document.addEventListener(RequestUpdateEvent, this.listenToUpdates.bind(this));
+    document.addEventListener(
+      RequestUpdateEvent,
+      this.listenToUpdates.bind(this)
+    );
   }
 
-  private _onAuthStateChange(event: AuthChangeEvent, session: Session | null): void {
+  private _onAuthStateChange(
+    event: AuthChangeEvent,
+    session: Session | null
+  ): void {
     if (event === 'SIGNED_IN') {
       this._signedIn = true;
       if (session) {
@@ -132,7 +142,7 @@ export abstract class BookeraModuleElement extends LitElement {
 
   // State management helpers
   protected async _runSyncedFlow<T>(
-    defaultsFunction: () => void, 
+    defaultsFunction: () => void,
     key: string
   ): Promise<Bag<T>> {
     const bag = this._bagManager.createBag<T>(key);
@@ -149,11 +159,16 @@ export abstract class BookeraModuleElement extends LitElement {
   protected _savePanelTabState(key: string, value: any): void {
     this._bag?.set(key, value);
     if (this.instanceId) {
-      localforage.setItem(this.instanceId, this._bag?.export() as Map<string, any>);
+      localforage.setItem(
+        this.instanceId,
+        this._bag?.export() as Map<string, any>
+      );
     }
   }
 
-  protected async _getLocalForage(key?: string): Promise<Map<string, any> | null> {
+  protected async _getLocalForage(
+    key?: string
+  ): Promise<Map<string, any> | null> {
     const storageKey = key || this.instanceId;
     if (!storageKey) return null;
     return await localforage.getItem(storageKey);
@@ -202,7 +217,9 @@ export abstract class BookeraModuleElement extends LitElement {
     }
 
     return html`
-      <sl-tooltip content=${`Add ${this.module.metadata.title} settings as a tab`}>
+      <sl-tooltip
+        content=${`Add ${this.module.metadata.title} settings as a tab`}
+      >
         <sl-icon-button
           name="layout-sidebar"
           class="icon-button"
@@ -213,9 +230,19 @@ export abstract class BookeraModuleElement extends LitElement {
               // Update the module with new tab
               this.module = { ...this.module, tab: updatedTab };
               this._emitModuleUpdate();
-              notify('Successfully inserted tab on left panel', 'success', null, 3000);
+              notify(
+                'Successfully inserted tab on left panel',
+                'success',
+                null,
+                3000
+              );
             } else {
-              notify(`${this.module.metadata.title} already exists as a tab`, 'warning', null, 3000);
+              notify(
+                `${this.module.metadata.title} already exists as a tab`,
+                'warning',
+                null,
+                3000
+              );
             }
             this.requestUpdate();
           }}
@@ -226,16 +253,19 @@ export abstract class BookeraModuleElement extends LitElement {
 
   protected renderThemeButton(trigger?: string): TemplateResult {
     const iconName = this.module.tab?.icon || 'gear';
-    
+
     if (trigger) {
-      return html`<sl-icon-button name=${iconName} slot="trigger"></sl-icon-button>`;
+      return html`<sl-icon-button
+        name=${iconName}
+        slot="trigger"
+      ></sl-icon-button>`;
     }
     return html`<sl-icon-button name=${iconName}></sl-icon-button>`;
   }
 
   protected createSection(
-    title: string, 
-    description: string, 
+    title: string,
+    description: string,
     section: () => TemplateResult
   ): TemplateResult {
     return html`

@@ -1,124 +1,217 @@
-// Clean, simple module system - no bullshit
+// Clean, simple module system - ALL LEGACY BULLSHIT DELETED 🔥
 import { z } from 'zod';
 import type { Tab } from './tab';
-import { genShortID } from '../model/util';
 
-// Re-export everything from clean-module
-export * from './clean-module';
-
-// Legacy compatibility - these will be deprecated
+// Essential events that are still needed
 export const UPDATE_BookeraModule_EVENT = 'update-BookeraModule-event';
 export const RequestUpdateEvent = 'request-update';
-export const DEFAULT_VERSION = '1.0.0';
 
 export interface RequestUpdateEventType {
   moduleId: string;
 }
 
-// Legacy types for backward compatibility
 export type UPDATE_BookeraModule_EVENT_TYPE = any;
-export type BookeraModuleConfig<T = unknown> = any;
-export type BookeraModuleClass<T extends object = {}> = any;
-export type BookeraModuleI = any;
 
-// Legacy registry for backward compatibility
-export const BookeraModuleRegistryClasses: Record<string, any> = {};
+// Clean, simple types without the bullshit
+export const RenderModeSchema = z.enum([
+  'renderInSettings',
+  'renderInSidePanel',
+  'renderInDaemon',
+  'renderInPanel',
+]);
 
-// Legacy BookeraModule class - DEPRECATED, use createModule() instead
-export class BookeraModule<T = unknown> {
-  version?: string;
-  title?: string;
-  description?: string;
-  tab?: Tab;
-  id?: string;
-  renderModes?: string[];
-  instances: T[] = [];
+export type RenderMode = z.infer<typeof RenderModeSchema>;
 
-  constructor(
-    version?: string,
-    title?: string,
-    description?: string,
-    tab?: Tab,
-    id?: string,
-    renderModes?: string[],
-    constructorType?: any,
-    instances?: T[]
-  ) {
-    this.version = version || DEFAULT_VERSION;
-    this.title = title || 'Untitled Module';
-    this.description = description || 'No description';
-    this.id = id || genShortID(10);
-    this.renderModes = renderModes || ['renderInSettings'];
-    this.tab = tab;
-    this.instances = instances || [];
-
-    // Legacy registry registration
-    if (constructorType && this.title) {
-      const typeName = this.getConstructorTypeName();
-      if (typeName) {
-        BookeraModuleRegistryClasses[typeName] = constructorType;
-      }
-    }
-  }
-
-  hasSettings(): boolean {
-    return this.renderModes?.includes('renderInSettings') || false;
-  }
-
-  hasPanel(): boolean {
-    return this.renderModes?.includes('renderInPanel') || false;
-  }
-
-  hasSidePanel(): boolean {
-    return this.renderModes?.includes('renderInSidePanel') || false;
-  }
-
-  hasModuleDaemon(): boolean {
-    return this.renderModes?.includes('renderInDaemon') || false;
-  }
-
-  getConstructorTypeName(): string {
-    return this.title?.replace(/ /g, '').concat('Element') || 'UnknownElement';
-  }
-}
-
-// Legacy schema for validation
-export const BookeraModuleSchema = z.object({
-  version: z.string().optional(),
-  title: z.string().optional(),
-  description: z.string().optional(),
-  tab: z.any().optional(),
-  id: z.string().optional(),
-  renderModes: z.array(z.string()).optional(),
-  instances: z.array(z.unknown()).default([]),
+// Module metadata - the actual plugin definition
+export const ModuleMetadataSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  version: z.string(),
+  renderModes: z.array(RenderModeSchema),
 });
 
-// Migration helper to convert legacy to new system
-export function migrateLegacyModule(legacy: BookeraModule<any>): import('./clean-module').BookeraModule {
-  const { createModule } = require('./clean-module');
-  
-  return createModule({
-    id: legacy.id,
-    title: legacy.title || 'Untitled Module',
-    description: legacy.description || 'No description',
-    version: legacy.version || DEFAULT_VERSION,
-    renderModes: (legacy.renderModes || ['renderInSettings']) as any[],
-    tab: legacy.tab,
-  });
+export type ModuleMetadata = z.infer<typeof ModuleMetadataSchema>;
+
+// Simple module type - just a plain object, no class bullshit
+export interface BookeraModule {
+  readonly metadata: ModuleMetadata;
+  readonly tab?: Tab;
 }
 
-// Helper to convert new to legacy for compatibility
-export function createLegacyModule(modern: import('./clean-module').BookeraModule): BookeraModule<any> {
-  const legacy = new BookeraModule(
-    modern.metadata.version,
-    modern.metadata.title,
-    modern.metadata.description,
-    modern.tab,
-    modern.metadata.id,
-    modern.metadata.renderModes,
-    undefined,
-    []
-  );
-  
-  return legacy;
+// Factory function for clean creation - returns plain object
+export function createModule(config: {
+  id?: string;
+  title: string;
+  description: string;
+  version?: string;
+  renderModes: RenderMode[];
+  tab?: Tab;
+}): BookeraModule {
+  const metadata: ModuleMetadata = {
+    id: config.id || generateId(),
+    title: config.title,
+    description: config.description,
+    version: config.version || '1.0.0',
+    renderModes: config.renderModes,
+  };
+
+  return {
+    metadata,
+    tab: config.tab,
+  };
+}
+
+// Simple ID generation
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 12);
+}
+
+// Utility functions for working with modules
+export function hasSettings(module: BookeraModule): boolean {
+  return module.metadata.renderModes.includes('renderInSettings');
+}
+
+export function hasPanel(module: BookeraModule): boolean {
+  return module.metadata.renderModes.includes('renderInPanel');
+}
+
+export function hasSidePanel(module: BookeraModule): boolean {
+  return module.metadata.renderModes.includes('renderInSidePanel');
+}
+
+export function hasModuleDaemon(module: BookeraModule): boolean {
+  return module.metadata.renderModes.includes('renderInDaemon');
+}
+
+export function getConstructorTypeName(module: BookeraModule): string {
+  return module.metadata.title.replace(/ /g, '').concat('Element');
+}
+
+// Module configuration for element creation
+export interface ModuleConfig {
+  readonly module: BookeraModule;
+  readonly renderMode: RenderMode;
+  readonly panelTabId?: string;
+  readonly supabase?: any; // Keep for backward compatibility
+}
+
+// Type for module element classes - loose typing for compatibility
+export interface ModuleElementClass {
+  new (config: ModuleConfig): any; // Use any for compatibility with existing elements
+}
+
+// Basic module element interface - loose for compatibility
+export interface ModuleElement {
+  renderInSettings(): unknown;
+  renderInSidePanel(): unknown;
+  renderInModuleDaemon(): unknown;
+  renderInPanel(): unknown;
+}
+
+// Registry entry
+export interface RegistryEntry {
+  readonly module: BookeraModule;
+  readonly elementClass: ModuleElementClass;
+}
+
+// Clean, simple singleton registry
+export class ModuleRegistry {
+  private static instance: ModuleRegistry;
+  private entries = new Map<string, RegistryEntry>();
+
+  private constructor() {} // Private constructor for singleton
+
+  static getInstance(): ModuleRegistry {
+    if (!this.instance) {
+      this.instance = new ModuleRegistry();
+    }
+    return this.instance;
+  }
+
+  // Simple static methods for convenience
+  static register(
+    module: BookeraModule,
+    elementClass: ModuleElementClass
+  ): void {
+    ModuleRegistry.getInstance().register(module, elementClass);
+  }
+
+  static get(moduleId: string): RegistryEntry | undefined {
+    return ModuleRegistry.getInstance().get(moduleId);
+  }
+
+  static getAll(): RegistryEntry[] {
+    return ModuleRegistry.getInstance().getAll();
+  }
+
+  static createInstance(
+    moduleId: string,
+    config: Omit<ModuleConfig, 'module'>
+  ): ModuleElement {
+    return ModuleRegistry.getInstance().createInstance(moduleId, config);
+  }
+
+  // Instance methods
+  register(module: BookeraModule, elementClass: ModuleElementClass): void {
+    if (this.entries.has(module.metadata.id)) {
+      throw new Error(`Module '${module.metadata.id}' already registered`);
+    }
+
+    this.entries.set(module.metadata.id, {
+      module,
+      elementClass,
+    });
+  }
+
+  get(moduleId: string): RegistryEntry | undefined {
+    return this.entries.get(moduleId);
+  }
+
+  getAll(): RegistryEntry[] {
+    return Array.from(this.entries.values());
+  }
+
+  getByRenderMode(renderMode: RenderMode): RegistryEntry[] {
+    return this.getAll().filter(entry =>
+      entry.module.metadata.renderModes.includes(renderMode)
+    );
+  }
+
+  createInstance(
+    moduleId: string,
+    config: Omit<ModuleConfig, 'module'>
+  ): ModuleElement {
+    const entry = this.get(moduleId);
+    if (!entry) {
+      throw new Error(`Module '${moduleId}' not found`);
+    }
+
+    return new entry.elementClass({
+      ...config,
+      module: entry.module,
+    });
+  }
+
+  unregister(moduleId: string): boolean {
+    return this.entries.delete(moduleId);
+  }
+
+  clear(): void {
+    this.entries.clear();
+  }
+}
+
+// User data service - separate from modules
+export interface UserDataService<TData = unknown> {
+  get(moduleId: string, key?: string): Promise<TData | undefined>;
+  set(moduleId: string, data: TData, key?: string): Promise<void>;
+  update(
+    moduleId: string,
+    updates: Partial<TData>,
+    key?: string
+  ): Promise<void>;
+  delete(moduleId: string, key?: string): Promise<void>;
+  list(moduleId: string): Promise<TData[]>;
+  subscribe(moduleId: string, callback: (data: TData) => void): () => void;
 }

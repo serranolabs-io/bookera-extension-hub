@@ -42,7 +42,7 @@ import { DarkMode } from './dark-mode';
 import { DarkModeKey } from './dark-mode-state';
 import { BookeraModuleElement, moduleElementStyles } from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
-import { BookeraModule, BookeraModuleConfig, RenderMode } from '@serranolabs.io/shared/module';
+import { BookeraModule, ModuleConfig, RenderMode } from '@serranolabs.io/shared/module';
 
 import { genShortID, sendEvent } from '@serranolabs.io/shared/util';
 import {
@@ -182,9 +182,9 @@ export class ThemesElement extends BookeraModuleElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    console.log('connected', this._config?.renderMode);
+    console.log('connected', this.renderMode);
 
-    if (this._config.renderMode === 'renderInDaemon') {
+    if (this.renderMode === 'renderInDaemon') {
       document.addEventListener(ExtensionDownloadEndpoints.themes, (e: CustomEvent<Config>) => {
         const configs = e.detail.values;
         configs.forEach((config: Config) => {
@@ -198,14 +198,14 @@ export class ThemesElement extends BookeraModuleElement {
     }
   }
 
-  constructor(config: BookeraModuleConfig) {
+  constructor(config: ModuleConfig) {
     super(config);
 
     savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue('--primary');
 
-    if (this._config?.renderMode === 'renderInSettings') {
+    if (this.renderMode === 'renderInSettings') {
       this._kickOffLocalFlow();
-    } else if (this._config?.renderMode === 'renderInDaemon') {
+    } else if (this.renderMode === 'renderInDaemon') {
       this._darkModeElement = new DarkMode(true);
     }
   }
