@@ -1,215 +1,163 @@
-// Phase 1 Refactoring: Type-safe module system exports
-// This index file provides a clean API for the improved module system
+// Clean, simple module system exports
+// The old system is burned down, this is the new way
 
-// Core types and interfaces
-export type {
-  RenderMode,
-  ModuleMetadata,
-  IBookeraModule,
-  ModuleConfig,
-  ModuleElementConstructor,
-  ModuleElementInstance,
-  ModuleRegistryEntry,
-  IModuleRegistry,
-  ModuleFactory,
-  ModuleUpdateEvent,
-} from './types';
+// Core clean module system
+export * from './clean-module';
 
-// Error classes
-export {
-  ModuleRegistrationError,
-  ModuleNotFoundError,
-  ModuleValidationError,
-} from './types';
-
-// Validation system
-export {
-  ModuleValidator,
-  validateRequired,
-  validateStringLength,
-  validateUrl,
-  isValidRenderMode,
-  isValidModuleMetadata,
-} from './validation';
-
-export type { ValidationResult } from './validation';
-
-// Services
-export {
-  ModuleStateService,
-  ModuleRegistryStateService,
-} from './services/module-state-service';
-
-export {
-  ModuleBusinessLogicService,
-  TabBusinessLogicService,
-  ModuleConfigService,
-} from './services/module-business-logic';
-
-export type {
-  ModuleSummary,
-  TabSummary,
-  ConfigSummary,
-} from './services/module-business-logic';
-
-// Dependency injection
-export {
-  DIContainer,
-  ServiceKeys,
-  Injectable,
-  Inject,
-  ModuleDependencyResolver,
-  ServiceLocator,
-  ConsoleLogger,
-  SimpleEventBus,
-  bootstrapDI,
-} from './services/dependency-injection';
-
-export type {
-  ModuleDependencies,
-  ILogger,
-  IEventBus,
-} from './services/dependency-injection';
-
-// Improved implementations
-export {
-  ImprovedBookeraModule,
-  TypeSafeModuleRegistry,
-  ModuleBuilder,
-  ModuleCompat,
-} from './improved-module';
-
-export {
-  ImprovedBookeraModuleElement,
-  SimpleModuleElement,
-} from './improved-module-element';
-
-// Legacy exports for backward compatibility
-export {
-  BookeraModule,
-  BookeraModuleRegistryClasses,
-  UPDATE_BookeraModule_EVENT,
-  UPDATE_BookeraModule_EVENT_TYPE,
-  RequestUpdateEvent,
-  RequestUpdateEventType,
-  DEFAULT_VERSION,
-} from './module';
-
-export type {
-  BookeraModuleConfig,
-  BookeraModuleClass,
-  BookeraModuleI,
-} from './module';
-
-export {
-  BookeraModuleElement,
-  moduleElementStyles,
-} from './module-element';
+// Clean module element base class
+export { BookeraModuleElement, moduleElementStyles } from './module-element';
 
 // Tab system
 export { Tab, TabPosition } from './tab';
 
-// Schemas for external use
+// Simplified types
+export type { ValidationResult, ModuleUpdateEvent } from './types';
+
+// Legacy compatibility (deprecated but functional)
 export {
-  RenderModeSchema,
-  ModuleMetadataSchema,
-  BookeraModuleSchema,
-  ExtensionConfigSchema,
-  ModuleInstanceSchema,
-} from './validation';
+  BookeraModule as LegacyBookeraModule,
+  UPDATE_BookeraModule_EVENT,
+  RequestUpdateEvent,
+  DEFAULT_VERSION,
+  BookeraModuleRegistryClasses,
+  migrateLegacyModule,
+  createLegacyModule,
+} from './module';
 
-/**
- * Migration helper for gradually adopting the new system
- * 
- * Usage:
- * ```typescript
- * import { ModuleMigrationHelper } from '@serranolabs.io/shared/module';
- * 
- * // Gradually migrate existing modules
- * const helper = new ModuleMigrationHelper();
- * const improvedModule = helper.upgradeModule(legacyModule);
- * ```
- */
-export class ModuleMigrationHelper {
+export type {
+  UPDATE_BookeraModule_EVENT_TYPE,
+  BookeraModuleConfig,
+  BookeraModuleClass,
+  BookeraModuleI,
+  RequestUpdateEventType,
+} from './module';
+
+// Migration helpers for upgrading from old system
+export class ModuleMigration {
   /**
-   * Upgrade legacy module to new improved module
+   * Convert legacy module to clean module
    */
-  upgradeModule<T>(legacyModule: any): ImprovedBookeraModule<T> {
-    return ModuleCompat.upgrade<T>(legacyModule);
+  static upgradeLegacy(legacy: any): import('./clean-module').BookeraModule {
+    const { createModule } = require('./clean-module');
+    
+    return createModule({
+      id: legacy.id,
+      title: legacy.title || 'Untitled Module',
+      description: legacy.description || 'No description',
+      version: legacy.version || '1.0.0',
+      renderModes: legacy.renderModes || ['renderInSettings'],
+      tab: legacy.tab,
+    });
   }
 
   /**
-   * Downgrade improved module to legacy format
+   * Convert clean module to legacy for compatibility
    */
-  downgradeModule<T>(improvedModule: ImprovedBookeraModule<T>): any {
-    return ModuleCompat.downgrade(improvedModule);
+  static downgradeTo Legacy(modern: import('./clean-module').BookeraModule): any {
+    const { BookeraModule } = require('./module');
+    
+    return new BookeraModule(
+      modern.metadata.version,
+      modern.metadata.title,
+      modern.metadata.description,
+      modern.tab,
+      modern.metadata.id,
+      modern.metadata.renderModes,
+      undefined,
+      []
+    );
   }
 
   /**
-   * Validate legacy module and get upgrade recommendations
+   * Check if a module is using the old system
    */
-  analyzeModule(legacyModule: any): {
-    canUpgrade: boolean;
-    issues: string[];
-    recommendations: string[];
-  } {
-    const issues: string[] = [];
-    const recommendations: string[] = [];
-
-    // Check required fields
-    if (!legacyModule.title) {
-      issues.push('Missing title');
-    }
-
-    if (!legacyModule.description) {
-      issues.push('Missing description');
-    }
-
-    if (!legacyModule.renderModes || legacyModule.renderModes.length === 0) {
-      issues.push('No render modes specified');
-    }
-
-    // Check for potential improvements
-    if (!legacyModule.version) {
-      recommendations.push('Add version information');
-    }
-
-    if (legacyModule.instances && legacyModule.instances.length > 10) {
-      recommendations.push('Consider implementing instance pagination');
-    }
-
-    if (legacyModule.renderModes?.includes('renderInSidePanel') && !legacyModule.tab) {
-      recommendations.push('Add tab configuration for side panel support');
-    }
-
-    return {
-      canUpgrade: issues.length === 0,
-      issues,
-      recommendations,
-    };
+  static isLegacy(module: any): boolean {
+    return module.constructor?.name === 'BookeraModule' && 
+           'instances' in module;
   }
 
   /**
-   * Get migration steps for a specific module
+   * Auto-upgrade if legacy, return as-is if modern
    */
-  getMigrationSteps(legacyModule: any): string[] {
-    const analysis = this.analyzeModule(legacyModule);
-    const steps: string[] = [];
-
-    if (analysis.issues.length > 0) {
-      steps.push('Fix required issues:');
-      analysis.issues.forEach(issue => steps.push(`  - ${issue}`));
+  static ensureModern(module: any): import('./clean-module').BookeraModule {
+    if (this.isLegacy(module)) {
+      return this.upgradeLegacy(module);
     }
-
-    steps.push('Run ModuleCompat.upgrade() to convert to ImprovedBookeraModule');
-    steps.push('Update module registration to use TypeSafeModuleRegistry');
-    steps.push('Migrate element class to extend ImprovedBookeraModuleElement');
-
-    if (analysis.recommendations.length > 0) {
-      steps.push('Consider these improvements:');
-      analysis.recommendations.forEach(rec => steps.push(`  - ${rec}`));
-    }
-
-    return steps;
+    return module;
   }
 }
+
+// Quick reference guide for migration
+export const MIGRATION_GUIDE = {
+  old: {
+    creation: 'new BookeraModule(...8 params)',
+    registration: 'BookeraModuleRegistryClasses[name] = class',
+    userdata: 'module.instances.push(data)',
+  },
+  new: {
+    creation: 'createModule({ title, description, renderModes })',
+    registration: 'ModuleRegistry.register(module, elementClass)',
+    userdata: 'userDataService.set(moduleId, data)',
+  },
+  steps: [
+    '1. Replace new BookeraModule() with createModule()',
+    '2. Move user data to separate service',
+    '3. Use ModuleRegistry.register() instead of class registry',
+    '4. Update element to extend clean BookeraModuleElement',
+    '5. Remove instances from module definition',
+  ]
+};
+
+// Simple factory function for common module patterns
+export function createSettingsModule(config: {
+  title: string;
+  description: string;
+  elementClass: any;
+  version?: string;
+}): void {
+  const module = createModule({
+    title: config.title,
+    description: config.description,
+    version: config.version || '1.0.0',
+    renderModes: ['renderInSettings'],
+  });
+
+  ModuleRegistry.register(module, config.elementClass);
+}
+
+export function createSidePanelModule(config: {
+  title: string;
+  description: string;
+  elementClass: any;
+  icon?: string;
+  version?: string;
+}): void {
+  const tab = new Tab(
+    config.title,
+    config.icon || 'gear',
+    undefined,
+    undefined,
+    'left'
+  );
+
+  const module = createModule({
+    title: config.title,
+    description: config.description,
+    version: config.version || '1.0.0',
+    renderModes: ['renderInSettings', 'renderInSidePanel'],
+    tab,
+  });
+
+  ModuleRegistry.register(module, config.elementClass);
+}
+
+// Re-export the main API from clean-module
+export const {
+  createModule,
+  ModuleRegistry,
+  hasSettings,
+  hasPanel,
+  hasSidePanel,
+  hasModuleDaemon,
+  getConstructorTypeName,
+} = require('./clean-module');

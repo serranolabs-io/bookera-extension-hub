@@ -1,16 +1,27 @@
-import { BookeraModule, DEFAULT_VERSION } from '@serranolabs.io/shared/module';
+// Clean user module - OOP BULLSHIT OBLITERATED 🔥
+import { createModule, ModuleRegistry } from '@serranolabs.io/shared/module';
+import { createTab } from '@serranolabs.io/shared/tab';
 import { UserElement, elementName } from './user-element';
-import { Tab } from '@serranolabs.io/shared/tab';
-import { genShortID } from '@serranolabs.io/shared/util';
 
 const description = 'Manage your account here!';
 
-export const userModule = new BookeraModule(
-  DEFAULT_VERSION,
-  'User',
+// Clean tab - PLAIN OBJECT
+const userTab = createTab({
+  title: 'User',
+  icon: 'person',
+  position: 'left',
+});
+
+// Clean module creation - FUCKING SIMPLE
+export const userModule = createModule({
+  title: 'User',
   description,
-  new Tab('User', 'person', '', elementName, 'left'),
-  genShortID(10),
-  ['renderInSidePanel', 'renderInDaemon', 'renderInPanel', 'renderInSettings'],
-  UserElement
-);
+  version: '1.0.0',
+  renderModes: ['renderInSidePanel', 'renderInDaemon', 'renderInPanel', 'renderInSettings'],
+  tab: userTab,
+});
+
+// Register - DONE
+ModuleRegistry.register(userModule, UserElement);
+
+export { UserElement };

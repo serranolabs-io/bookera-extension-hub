@@ -1,117 +1,79 @@
-import { z } from 'zod';
-import type { Tab } from './tab';
-import type { SupabaseClient } from '@supabase/supabase-js';
+// Clean, simplified types - no more over-engineering
+export * from './clean-module';
 
-// Render mode validation schema
-export const RenderModeSchema = z.enum([
-  'renderInSettings',
-  'renderInSidePanel',
-  'renderInDaemon',
-  'renderInPanel',
-]);
+// Re-export clean module types as the main types
+export type {
+  BookeraModule,
+  ModuleMetadata,
+  RenderMode,
+  ModuleConfig,
+  ModuleElement,
+  ModuleElementClass,
+  RegistryEntry,
+  UserDataService,
+} from './clean-module';
 
-export type RenderMode = z.infer<typeof RenderModeSchema>;
+export {
+  createModule,
+  ModuleRegistry,
+  hasSettings,
+  hasPanel,
+  hasSidePanel,
+  hasModuleDaemon,
+  getConstructorTypeName,
+  RenderModeSchema,
+  ModuleMetadataSchema,
+} from './clean-module';
 
-// Tab validation schema
-export const TabSchema = z.object({
-  id: z.string().optional(),
-  title: z.string(),
-  icon: z.string(),
-  position: z.enum(['left', 'right']),
-  isAppended: z.boolean().default(false),
-  isToggledInDrawer: z.boolean().default(false),
-  value: z.string().optional(),
-});
+// Legacy types for backward compatibility - all marked as deprecated
+/** @deprecated Use createModule() instead */
+export type IBookeraModule<T = unknown> = any;
 
-// Module metadata schema
-export const ModuleMetadataSchema = z.object({
-  version: z.string(),
-  title: z.string(),
-  description: z.string(),
-  id: z.string(),
-  renderModes: z.array(RenderModeSchema),
-});
+/** @deprecated Use ModuleMetadata instead */
+export type ModuleMetadata_Legacy = any;
 
-export type ModuleMetadata = z.infer<typeof ModuleMetadataSchema>;
-
-// Base module interface
-export interface IBookeraModule<T = unknown> {
-  readonly metadata: ModuleMetadata;
-  readonly tab?: Tab;
-  readonly instances: ReadonlyArray<T>;
-  
-  hasSettings(): boolean;
-  hasPanel(): boolean;
-  hasSidePanel(): boolean;
-  hasModuleDaemon(): boolean;
-  addInstance(instance: T): void;
-  removeInstance(instanceId: string): void;
-  getInstance(instanceId: string): T | undefined;
+/** @deprecated Use ModuleConfig instead */
+export interface ModuleConfig_Legacy<T = unknown> {
+  renderMode: string;
+  module: any;
+  panelTabId?: string;
+  supabase?: any;
+  instanceType?: T;
 }
 
-// Module configuration interface
-export interface ModuleConfig<T = unknown> {
-  readonly renderMode: RenderMode;
-  readonly module: IBookeraModule<T>;
-  readonly panelTabId?: string;
-  readonly supabase?: SupabaseClient;
-  readonly instanceType?: T;
-}
-
-// Type-safe module class constraint
+/** @deprecated Use ModuleElementClass instead */
 export interface ModuleElementConstructor<T = unknown> {
-  new (config: ModuleConfig<T>): ModuleElementInstance<T>;
+  new (config: any): any;
 }
 
-// Module element instance interface
+/** @deprecated Use ModuleElement instead */
 export interface ModuleElementInstance<T = unknown> {
-  readonly module: IBookeraModule<T>;
-  readonly renderMode: RenderMode;
+  readonly module: any;
+  readonly renderMode: string;
   readonly instanceId?: string;
-  
   renderInSettings(): unknown;
   renderInSidePanel(): unknown;
   renderInModuleDaemon(): unknown;
   renderInPanel(): unknown;
 }
 
-// Registry entry interface
+/** @deprecated Use RegistryEntry instead */
 export interface ModuleRegistryEntry<T = unknown> {
-  readonly metadata: ModuleMetadata;
-  readonly moduleClass: ModuleElementConstructor<T>;
-  readonly moduleInstance: IBookeraModule<T>;
+  readonly metadata: any;
+  readonly moduleClass: any;
+  readonly moduleInstance: any;
 }
 
-// Type-safe registry interface
+/** @deprecated Use ModuleRegistry singleton instead */
 export interface IModuleRegistry {
-  register<T>(
-    module: IBookeraModule<T>,
-    elementClass: ModuleElementConstructor<T>
-  ): void;
-  
-  get<T>(moduleId: string): ModuleRegistryEntry<T> | undefined;
-  
-  getAll(): ReadonlyArray<ModuleRegistryEntry<any>>;
-  
-  createInstance<T>(
-    moduleId: string,
-    config: ModuleConfig<T>
-  ): ModuleElementInstance<T> | undefined;
-  
-  getModulesWithRenderMode(renderMode: RenderMode): ReadonlyArray<ModuleRegistryEntry<any>>;
+  register<T>(module: any, elementClass: any): void;
+  get<T>(moduleId: string): any;
+  getAll(): ReadonlyArray<any>;
+  createInstance<T>(moduleId: string, config: any): any;
+  getModulesWithRenderMode(renderMode: string): ReadonlyArray<any>;
 }
 
-// Factory function type
-export type ModuleFactory<T> = (config: ModuleConfig<T>) => ModuleElementInstance<T>;
-
-// Update event types
-export interface ModuleUpdateEvent<T = unknown> {
-  readonly moduleId: string;
-  readonly module: IBookeraModule<T>;
-  readonly changeType: 'created' | 'updated' | 'deleted';
-}
-
-// Error types
+/** @deprecated Use built-in Error instead */
 export class ModuleRegistrationError extends Error {
   constructor(moduleId: string, reason: string) {
     super(`Failed to register module '${moduleId}': ${reason}`);
@@ -119,6 +81,7 @@ export class ModuleRegistrationError extends Error {
   }
 }
 
+/** @deprecated Use built-in Error instead */
 export class ModuleNotFoundError extends Error {
   constructor(moduleId: string) {
     super(`Module with id '${moduleId}' not found in registry`);
@@ -126,9 +89,25 @@ export class ModuleNotFoundError extends Error {
   }
 }
 
+/** @deprecated Use built-in Error instead */
 export class ModuleValidationError extends Error {
   constructor(moduleId: string, validationErrors: string[]) {
     super(`Module '${moduleId}' validation failed: ${validationErrors.join(', ')}`);
     this.name = 'ModuleValidationError';
   }
+}
+
+// Simple validation result - no need for complex validation anymore
+export interface ValidationResult<T = unknown> {
+  success: boolean;
+  data?: T;
+  errors: string[];
+  warnings: string[];
+}
+
+// Update event types - simplified
+export interface ModuleUpdateEvent<T = unknown> {
+  readonly moduleId: string;
+  readonly module: any;
+  readonly changeType: 'created' | 'updated' | 'deleted';
 }

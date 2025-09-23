@@ -1,142 +1,113 @@
+// Clean module element base class - simplified and focused
 import { LitElement, html, css, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import {
-  BookeraModule,
-  RequestUpdateEvent,
-  RequestUpdateEventType,
-  UPDATE_BookeraModule_EVENT,
-  UPDATE_BookeraModule_EVENT_TYPE,
-} from './module';
-import type { BookeraModuleConfig, RenderMode } from './module';
-import { Tab } from './tab';
+import type { 
+  BookeraModule as CleanBookeraModule, 
+  ModuleConfig,
+  RenderMode 
+} from './clean-module';
+import { hasSidePanel } from './clean-module';
+import { appendTab, removeTab, type CleanTab } from './tab';
 import { MOBILE_MEDIA_QUERY, sendEvent } from '../model/util';
 import { notify } from '../model/lit';
 import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { Source } from '../model/keyboard-shortcuts/model';
-import { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Source } from '../model/keyboard-shortcuts/model';
+import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
 
-customElement('bookera-module-element');
+// Legacy events for backward compatibility
+export const UPDATE_BookeraModule_EVENT = 'update-BookeraModule-event';
+export const RequestUpdateEvent = 'request-update';
+
+export interface RequestUpdateEventType {
+  moduleId: string;
+}
+
 /**
- * The `ModuleElement` class serves as an abstract base class for creating custom module elements
- * in the application. It extends the `LitElement` class and provides a structure for managing
- * module state, rendering, and event handling.
- *
- * @abstract
- * @extends {LitElement}
- *
- * @property {CSSResult[]} static styles - Defines the default styles for the module element.
- * @property {BookeraModule} module - Represents the module associated with this element.
- * @property {string} title - The title of the module element. Defaults to 'Theme Switcher'.
- * @property {RenderMode} renderMode - Specifies the rendering mode for the module element.
- *
- * @constructor
- * @param {RenderMode} renderMode - The rendering mode to initialize the module element with.
- * @param {BookeraModule} module - The module to associate with this element.
- *
- * @event sendEvent<UpdateMenuType<T>> - Dispatched to update the menu state with the current module's data.
- *
- * @method newMethod - Abstract method to be implemented by subclasses for additional functionality.
- * @method intializeModule - Abstract method to initialize and return a new module instance.
- * @method _sendTabState - Abstract method to handle the dispatching of the module's tab state.
- * @method renderInSidePanel - Abstract method to define rendering logic for the side panel.
- * @method renderInSettings - Abstract method to define rendering logic for the main panel.
- * @method render - Abstract method to define the overall rendering logic for the module element.
+ * Clean, simplified BookeraModuleElement base class
+ * Uses clean module types and focuses on essential functionality
  */
+@customElement('bookera-module-element')
 export abstract class BookeraModuleElement extends LitElement {
   @state()
-  module!: BookeraModule;
-
-  @state() title!: string;
+  protected module!: CleanBookeraModule;
 
   @state()
-  renderMode: RenderMode = 'renderInSettings';
-
-  private _panelTabId: string | undefined;
-
-  protected _source?: Source;
+  protected renderMode: RenderMode = 'renderInSettings';
 
   @state()
-  instanceId: string | undefined;
+  protected instanceId?: string;
 
+  // Essential state
   @state()
   protected _isInstanceDirty: boolean = false;
 
-  protected _bagManager!: BagManager;
-  protected _bag: Bag | undefined;
-
-  protected _supabase!: SupabaseClient | null;
-
   @state()
-  protected _user: SupabaseUser | undefined;
+  protected _user?: SupabaseUser;
 
   @state()
   protected _signedIn: boolean = false;
 
   @state()
-  _renderInDaemonMode = true;
+  protected _renderInDaemonMode = true;
 
-  doNotRenderInDaemonMode() {
-    this._renderInDaemonMode = false;
-  }
+  // Services - simplified
+  protected _bagManager!: BagManager;
+  protected _bag?: Bag<any>;
+  protected _supabase?: SupabaseClient;
+  protected _source?: Source;
 
-  _formInstanceId() {
-    return this.module.id! + this._panelTabId;
-  }
-
-  protected _config: BookeraModuleConfig | undefined;
-
-  constructor(config: BookeraModuleConfig) {
+  constructor(config: ModuleConfig) {
     super();
 
     if (!config) return;
 
     this.renderMode = config.renderMode;
     this.module = config.module;
+    this.instanceId = config.panelTabId ? 
+      `${config.module.metadata.id}-${config.panelTabId}` : 
+      config.module.metadata.id;
 
-    this.module.tab = Object.assign(new Tab(), this.module.tab);
-    this.title = this.module.title!;
     this._bagManager = CreateBagManager();
-    if (config.supabase) {
-      this._supabase = config.supabase;
-    }
+    this._supabase = config.supabase;
 
-    if (config._panelTabId) {
-      this._panelTabId = config._panelTabId;
-      this.instanceId = this._formInstanceId();
+    if (config.panelTabId) {
       this._bag = CreateBag(this.instanceId);
     }
 
-    this._config = config;
-
-    if (this.module.title) {
-      this._source = new Source(
-        this.module.title,
-        'https://github.com/serranolabs-io/bookera-extension-hub/tree/main/packages/modules/themes'
-      );
+    // Set up source for shortcuts
+    if (this.module.metadata.title) {
+      this._source = {
+        name: this.module.metadata.title,
+        link: 'https://github.com/serranolabs-io/bookera-extension-hub'
+      } as Source;
     }
 
-    this._getSupabase();
-    // @ts-expect-error addEventListener sucks
-    document.addEventListener(RequestUpdateEvent, this.listenToUpdates.bind(this));
+    this._setupAuth();
+    this._setupEventListeners();
   }
 
-  private async _getSupabase() {
-    this._config?.supabase?.auth.onAuthStateChange(this._onAuthStateChange.bind(this));
+  private async _setupAuth(): Promise<void> {
+    if (!this._supabase) return;
 
-    const session = await this._config?.supabase?.auth.getSession();
-    if (session?.error) {
-      return;
-    }
+    this._supabase.auth.onAuthStateChange(this._onAuthStateChange.bind(this));
+
+    const session = await this._supabase.auth.getSession();
+    if (session?.error) return;
 
     if (session?.data.session) {
-      this._user = session.data.session?.user;
+      this._user = session.data.session.user;
       this._signedIn = true;
     }
   }
 
-  _onAuthStateChange(event: AuthChangeEvent, session: Session | null): void | Promise<void> {
+  private _setupEventListeners(): void {
+    // @ts-expect-error - Custom event types
+    document.addEventListener(RequestUpdateEvent, this.listenToUpdates.bind(this));
+  }
+
+  private _onAuthStateChange(event: AuthChangeEvent, session: Session | null): void {
     if (event === 'SIGNED_IN') {
       this._signedIn = true;
       if (session) {
@@ -148,25 +119,23 @@ export abstract class BookeraModuleElement extends LitElement {
     }
   }
 
-  protected _getSyncedBag<T>(key: string): Bag<T> | undefined {
-    return this._bagManager.getBag<any>(key);
+  private listenToUpdates(e: CustomEvent<RequestUpdateEventType>): void {
+    if (e.detail.moduleId === this.module.metadata.id) {
+      this.requestUpdate();
+    }
   }
 
-  protected _saveSyncedLocalForage(
-    bagManager: BagManager,
-    bagKey: string,
-    valueKey: string,
-    value: any
-  ) {
-    const bag = bagManager.getBag(bagKey);
-    bag?.set(valueKey, value);
-
-    localforage.setItem(bagKey, bag?.export() as Map<string, any>);
+  // Daemon mode control
+  doNotRenderInDaemonMode(): void {
+    this._renderInDaemonMode = false;
   }
 
-  protected async _runSyncedFlow<T>(defaultsFunction: () => void, key: string): Promise<Bag<T>> {
-    const bag = this._bagManager.createBag<T>(key)!;
-
+  // State management helpers
+  protected async _runSyncedFlow<T>(
+    defaultsFunction: () => void, 
+    key: string
+  ): Promise<Bag<T>> {
+    const bag = this._bagManager.createBag<T>(key);
     const contents = await this._getLocalForage(key);
 
     if (!contents) {
@@ -174,64 +143,58 @@ export abstract class BookeraModuleElement extends LitElement {
     } else {
       bag?.populate(contents);
     }
-    return bag;
+    return bag!;
   }
 
-  protected findKey(savingKeys: any, index: any) {
-    Object.keys(savingKeys).find(key => savingKeys[key as keyof typeof savingKeys] === index);
-  }
-
-  protected _savePanelTabState(key: string, value: any) {
+  protected _savePanelTabState(key: string, value: any): void {
     this._bag?.set(key, value);
-
-    localforage.setItem(this.instanceId!, this._bag?.export() as Map<string, any>);
+    if (this.instanceId) {
+      localforage.setItem(this.instanceId, this._bag?.export() as Map<string, any>);
+    }
   }
 
   protected async _getLocalForage(key?: string): Promise<Map<string, any> | null> {
-    if (key) {
-      return await localforage.getItem(key);
-    }
-
-    return await localforage.getItem(this.instanceId!);
+    const storageKey = key || this.instanceId;
+    if (!storageKey) return null;
+    return await localforage.getItem(storageKey);
   }
 
-  protected async _runLocalFlow(defaultsFunction: () => void) {
+  protected async _runLocalFlow(defaultsFunction: () => void): Promise<void> {
     const contents = await this._getLocalForage();
-
     if (!contents) {
       defaultsFunction();
       return;
     }
-
     this._bag?.populate(contents);
   }
 
-  private listenToUpdates(e: CustomEvent<RequestUpdateEventType>) {
-    if (e.detail.moduleId === this.module.id) {
-      this.requestUpdate();
-    }
-  }
-
-  protected handleTab() {
-    if (!this.module.hasSidePanel()) {
+  // UI Helpers
+  protected handleTab(): TemplateResult {
+    if (!hasSidePanel(this.module)) {
       return html``;
     }
 
-    if (this.module.tab?.isAppended) {
+    const tab = this.module.tab;
+    if (!tab) {
+      return html``;
+    }
+
+    if (tab.isAppended) {
       return html`
         <sl-tooltip content="Remove tab from side-bar">
           <sl-icon-button
             name="layout-sidebar"
             class="icon-button"
             @click=${() => {
-              this.module.tab?.removeTab();
-              sendEvent<UPDATE_BookeraModule_EVENT_TYPE>(
-                this,
-                UPDATE_BookeraModule_EVENT,
-                this.module
-              );
-              notify('removed tab!', 'success', null, 3000);
-              this.requestUpdate();
+              if (tab) {
+                // Update tab state immutably
+                const updatedTab = removeTab(tab);
+                // Update the module with new tab
+                this.module = { ...this.module, tab: updatedTab };
+                this._emitModuleUpdate();
+                notify('removed tab!', 'success', null, 3000);
+                this.requestUpdate();
+              }
             }}
           ></sl-icon-button>
         </sl-tooltip>
@@ -239,23 +202,21 @@ export abstract class BookeraModuleElement extends LitElement {
     }
 
     return html`
-      <sl-tooltip content=${`Add ${this.title} settings as a tab`}>
+      <sl-tooltip content=${`Add ${this.module.metadata.title} settings as a tab`}>
         <sl-icon-button
           name="layout-sidebar"
           class="icon-button"
           @click=${() => {
-            if (!this.module.tab?.isAppended) {
-              this.module.tab?.appendTab();
-              sendEvent<UPDATE_BookeraModule_EVENT_TYPE>(
-                this,
-                UPDATE_BookeraModule_EVENT,
-                this.module
-              );
+            if (tab && !tab.isAppended) {
+              // Update tab state immutably
+              const updatedTab = appendTab(tab);
+              // Update the module with new tab
+              this.module = { ...this.module, tab: updatedTab };
+              this._emitModuleUpdate();
               notify('Successfully inserted tab on left panel', 'success', null, 3000);
             } else {
-              notify(`${this.title} already exists as a tab`, 'warning', null, 3000);
+              notify(`${this.module.metadata.title} already exists as a tab`, 'warning', null, 3000);
             }
-
             this.requestUpdate();
           }}
         ></sl-icon-button>
@@ -263,17 +224,20 @@ export abstract class BookeraModuleElement extends LitElement {
     `;
   }
 
-  protected renderThemeButton(trigger?: string) {
+  protected renderThemeButton(trigger?: string): TemplateResult {
+    const iconName = this.module.tab?.icon || 'gear';
+    
     if (trigger) {
-      return html`
-        <sl-icon-button name=${this.module.tab?.value} slot="trigger"> </sl-icon-button>
-      `;
+      return html`<sl-icon-button name=${iconName} slot="trigger"></sl-icon-button>`;
     }
-
-    return html` <sl-icon-button name=${this.module.tab?.value}></sl-icon-button> `;
+    return html`<sl-icon-button name=${iconName}></sl-icon-button>`;
   }
 
-  protected createSection(title: string, description: string, section: () => TemplateResult) {
+  protected createSection(
+    title: string, 
+    description: string, 
+    section: () => TemplateResult
+  ): TemplateResult {
     return html`
       <section>
         <div>
@@ -289,7 +253,7 @@ export abstract class BookeraModuleElement extends LitElement {
     title: string,
     description: string,
     section: () => TemplateResult
-  ) {
+  ): TemplateResult {
     return html`
       <sl-details open>
         <h5 slot="summary">${title}</h5>
@@ -299,61 +263,68 @@ export abstract class BookeraModuleElement extends LitElement {
     `;
   }
 
-  protected renderTitleSection() {
+  protected renderTitleSection(): TemplateResult {
     return html`
       <div class="title-box">
         ${this.renderThemeButton()}
-        <h4>${this.title}</h4>
+        <h4>${this.module.metadata.title}</h4>
         ${this.handleTab()}
       </div>
-      <p class="title-description lead">${this.module.description}</p>
+      <p class="title-description lead">${this.module.metadata.description}</p>
     `;
   }
 
-  protected renderSidePanelTitleSection() {
+  protected renderSidePanelTitleSection(): TemplateResult {
     const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY);
     if (mediaQuery.matches) {
       return html``;
     }
 
-    return html` <div class="title-box">
-      <h5>${this.title}</h5>
-    </div>`;
+    return html`
+      <div class="title-box">
+        <h5>${this.module.metadata.title}</h5>
+      </div>
+    `;
   }
 
-  protected renderDaemonWrapper() {
+  // Wrapper methods for different render contexts
+  protected renderDaemonWrapper(): TemplateResult {
     if (!this._renderInDaemonMode) {
       return html``;
     }
 
     return html`
-      <sl-tooltip content=${this.module.title}>
+      <sl-tooltip content=${this.module.metadata.title}>
         <div class="daemon">${this.renderInModuleDaemon()}</div>
       </sl-tooltip>
     `;
   }
 
-  protected renderSidePanelWrapper() {
-    return html` <div class="side-panel">${this.renderInSidePanel()}</div> `;
+  protected renderSidePanelWrapper(): TemplateResult {
+    return html`<div class="side-panel">${this.renderInSidePanel()}</div>`;
   }
 
-  protected renderSettingsWrapper() {
-    return html` <div class="panel-container">${this.renderInSettings()}</div>`;
+  protected renderSettingsWrapper(): TemplateResult {
+    return html`<div class="panel-container">${this.renderInSettings()}</div>`;
   }
 
-  protected renderInPanelWrapper() {
-    return html` <div class="panel-container">${this.renderInPanel()}</div>`;
+  protected renderInPanelWrapper(): TemplateResult {
+    return html`<div class="panel-container">${this.renderInPanel()}</div>`;
   }
 
+  // Event emitter
+  private _emitModuleUpdate(): void {
+    sendEvent(this, UPDATE_BookeraModule_EVENT, this.module);
+  }
+
+  // Abstract methods that must be implemented
   protected abstract renderInSidePanel(): TemplateResult;
-
   protected abstract renderInSettings(): TemplateResult;
-
   protected abstract renderInModuleDaemon(): TemplateResult;
-
   protected abstract renderInPanel(): TemplateResult;
 
-  render() {
+  // Main render method
+  render(): TemplateResult {
     switch (this.renderMode) {
       case 'renderInSettings':
         return this.renderSettingsWrapper();
@@ -363,19 +334,26 @@ export abstract class BookeraModuleElement extends LitElement {
         return this.renderDaemonWrapper();
       case 'renderInPanel':
         return this.renderInPanelWrapper();
+      default:
+        return html`<p>Unknown render mode: ${this.renderMode}</p>`;
     }
   }
 }
 
+// Global element registration
 declare global {
   interface HTMLElementTagNameMap {
     'bookera-module-element': BookeraModuleElement;
   }
 }
 
+// Styles - simplified from the original
 export const moduleElementStyles = css`
   .title-box {
     margin-bottom: var(--spacingSmall);
+    display: flex !important;
+    align-items: center;
+    position: relative;
   }
 
   .title-description {
@@ -394,32 +372,15 @@ export const moduleElementStyles = css`
     margin-left: 2px;
   }
 
-  .column-layout div {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    justify-content: stretch;
-    gap: var(--spacingSmall);
-  }
-  .column-layout sl-icon-button {
-    font-size: 24px;
-  }
-
-  .title-box {
-    display: flex !important;
-    align-items: center;
-    margin-bottom: var(--spacing);
-    position: relative;
-  }
-
   .icon-button {
     position: absolute;
     right: 0;
+    font-size: 20px;
+    margin-right: var(--spacingSmall);
   }
-  .column-layout {
-    display: flex;
-    gap: var(--spacingMedium);
-    margin: var(--spacing) 0 0 0;
+
+  .icon-button::part(base) {
+    padding: 0;
   }
 
   section {
@@ -429,9 +390,6 @@ export const moduleElementStyles = css`
   sl-icon-button {
     font-size: 20px;
     margin-right: var(--spacingSmall);
-  }
-  sl-icon-button::part(base) {
-    padding: 0;
   }
 
   p {

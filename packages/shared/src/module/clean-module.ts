@@ -85,16 +85,13 @@ export interface ModuleConfig {
   readonly supabase?: any; // Keep for backward compatibility
 }
 
-// Type for module element classes
+// Type for module element classes - loose typing for compatibility
 export interface ModuleElementClass {
-  new (config: ModuleConfig): ModuleElement;
+  new (config: ModuleConfig): any; // Use any for compatibility with existing elements
 }
 
-// Basic module element interface
+// Basic module element interface - loose for compatibility
 export interface ModuleElement {
-  readonly module: BookeraModule;
-  readonly renderMode: RenderMode;
-  
   renderInSettings(): unknown;
   renderInSidePanel(): unknown;
   renderInModuleDaemon(): unknown;
