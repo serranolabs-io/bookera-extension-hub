@@ -1,142 +1,124 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { genShortID } from '../model/util';
-import type { Tab } from './tab';
+// Clean, simple module system - no bullshit
 import { z } from 'zod';
+import type { Tab } from './tab';
+import { genShortID } from '../model/util';
 
+// Re-export everything from clean-module
+export * from './clean-module';
+
+// Legacy compatibility - these will be deprecated
 export const UPDATE_BookeraModule_EVENT = 'update-BookeraModule-event';
-export type UPDATE_BookeraModule_EVENT_TYPE = BookeraModule;
-
 export const RequestUpdateEvent = 'request-update';
+export const DEFAULT_VERSION = '1.0.0';
+
 export interface RequestUpdateEventType {
   moduleId: string;
 }
 
-export const DEFAULT_VERSION = '0.0.1';
-export interface BookeraModuleConfig<T = unknown> {
-  renderMode: RenderMode;
-  module: BookeraModule<T>;
-  _panelTabId?: string;
-  supabase?: SupabaseClient;
-  instanceType?: T;
-}
+// Legacy types for backward compatibility
+export type UPDATE_BookeraModule_EVENT_TYPE = any;
+export type BookeraModuleConfig<T = unknown> = any;
+export type BookeraModuleClass<T extends object = {}> = any;
+export type BookeraModuleI = any;
 
-export type BookeraModuleClass<T extends object = {}> = new (
-  config: BookeraModuleConfig<T>
-) => object;
+// Legacy registry for backward compatibility
+export const BookeraModuleRegistryClasses: Record<string, any> = {};
 
-export const BookeraModuleRegistryClasses: Record<string, BookeraModuleClass<any>> = {};
-
-const RenderModeSchema = z.enum([
-  'renderInSettings',
-  'renderInSidePanel',
-  'renderInDaemon',
-  'renderInPanel',
-]);
-export type RenderMode = z.infer<typeof RenderModeSchema>;
-
-// extensions are just extended functionality from the core system, BookeraModules
-
-export const BookeraModuleSchema = z.object({
-  version: z.string().optional(),
-  title: z.string().optional(),
-  description: z.string().optional(),
-  tab: z.any().optional(), // Replace `z.any()` with a specific schema for `Tab` if available
-  id: z.string().optional(),
-  renderModes: z.array(RenderModeSchema).optional(),
-  instances: z.array(z.unknown()), // Replace `z.unknown()` with a specific schema for `T` if available
-});
-
-export type BookeraModuleI = z.infer<typeof BookeraModuleSchema>;
-
-export class BookeraModule<T = unknown> implements BookeraModuleI {
+// Legacy BookeraModule class - DEPRECATED, use createModule() instead
+export class BookeraModule<T = unknown> {
   version?: string;
   title?: string;
   description?: string;
   tab?: Tab;
   id?: string;
-  renderModes?: RenderMode[];
-  instances: T[];
+  renderModes?: string[];
+  instances: T[] = [];
 
-  // * no id since there will always be one instance, of BookeraModules. They are not meant to be passed. But, there are versions.
   constructor(
     version?: string,
     title?: string,
     description?: string,
     tab?: Tab,
     id?: string,
-    renderModes?: RenderMode[],
-    constructorType?: BookeraModuleClass,
+    renderModes?: string[],
+    constructorType?: any,
     instances?: T[]
   ) {
-    if (version) {
-      this.version = version;
-    }
-    if (title) {
-      this.title = title;
-    }
-    if (description) {
-      this.description = description;
-    }
-    if (renderModes) {
-      this.renderModes = renderModes;
-    }
+    this.version = version || DEFAULT_VERSION;
+    this.title = title || 'Untitled Module';
+    this.description = description || 'No description';
+    this.id = id || genShortID(10);
+    this.renderModes = renderModes || ['renderInSettings'];
+    this.tab = tab;
+    this.instances = instances || [];
 
-    if (constructorType) {
-      const constructorTypeName = this.getConstructorTypeName();
-      if (constructorTypeName) {
-        BookeraModuleRegistryClasses[constructorTypeName] = constructorType;
+    // Legacy registry registration
+    if (constructorType && this.title) {
+      const typeName = this.getConstructorTypeName();
+      if (typeName) {
+        BookeraModuleRegistryClasses[typeName] = constructorType;
       }
     }
-
-    if (instances) {
-      this.instances = instances;
-    } else {
-      this.instances = [];
-    }
-
-    if (id) {
-      this.id = id;
-    } else {
-      this.id = genShortID(10);
-    }
-
-    if (tab) {
-      this.tab = tab;
-    }
-    if (tab && id) {
-      this.tab!.id = id;
-    }
   }
 
-  hasSettings() {
-    if (this.renderModes?.includes('renderInSettings')) {
-      return true;
-    }
-    return false;
+  hasSettings(): boolean {
+    return this.renderModes?.includes('renderInSettings') || false;
   }
 
-  hasPanel() {
-    if (this.renderModes?.includes('renderInPanel')) {
-      return true;
-    }
-    return false;
+  hasPanel(): boolean {
+    return this.renderModes?.includes('renderInPanel') || false;
   }
 
-  hasSidePanel() {
-    if (this.renderModes?.includes('renderInSidePanel')) {
-      return true;
-    }
-    return false;
+  hasSidePanel(): boolean {
+    return this.renderModes?.includes('renderInSidePanel') || false;
   }
 
-  hasModuleDaemon() {
-    if (this.renderModes?.includes('renderInDaemon')) {
-      return true;
-    }
-    return false;
+  hasModuleDaemon(): boolean {
+    return this.renderModes?.includes('renderInDaemon') || false;
   }
 
-  getConstructorTypeName() {
-    return this.title?.replace(/ /g, '').concat('Element');
+  getConstructorTypeName(): string {
+    return this.title?.replace(/ /g, '').concat('Element') || 'UnknownElement';
   }
+}
+
+// Legacy schema for validation
+export const BookeraModuleSchema = z.object({
+  version: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  tab: z.any().optional(),
+  id: z.string().optional(),
+  renderModes: z.array(z.string()).optional(),
+  instances: z.array(z.unknown()).default([]),
+});
+
+// Migration helper to convert legacy to new system
+export function migrateLegacyModule(legacy: BookeraModule<any>): import('./clean-module').BookeraModule {
+  const { createModule } = require('./clean-module');
+  
+  return createModule({
+    id: legacy.id,
+    title: legacy.title || 'Untitled Module',
+    description: legacy.description || 'No description',
+    version: legacy.version || DEFAULT_VERSION,
+    renderModes: (legacy.renderModes || ['renderInSettings']) as any[],
+    tab: legacy.tab,
+  });
+}
+
+// Helper to convert new to legacy for compatibility
+export function createLegacyModule(modern: import('./clean-module').BookeraModule): BookeraModule<any> {
+  const legacy = new BookeraModule(
+    modern.metadata.version,
+    modern.metadata.title,
+    modern.metadata.description,
+    modern.tab,
+    modern.metadata.id,
+    modern.metadata.renderModes,
+    undefined,
+    []
+  );
+  
+  return legacy;
 }
