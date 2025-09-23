@@ -25,6 +25,7 @@
     "./util": "./src/model/util.ts",
     "./lit": "./src/model/lit.ts",
     "./module": "./src/module/module.ts",
+    "./module/user-data-service": "./src/module/user-data-service.ts",
     "./tab": "./src/module/tab.ts",
     "./module-element": "./src/module/module-element.ts",
     "./supabase": "./src/model/supabase.ts",
