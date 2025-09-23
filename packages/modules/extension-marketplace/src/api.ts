@@ -24,8 +24,7 @@ export interface UpsertConfigPanel {
   config: Config;
 }
 
-export const SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT =
-  'send-downloaded-config-to-panel-event';
+export const SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT = 'send-downloaded-config-to-panel-event';
 
 export const windows = {
   renderConfig: '🧩🌐 Publish Extension',

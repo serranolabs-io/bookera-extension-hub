@@ -18,6 +18,9 @@ coverage
 # Turbo
 .turbo
 
+# ESLint cache
+.eslintcache
+
 # Vercel
 .vercel
 

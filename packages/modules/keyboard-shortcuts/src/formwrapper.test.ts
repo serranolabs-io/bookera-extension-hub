@@ -4,10 +4,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { modifierKeys } from '../../../shared/src/model/keyboard-shortcuts/keyboard-event-key-type';
 import { Formwrapper } from './formwrapper';
-import {
-  KeyboardEventKey,
-  When,
-} from '@serranolabs.io/shared/keyboard-shortcuts';
+import { KeyboardEventKey, When } from '@serranolabs.io/shared/keyboard-shortcuts';
 import {
   evaluateWhenExpression,
   evaluateWhenExpressionEval,
@@ -83,35 +80,21 @@ describe('handle-keyboard-shortcuts', () => {
     {
       input: {
         when: ['panelBarFocus'] as When[],
-        focusTree: [
-          'sidePanelFocus',
-          'leftSidePanelFocus',
-          'panelBarFocus',
-        ] as When[],
+        focusTree: ['sidePanelFocus', 'leftSidePanelFocus', 'panelBarFocus'] as When[],
         expected: [true],
       },
       description: '&& case where one if found yet the other is not',
     },
     {
       input: {
-        when: [
-          'panelFocus',
-          '&&',
-          'panelTabFocus',
-          '&&',
-          '!',
-          'panelFocus',
-        ] as When[],
+        when: ['panelFocus', '&&', 'panelTabFocus', '&&', '!', 'panelFocus'] as When[],
         focusTree: ['panelFocus', 'inputFocus'] as When[],
         expected: [true, '&&', false, '&&', '!', true],
       },
       description: '&& case where one if found yet the other is not',
     },
   ])('should insert booleans in condition', ({ input }) => {
-    const conditionArray = insertBooleansInCondition(
-      input.when,
-      input.focusTree
-    );
+    const conditionArray = insertBooleansInCondition(input.when, input.focusTree);
 
     expect(conditionArray).toEqual(input.expected);
   });
@@ -147,16 +130,7 @@ describe('handle-keyboard-shortcuts', () => {
     },
     {
       input: {
-        conditions: [
-          '!',
-          true,
-          '&&',
-          '(',
-          false,
-          '||',
-          true,
-          ')',
-        ] as WhenBoolean[],
+        conditions: ['!', true, '&&', '(', false, '||', true, ')'] as WhenBoolean[],
         expected: false,
       },
       description: 'inverted case',
@@ -184,15 +158,7 @@ describe('handle-keyboard-shortcuts', () => {
     },
     {
       input: {
-        conditions: [
-          false,
-          '&&',
-          true,
-          '||',
-          false,
-          '||',
-          true,
-        ] as WhenBoolean[],
+        conditions: [false, '&&', true, '||', false, '||', true] as WhenBoolean[],
         expected: true,
       },
       description: 'inverted case on parenthesis WITH ORDER OF OPERATIONS',
@@ -272,10 +238,7 @@ it.each([
     description: 'no mathces or potential matches base case',
   },
 ])('should have potential match $description', ({ input }) => {
-  const { match, hasPotentialMatch } = matchCommand(
-    input.currentShortcut,
-    input.shortcut
-  );
+  const { match, hasPotentialMatch } = matchCommand(input.currentShortcut, input.shortcut);
 
   console.log(match, hasPotentialMatch);
 
@@ -293,11 +256,7 @@ it.each([
     description: 'no mathces or potential matches base case',
   },
 ])('should properly highlight', ({ input }) => {
-  const rendering = renderMatches(
-    input.list,
-    ['command', 'title', 'keys'],
-    input.pattern
-  );
+  const rendering = renderMatches(input.list, ['command', 'title', 'keys'], input.pattern);
 
   console.log(rendering);
 

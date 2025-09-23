@@ -7,10 +7,7 @@ import {
   UPDATE_BookeraModule_EVENT,
   UPDATE_BookeraModule_EVENT_TYPE,
 } from './module';
-import type {
-  BookeraModuleConfig,
-  RenderMode,
-} from './module';
+import type { BookeraModuleConfig, RenderMode } from './module';
 import { Tab } from './tab';
 import { MOBILE_MEDIA_QUERY, sendEvent } from '../model/util';
 import { notify } from '../model/lit';
@@ -18,11 +15,7 @@ import { Bag, BagManager, CreateBag, CreateBagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Source } from '../model/keyboard-shortcuts/model';
-import {
-  AuthChangeEvent,
-  Session,
-  User as SupabaseUser,
-} from '@supabase/supabase-js';
+import { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 customElement('bookera-module-element');
 /**
@@ -126,16 +119,11 @@ export abstract class BookeraModuleElement extends LitElement {
 
     this._getSupabase();
     // @ts-expect-error addEventListener sucks
-    document.addEventListener(
-      RequestUpdateEvent,
-      this.listenToUpdates.bind(this)
-    );
+    document.addEventListener(RequestUpdateEvent, this.listenToUpdates.bind(this));
   }
 
   private async _getSupabase() {
-    this._config?.supabase?.auth.onAuthStateChange(
-      this._onAuthStateChange.bind(this)
-    );
+    this._config?.supabase?.auth.onAuthStateChange(this._onAuthStateChange.bind(this));
 
     const session = await this._config?.supabase?.auth.getSession();
     if (session?.error) {
@@ -148,10 +136,7 @@ export abstract class BookeraModuleElement extends LitElement {
     }
   }
 
-  _onAuthStateChange(
-    event: AuthChangeEvent,
-    session: Session | null
-  ): void | Promise<void> {
+  _onAuthStateChange(event: AuthChangeEvent, session: Session | null): void | Promise<void> {
     if (event === 'SIGNED_IN') {
       this._signedIn = true;
       if (session) {
@@ -179,10 +164,7 @@ export abstract class BookeraModuleElement extends LitElement {
     localforage.setItem(bagKey, bag?.export() as Map<string, any>);
   }
 
-  protected async _runSyncedFlow<T>(
-    defaultsFunction: () => void,
-    key: string
-  ): Promise<Bag<T>> {
+  protected async _runSyncedFlow<T>(defaultsFunction: () => void, key: string): Promise<Bag<T>> {
     const bag = this._bagManager.createBag<T>(key)!;
 
     const contents = await this._getLocalForage(key);
@@ -196,23 +178,16 @@ export abstract class BookeraModuleElement extends LitElement {
   }
 
   protected findKey(savingKeys: any, index: any) {
-    Object.keys(savingKeys).find(
-      (key) => savingKeys[key as keyof typeof savingKeys] === index
-    );
+    Object.keys(savingKeys).find(key => savingKeys[key as keyof typeof savingKeys] === index);
   }
 
   protected _savePanelTabState(key: string, value: any) {
     this._bag?.set(key, value);
 
-    localforage.setItem(
-      this.instanceId!,
-      this._bag?.export() as Map<string, any>
-    );
+    localforage.setItem(this.instanceId!, this._bag?.export() as Map<string, any>);
   }
 
-  protected async _getLocalForage(
-    key?: string
-  ): Promise<Map<string, any> | null> {
+  protected async _getLocalForage(key?: string): Promise<Map<string, any> | null> {
     if (key) {
       return await localforage.getItem(key);
     }
@@ -276,19 +251,9 @@ export abstract class BookeraModuleElement extends LitElement {
                 UPDATE_BookeraModule_EVENT,
                 this.module
               );
-              notify(
-                'Successfully inserted tab on left panel',
-                'success',
-                null,
-                3000
-              );
+              notify('Successfully inserted tab on left panel', 'success', null, 3000);
             } else {
-              notify(
-                `${this.title} already exists as a tab`,
-                'warning',
-                null,
-                3000
-              );
+              notify(`${this.title} already exists as a tab`, 'warning', null, 3000);
             }
 
             this.requestUpdate();
@@ -301,21 +266,14 @@ export abstract class BookeraModuleElement extends LitElement {
   protected renderThemeButton(trigger?: string) {
     if (trigger) {
       return html`
-        <sl-icon-button name=${this.module.tab?.value} slot="trigger">
-        </sl-icon-button>
+        <sl-icon-button name=${this.module.tab?.value} slot="trigger"> </sl-icon-button>
       `;
     }
 
-    return html`
-      <sl-icon-button name=${this.module.tab?.value}></sl-icon-button>
-    `;
+    return html` <sl-icon-button name=${this.module.tab?.value}></sl-icon-button> `;
   }
 
-  protected createSection(
-    title: string,
-    description: string,
-    section: () => TemplateResult
-  ) {
+  protected createSection(title: string, description: string, section: () => TemplateResult) {
     return html`
       <section>
         <div>

@@ -72,8 +72,8 @@ export const changeArrayOrderBasedOnField = <T>(
 ): T[] => {
   const newArray: T[] = [];
 
-  newOrderArray.forEach((item) => {
-    const el = changeArray.find((element) => {
+  newOrderArray.forEach(item => {
+    const el = changeArray.find(element => {
       return element[fieldToLookFor] === item;
     });
 
@@ -103,14 +103,7 @@ export const changeArrayOrderBasedOnOrder = <T extends { index: number }>(
   return changeArray;
 };
 
-export const acceptedImageTypes = [
-  '.png',
-  '.jpg',
-  '.jpeg',
-  '.gif',
-  '.svg',
-  '.webp',
-];
+export const acceptedImageTypes = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'];
 
 export const dashedCase = (item: string): string => {
   return item.replace(/ /g, '-').toLowerCase();
@@ -124,16 +117,14 @@ export const doesClickContainElement = <T = HTMLElement>(
   }
 ): T | null => {
   if (config.className) {
-    config.className =
-      config.className[0] === '.' ? config.className : `.${config.className}`;
+    config.className = config.className[0] === '.' ? config.className : `.${config.className}`;
   }
 
   const target = event.target as HTMLElement;
 
   if (
     config.className &&
-    (target?.classList.contains(config?.className) ||
-      target?.nodeName === config?.nodeName)
+    (target?.classList.contains(config?.className) || target?.nodeName === config?.nodeName)
   ) {
     return target as T;
   }
@@ -153,11 +144,7 @@ export function sendGlobalEvent<T>(eventName: string, detail?: T) {
   sendEvent(document, eventName, detail);
 }
 
-export function sendEvent<T>(
-  element: Element | Document,
-  eventName: string,
-  detail?: T
-) {
+export function sendEvent<T>(element: Element | Document, eventName: string, detail?: T) {
   element.dispatchEvent(
     new CustomEvent<T>(eventName, {
       composed: true,
@@ -189,19 +176,14 @@ export function genUUID(): string {
 export function genShortID(length: number): string {
   function randomString(length: number, chars: string) {
     let result = '';
-    for (let i = length; i > 0; --i)
-      result += chars[Math.floor(Math.random() * chars.length)];
+    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
   }
-  return randomString(
-    length,
-    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  );
+  return randomString(length, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 }
 
 export const BOOKERA_STUDIO: string = 'Studio';
-export const MANUSCRIPT: string =
-  '/' + BOOKERA_STUDIO.toLocaleLowerCase() + '/manuscript';
+export const MANUSCRIPT: string = '/' + BOOKERA_STUDIO.toLocaleLowerCase() + '/manuscript';
 
 export const BACK_TO_STUDIO: string = '<- Studio';
 
@@ -218,9 +200,7 @@ export const titleCase = (item: string | string[]): string => {
   if (typeof item === 'string') {
     return item.split(/(?=[A-Z])/).join(' ');
   }
-  return item
-    .map((char) => char.charAt(0).toUpperCase() + char.slice(1))
-    .join(' ');
+  return item.map(char => char.charAt(0).toUpperCase() + char.slice(1)).join(' ');
 };
 
 export const joinedTitleCase = (item: string) => {
@@ -228,8 +208,8 @@ export const joinedTitleCase = (item: string) => {
 };
 
 export const routes: string[] = [
-  ...productItems.map((item) => dashedCase(item)),
-  ...companyItems.map((item) => dashedCase(item)),
+  ...productItems.map(item => dashedCase(item)),
+  ...companyItems.map(item => dashedCase(item)),
 ];
 
 export const navSize: number = 85;

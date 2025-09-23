@@ -27,7 +27,6 @@ export class LoginElement extends LitElement {
   });
   private _config: BookeraModuleConfig;
 
-
   constructor(config: BookeraModuleConfig) {
     super();
     this._config = config;
@@ -107,14 +106,14 @@ export class LoginElement extends LitElement {
               },
             },
           },
-          (emailField) => {
+          emailField => {
             let inputField = html``;
 
             if (!emailField.state.meta.isValid) {
               inputField = html`${repeat(
                 emailField.state.meta.errors,
                 (__, idx) => idx,
-                (error) => {
+                error => {
                   return html`<div class="red-error">${error}</div>`;
                 }
               )}`;
@@ -151,14 +150,14 @@ export class LoginElement extends LitElement {
               },
             },
           },
-          (passwordField) => {
+          passwordField => {
             let errors = html``;
 
             if (!passwordField.state.meta.isValid) {
               errors = html`${repeat(
                 passwordField.state.meta.errors,
                 (__, idx) => idx,
-                (error) => {
+                error => {
                   return html`<div class="red-error">${error}</div>`;
                 }
               )}`;
@@ -179,9 +178,7 @@ export class LoginElement extends LitElement {
             `;
           }
         )}
-        <sl-button type="submit" class="full" variant="primary"
-          >Start Writing 🪶
-        </sl-button>
+        <sl-button type="submit" class="full" variant="primary">Start Writing 🪶 </sl-button>
         ${this._isSubmitting ? html`<div class="loader"></div>` : ''}
       </form>
     `;

@@ -1,13 +1,7 @@
 import { ExtensionMarketplaceElement } from './extension-marketplace-element';
 import { html, TemplateResult } from 'lit';
-import {
-  ExtensionConfig,
-  PackageJson,
-} from '@serranolabs.io/shared/extension-marketplace';
-import {
-  doesClickContainElement,
-  sendEvent,
-} from '@serranolabs.io/shared/util';
+import { ExtensionConfig, PackageJson } from '@serranolabs.io/shared/extension-marketplace';
+import { doesClickContainElement, sendEvent } from '@serranolabs.io/shared/util';
 import { notify } from '@serranolabs.io/shared/lit';
 import {
   NewPanelEventType,
@@ -72,10 +66,7 @@ function sendSelectedExtension(
   this._sidePanelSelectedExtension = extension;
 }
 
-function selectExtensionFromMarketplace(
-  this: ExtensionMarketplaceElement,
-  e: Event
-) {
+function selectExtensionFromMarketplace(this: ExtensionMarketplaceElement, e: Event) {
   const el = doesClickContainElement<HTMLButtonElement>(e, {
     nodeName: 'button',
   });
@@ -92,10 +83,7 @@ function selectExtensionFromMarketplace(
   });
 
   if (!extension) {
-    notify(
-      'Could not find extension. If you got here, please file a report :3',
-      'warning'
-    );
+    notify('Could not find extension. If you got here, please file a report :3', 'warning');
     return;
   }
 
@@ -113,16 +101,10 @@ function renderExtensionIconIdentifier(
 
   let isDownloadedIcon;
   if (!extension?.isDownloaded && this._user?.id !== extension.userId) {
-    isDownloadedIcon = html`
-      <sl-tag size="small" variant="secondary">Install</sl-tag>
-    `;
+    isDownloadedIcon = html` <sl-tag size="small" variant="secondary">Install</sl-tag> `;
   }
 
-  return html`
-    <div class="extension-icon-identifier">
-      ${personIcon}${isDownloadedIcon}
-    </div>
-  `;
+  return html` <div class="extension-icon-identifier">${personIcon}${isDownloadedIcon}</div> `;
 }
 
 function renderExtension(
@@ -160,10 +142,7 @@ function renderSkeleton() {
 
 function renderExtensionsTask(this: ExtensionMarketplaceElement) {
   return html`
-    <ul
-      class="extensions-list"
-      @click=${selectExtensionFromMarketplace.bind(this)}
-    >
+    <ul class="extensions-list" @click=${selectExtensionFromMarketplace.bind(this)}>
       ${this._extensionsTask?.render({
         pending: () => {
           return html`<div class="skeleton-list">
@@ -177,11 +156,9 @@ function renderExtensionsTask(this: ExtensionMarketplaceElement) {
             return html`🙅‍♀️ No extensions`;
           }
 
-          return extensions.map(
-            (extension: ExtensionConfig<string> & Extension) => {
-              return html`${renderExtension.bind(this)(extension)}`;
-            }
-          );
+          return extensions.map((extension: ExtensionConfig<string> & Extension) => {
+            return html`${renderExtension.bind(this)(extension)}`;
+          });
         },
         error: () => html`😿 could not get extensions`,
       })}
@@ -195,9 +172,7 @@ export function renderMarketplacePanel(this: ExtensionMarketplaceElement) {
 
 export function renderDownloadedPanel(this: ExtensionMarketplaceElement) {
   if (!this._user) {
-    return html`<p class="must-be-logged-in">
-      Must be logged in to view downloaded extensions!
-    </p>`;
+    return html`<p class="must-be-logged-in">Must be logged in to view downloaded extensions!</p>`;
   }
 
   return renderExtensionsTask.bind(this)();
@@ -205,9 +180,7 @@ export function renderDownloadedPanel(this: ExtensionMarketplaceElement) {
 
 export function renderMyExtensionsPanel(this: ExtensionMarketplaceElement) {
   if (!this._user) {
-    return html`<p class="must-be-logged-in">
-      Must be logged in to view your extensions!
-    </p>`;
+    return html`<p class="must-be-logged-in">Must be logged in to view your extensions!</p>`;
   }
 
   return renderExtensionsTask.bind(this)();
@@ -215,9 +188,7 @@ export function renderMyExtensionsPanel(this: ExtensionMarketplaceElement) {
 
 export function renderMyDraftsPanel(this: ExtensionMarketplaceElement) {
   if (!this._user) {
-    return html`<p class="must-be-logged-in">
-      Must be logged in to view your drafts!
-    </p>`;
+    return html`<p class="must-be-logged-in">Must be logged in to view your drafts!</p>`;
   }
 
   return renderExtensionsTask.bind(this)();
@@ -227,17 +198,12 @@ export function handleCreateExtension(this: ExtensionMarketplaceElement) {
   upsertConfigPanel.bind(this)(null);
 }
 
-export function renderInSidePanel(
-  this: ExtensionMarketplaceElement
-): TemplateResult {
+export function renderInSidePanel(this: ExtensionMarketplaceElement): TemplateResult {
   const renderCreateExtensionButton = () => {
     return html`
       <div class="create-extension-box">
         <sl-tooltip content="Create extension!"></sl-tooltip>
-        <sl-icon-button
-          name="plus-circle"
-          @click=${handleCreateExtension.bind(this)}
-        >
+        <sl-icon-button name="plus-circle" @click=${handleCreateExtension.bind(this)}>
         </sl-icon-button>
       </div>
     `;
@@ -246,7 +212,7 @@ export function renderInSidePanel(
   return html`
     ${renderCreateExtensionButton()}
     <sl-tab-group
-      @sl-tab-show=${(e) => {
+      @sl-tab-show=${e => {
         const value: TabOption = e.detail.name;
         const selectedTab = this._tabs.find((tab: TabGroup) => {
           return tab.value === value;

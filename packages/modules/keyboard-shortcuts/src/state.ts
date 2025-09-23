@@ -1,9 +1,6 @@
 import type { Bag, BagManager } from '@pb33f/saddlebag';
 import localforage from 'localforage';
-import {
-  KeyboardShortcut,
-  KeyboardShortcutJson,
-} from '@serranolabs.io/shared/keyboard-shortcuts';
+import { KeyboardShortcut, KeyboardShortcutJson } from '@serranolabs.io/shared/keyboard-shortcuts';
 import {
   panelShortcuts,
   sidePanelShortcuts,
@@ -16,7 +13,7 @@ import themesShortcuts from '@serranolabs.io/bookera-themes/shortcuts';
 const KEYBINDINGS_BAG_NAME = 'keyboard-shortcuts';
 
 const convertAll = (shortcuts: KeyboardShortcutJson[]): KeyboardShortcut[] => {
-  return shortcuts.map((shortcut) => {
+  return shortcuts.map(shortcut => {
     return KeyboardShortcut.fromJson(shortcut);
   });
 };
@@ -32,14 +29,11 @@ export class KeyboardShortcutsState {
   constructor() {}
 
   static async GetShortcuts(): Promise<Map<string, KeyboardShortcut> | null> {
-    return await localforage.getItem<Map<string, KeyboardShortcut>>(
-      KEYBINDINGS_BAG_NAME
-    );
+    return await localforage.getItem<Map<string, KeyboardShortcut>>(KEYBINDINGS_BAG_NAME);
   }
 
   static updateShortcut(bagManager: BagManager, shortcut: KeyboardShortcut) {
-    const shortcutsBag =
-      bagManager.getBag<KeyboardShortcut>(KEYBINDINGS_BAG_NAME);
+    const shortcutsBag = bagManager.getBag<KeyboardShortcut>(KEYBINDINGS_BAG_NAME);
 
     shortcutsBag?.set(shortcut.id, shortcut);
     localforage.setItem(
@@ -49,18 +43,15 @@ export class KeyboardShortcutsState {
   }
 
   static async initializeShortcutsInBag(bagManager: BagManager): Promise<Bag> {
-    const shortcutsBag =
-      bagManager.createBag<KeyboardShortcut>(KEYBINDINGS_BAG_NAME)!;
+    const shortcutsBag = bagManager.createBag<KeyboardShortcut>(KEYBINDINGS_BAG_NAME)!;
 
     const savedShortcuts =
-      await localforage.getItem<Map<string, KeyboardShortcut>>(
-        KEYBINDINGS_BAG_NAME
-      );
+      await localforage.getItem<Map<string, KeyboardShortcut>>(KEYBINDINGS_BAG_NAME);
 
     if (!savedShortcuts) {
       const defaultShortcuts = new Map<string, KeyboardShortcut>();
 
-      this.defaults.forEach((kb) => {
+      this.defaults.forEach(kb => {
         defaultShortcuts.set(kb.id, kb);
       });
 

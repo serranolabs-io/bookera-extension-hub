@@ -37,7 +37,7 @@ const keyboardShortcutAction = (shortcut: KeyboardShortcut) => {
 
 const keyboardShortcutActionArray = (keyboardShortcut: KeyboardShortcut[]) => {
   // Define the action for keyboard shortcuts
-  return keyboardShortcut.map((shortcut) => {
+  return keyboardShortcut.map(shortcut => {
     return html`${keyboardShortcutAction(shortcut)}`;
   });
 };
@@ -61,7 +61,7 @@ const renderColorCol = (colors: any) => {
   `;
 };
 
-const customColorPaletteAction = (customColorPalette) => {
+const customColorPaletteAction = customColorPalette => {
   return html`
     <div class="palette">
       <p>${customColorPalette.name}</p>
@@ -95,10 +95,7 @@ function sendThemesConfig(config: any) {
 
 function sendKeyboardShortcutsConfig() {
   // sendGlobalEvent(ExtensionDownloadEndpoints.themes, config);
-  notify(
-    'Feature is not fully complete yet! please report this if found',
-    'warning'
-  );
+  notify('Feature is not fully complete yet! please report this if found', 'warning');
 }
 
 export const sendActions = [
@@ -117,7 +114,7 @@ export const schemaActions = schemas.map((schema, index: number) => {
 });
 
 export const renderConfig = (config: any[]) => {
-  const rendered = schemaActions.find((sa) => {
+  const rendered = schemaActions.find(sa => {
     const { success } = sa.schema.safeParse(config);
     return success;
   });

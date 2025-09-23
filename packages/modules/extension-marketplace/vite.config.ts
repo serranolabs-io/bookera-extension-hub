@@ -10,12 +10,7 @@ export default defineConfig({
       babelConfig: {
         babelrc: false,
         configFile: false,
-        plugins: [
-          [
-            '@babel/plugin-proposal-decorators',
-            { loose: true, version: '2022-03' },
-          ],
-        ],
+        plugins: [['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }]],
       },
     }),
   ],

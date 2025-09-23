@@ -1,10 +1,7 @@
 import { customElement, state } from 'lit/decorators.js';
 import userStyles from './user-element.styles';
 import baseCss from '@serranolabs.io/shared/base';
-import {
-  BookeraModuleElement,
-  moduleElementStyles,
-} from '@serranolabs.io/shared/module-element';
+import { BookeraModuleElement, moduleElementStyles } from '@serranolabs.io/shared/module-element';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { html, TemplateResult } from 'lit';
 import './login-element';
@@ -49,12 +46,12 @@ export class UserElement extends BookeraModuleElement {
         </header>
         <div class="description">
           <p>
-            Hey everyone 👋! I am the author of The Ballad of Programata - a
-            collection of coding poems.
+            Hey everyone 👋! I am the author of The Ballad of Programata - a collection of coding
+            poems.
           </p>
           <p>
-            Being alive is a gift that I will never take for granted ❤️‍🔥. Thank
-            you for coming along the journey with me 🥹.
+            Being alive is a gift that I will never take for granted ❤️‍🔥. Thank you for coming along
+            the journey with me 🥹.
           </p>
         </div>
         <div class="tag-box">
@@ -74,9 +71,7 @@ export class UserElement extends BookeraModuleElement {
                 ${category.statistics.map((stat: Statistic) => {
                   return html`
                     <div>
-                      <dt>
-                        <span class="stat-icon">${stat.icon}</span>${stat.name}
-                      </dt>
+                      <dt><span class="stat-icon">${stat.icon}</span>${stat.name}</dt>
                       <dd>${stat.value}</dd>
                     </div>
                   `;
@@ -87,10 +82,7 @@ export class UserElement extends BookeraModuleElement {
         </div>
       </figure>
       <div class="bottom-box">
-        <sl-button
-          @click=${this._signOut.bind(this)}
-          ?loading=${this._isSigningOut}
-        >
+        <sl-button @click=${this._signOut.bind(this)} ?loading=${this._isSigningOut}>
           <sl-icon slot="prefix" name="box-arrow-left"> </sl-icon>
 
           Sign out</sl-button

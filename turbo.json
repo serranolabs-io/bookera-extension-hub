@@ -7,8 +7,21 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
+      "cache": true
+    },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "outputs": [".eslintcache/**"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md", "!**/*.test.*"]
     },
     "dev": {
       "cache": false,

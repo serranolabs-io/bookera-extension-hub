@@ -5,12 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 **Monorepo management:**
+
 - `turbo dev` - Start development for all workspaces
 - `turbo build` - Build all workspaces
 - `turbo lint -- --fix` - Lint all workspaces with auto-fix
 - `bun run format` - Format code with Prettier
 
 **UI Application (apps/ui):**
+
 - `cd apps/ui && bun run dev` - Start development server on port 5003
 - `cd apps/ui && bun run build` - Build production version
 - `cd apps/ui && bun run test` - Run tests with Bun
@@ -18,6 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `cd apps/ui && bun run lint` - Run ESLint with TypeScript support
 
 **Module Development:**
+
 - Individual modules in `packages/modules/` have their own dev servers
 - Each module can be developed independently with `bun run dev`
 
@@ -25,6 +28,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Monorepo Structure:**
 This is a Turbo monorepo using Bun as the package manager with workspaces for:
+
 - `apps/ui` - Main Bookera application (Lit Elements + Vite)
 - `packages/modules/` - Feature modules (themes, keyboard-shortcuts, extension-marketplace, user)
 - `packages/extensions/` - Extension configurations
@@ -32,6 +36,7 @@ This is a Turbo monorepo using Bun as the package manager with workspaces for:
 - `packages/typescript-config` - Shared TypeScript configuration
 
 **Technology Stack:**
+
 - **Monorepo:** Turbo + Bun workspaces
 - **Framework:** Lit Elements (Web Components) with TypeScript
 - **Build Tool:** Vite with Bun runtime
@@ -41,6 +46,7 @@ This is a Turbo monorepo using Bun as the package manager with workspaces for:
 - **Backend:** Supabase integration
 
 **Key Dependencies:**
+
 - `@serranolabs.io/shared` - Core shared utilities and base classes
 - `@serranolabs.io/bookera-*` - Bookera-specific extension modules
 - `@shoelace-style/shoelace` - Web component UI library
@@ -66,18 +72,21 @@ The application uses a sophisticated modular architecture:
 5. **State Persistence:** Module state persisted via LocalForage + Saddlebag
 
 **Core Modules:**
+
 - `themes` - Theme switching and dark mode
 - `keyboard-shortcuts` - Customizable keyboard shortcuts
 - `extension-marketplace` - Extension discovery and installation
 - `user` - User authentication and management
 
 **Extension System:**
+
 - Extensions stored in `packages/extensions/configs/`
 - Each extension has user-specific configurations
 - Extensions can be published to and installed from marketplace
 - Extension configurations include metadata, icons, and settings
 
 **UI Application Structure:**
+
 ```
 apps/ui/src/
 ├── components/
@@ -95,6 +104,7 @@ apps/ui/src/
 ```
 
 **Development Patterns:**
+
 - Event-driven communication between components
 - Context providers for shared state (Lit Context API)
 - Module registry pattern for extensibility
@@ -102,6 +112,7 @@ apps/ui/src/
 - TypeScript decorators for component registration (@customElement)
 
 **Environment Variables:**
+
 - `SUPABASE_URL` - Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
 - `SUPABASE_SERVICE_KEY` - Supabase service key (server-side)

@@ -26,8 +26,7 @@ export default css`
     background-repeat: no-repeat;
     background-image:
       radial-gradient(circle 2.5px, var(--primary) 100%, transparent 0),
-      linear-gradient(#525252 90px, transparent 0),
-      linear-gradient(#ececec 120px, transparent 0),
+      linear-gradient(#525252 90px, transparent 0), linear-gradient(#ececec 120px, transparent 0),
       linear-gradient(to right, #eee 10%, #333 10%, #333 90%, #eee 90%);
 
     background-size:

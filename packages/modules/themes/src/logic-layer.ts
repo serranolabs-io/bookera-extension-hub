@@ -15,18 +15,13 @@ import {
   ColorPalette,
   SystemColorPalette,
 } from './stateful';
-import {
-  savingKeys,
-  savingProperties,
-  ThemesElement,
-} from './theme-switcher-element';
+import { savingKeys, savingProperties, ThemesElement } from './theme-switcher-element';
 import { BagManager, CreateBagManager } from '@pb33f/saddlebag';
 import { notify } from '@serranolabs.io/shared/lit';
 import { doesClickContainElement } from '@serranolabs.io/shared/util';
 
 export function switchCustomPaletteStep(this: ThemesElement) {
-  this.customPaletteStep =
-    this.customPaletteStep === 'DarkMode' ? 'LightMode' : 'DarkMode';
+  this.customPaletteStep = this.customPaletteStep === 'DarkMode' ? 'LightMode' : 'DarkMode';
 
   this.requestUpdate();
 }
@@ -56,19 +51,14 @@ export function fillShadeStyle(name: string, reverse: boolean): string[] {
 
 export function enableCreateColorPaletteMode(this: ThemesElement) {
   this.createColorPaletteMode = true;
-  this._savePanelTabState(
-    savingProperties.createColorPaletteMode,
-    this.createColorPaletteMode
-  );
+  this._savePanelTabState(savingProperties.createColorPaletteMode, this.createColorPaletteMode);
 }
 
 function getUserShades(this: ThemesElement, selector: string): string[] {
   const shades: string[] = [];
-  this.shadowRoot
-    ?.querySelectorAll<HTMLInputElement>(selector)
-    .forEach((el: HTMLInputElement) => {
-      shades.push(el.value);
-    });
+  this.shadowRoot?.querySelectorAll<HTMLInputElement>(selector).forEach((el: HTMLInputElement) => {
+    shades.push(el.value);
+  });
 
   return shades;
 }
@@ -106,19 +96,13 @@ export function handleCustomPaletteForm(this: ThemesElement, e: Event) {
   ) {
     return;
   }
-  const name = (this.shadowRoot?.querySelector(
-    '#color-palette-name'
-  ) as HTMLInputElement)!.value;
+  const name = (this.shadowRoot?.querySelector('#color-palette-name') as HTMLInputElement)!.value;
   if (name.length === 0) {
     notify(`Please select a name!`, 'warning', '');
     return;
   }
 
-  const newPalette = new CustomColorPalette(
-    this.lightMode,
-    this.darkMode,
-    name
-  );
+  const newPalette = new CustomColorPalette(this.lightMode, this.darkMode, name);
 
   notify(`new color palette ${name} added 💅`, 'success', '');
   this.createColorPaletteMode = false;
@@ -130,10 +114,7 @@ export function handleCustomPaletteForm(this: ThemesElement, e: Event) {
   this._setDefaults();
 }
 
-function _handleSelectInternals(
-  colorPalette: ColorPalette,
-  bagManager: BagManager
-) {
+function _handleSelectInternals(colorPalette: ColorPalette, bagManager: BagManager) {
   // set color
   ColorPalette.SelectColorPalette(colorPalette, DarkMode.GetColorMode());
 
@@ -160,10 +141,7 @@ export function handleSelectColorPalette(this: ThemesElement, e: Event) {
 
   // suffix button press does not trigger
   const path = Array.from(e.composedPath());
-  if (
-    path.length > 2 &&
-    (path[2] as HTMLElement)?.nodeName === 'SL-ICON-BUTTON'
-  ) {
+  if (path.length > 2 && (path[2] as HTMLElement)?.nodeName === 'SL-ICON-BUTTON') {
     return;
   }
 
@@ -182,37 +160,23 @@ export function handleSelectColorPalette(this: ThemesElement, e: Event) {
 
 export function selectSystemColor(this: ThemesElement) {
   const val = this.colorSelect.value as string;
-  ColorSets.get(val as SystemColorSets)?.applyColorWithMode(
-    DarkMode.GetColorMode()
-  );
+  ColorSets.get(val as SystemColorSets)?.applyColorWithMode(DarkMode.GetColorMode());
   this.systemColorPaletteMode = true;
   this.backgroundColor = val as SystemColorSets;
-  this._savePanelTabState(
-    savingProperties.backgroundColor,
-    this.backgroundColor
-  );
+  this._savePanelTabState(savingProperties.backgroundColor, this.backgroundColor);
 
-  this._savePanelTabState(
-    savingProperties.systemColorPaletteMode,
-    this.systemColorPaletteMode
-  );
+  this._savePanelTabState(savingProperties.systemColorPaletteMode, this.systemColorPaletteMode);
 }
 
 export function selectPrimaryColor(this: ThemesElement) {
   this.systemColorPaletteMode = true;
-  this._savePanelTabState(
-    savingProperties.systemColorPaletteMode,
-    this.systemColorPaletteMode
-  );
+  this._savePanelTabState(savingProperties.systemColorPaletteMode, this.systemColorPaletteMode);
   this.primaryColor = this.primaryColorPicker.value;
   ColorSet.SetPrimaryColor(this.primaryColor);
   this._savePanelTabState(savingProperties.primaryColor, this.primaryColor);
 }
 
-export function handleSubmitSystemColorPalette(
-  this: ThemesElement,
-  e: SubmitEvent
-) {
+export function handleSubmitSystemColorPalette(this: ThemesElement, e: SubmitEvent) {
   e.preventDefault();
   const form = new FormData(e.target as HTMLFormElement);
 
@@ -230,10 +194,7 @@ export function handleSubmitSystemColorPalette(
   this.colorPalettes.push(this.selectedColorPalette);
   ColorPalettesSingleton.NewColorPaletteAndSelect(this.bagManager, newPalette);
   this.systemColorPaletteMode = false;
-  this._savePanelTabState(
-    savingProperties.systemColorPaletteMode,
-    this.systemColorPaletteMode
-  );
+  this._savePanelTabState(savingProperties.systemColorPaletteMode, this.systemColorPaletteMode);
 
   this._setDefaults();
 }

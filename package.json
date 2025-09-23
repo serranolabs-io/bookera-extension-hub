@@ -4,10 +4,16 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "publish": "turbo build && changeset version && changeset publish && git add . && git commit -am 'fuck ' ",
-    "publish-2": "changeset version && changeset publish && git add . && git commit -am 'fuck ' ",
+    "test": "turbo run test",
     "lint": "turbo run lint -- --fix",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\" --single-quote --trailing-comma=es5 --print-width=100",
+    "publish": "turbo build && changeset version && changeset publish",
+    "publish-2": "changeset version && changeset publish",
+    "clean": "turbo run clean",
+    "test-existing": "turbo run test --filter=@serranolabs.io/editor",
+    "check-all": "turbo run build lint type-check",
+    "check-all-with-tests": "bun run check-all && bun run test-existing"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

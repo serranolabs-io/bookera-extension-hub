@@ -29,16 +29,12 @@ export class DarkModeSingleton {
     bag?.set(DarkModeKey, colorMode);
 
     localStorage.setItem(DarkModeKey, colorMode);
-    const selectedPalette =
-      ColorPalettesSingleton.GetSelectedColorPalette(bagManager);
+    const selectedPalette = ColorPalettesSingleton.GetSelectedColorPalette(bagManager);
 
     ColorPalette.ApplyMode(selectedPalette, colorMode, false);
   }
 
-  static InitializeModeInBag(
-    bagManager: BagManager,
-    media: MediaQueryList
-  ): Bag<ColorMode> {
+  static InitializeModeInBag(bagManager: BagManager, media: MediaQueryList): Bag<ColorMode> {
     const darkModeBag = bagManager.createBag<ColorMode>(DarkModeKey)!;
 
     let savedContent = localStorage.getItem(DarkModeKey)! as ColorMode;

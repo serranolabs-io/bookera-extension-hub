@@ -30,16 +30,12 @@ export function renderConfigs(
             <sl-tab
               slot="nav"
               panel=${config.id}
-              ?closable=${mode === 'manage'
-                ? firstConfig.values.length > 1
-                : false}
+              ?closable=${mode === 'manage' ? firstConfig.values.length > 1 : false}
               id=${config.id}
               >${config[firstConfig.nameIndex]}</sl-tab
             >
 
-            <sl-tab-panel name=${config.id}>
-              ${renderConfig(config)}</sl-tab-panel
-            >
+            <sl-tab-panel name=${config.id}> ${renderConfig(config)}</sl-tab-panel>
           `;
         })}
       </sl-tab-group>
@@ -52,12 +48,7 @@ export function renderConfigs(
           : undefined}
       >
         ${configs.map((config: Config) => {
-          config = new Config(
-            config.source,
-            config.values,
-            config.nameIndex,
-            config.id
-          );
+          config = new Config(config.source, config.values, config.nameIndex, config.id);
 
           return html`
             <sl-tab

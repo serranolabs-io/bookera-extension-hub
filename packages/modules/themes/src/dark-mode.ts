@@ -75,9 +75,7 @@ export class DarkMode extends LitElement {
   }
 
   applySelectedPallete() {
-    const selectedPalette = ColorPalettesSingleton.GetSelectedColorPalette(
-      this.bagManager
-    );
+    const selectedPalette = ColorPalettesSingleton.GetSelectedColorPalette(this.bagManager);
 
     ColorPalette.ApplyMode(selectedPalette, this.colorMode, true);
     ColorPalette.SelectColorPalette(selectedPalette, this.colorMode);

@@ -24,10 +24,7 @@ export type BookeraModuleClass<T extends object = {}> = new (
   config: BookeraModuleConfig<T>
 ) => object;
 
-export const BookeraModuleRegistryClasses: Record<
-  string,
-  BookeraModuleClass<any>
-> = {};
+export const BookeraModuleRegistryClasses: Record<string, BookeraModuleClass<any>> = {};
 
 const RenderModeSchema = z.enum([
   'renderInSettings',

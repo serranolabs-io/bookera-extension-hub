@@ -28,12 +28,7 @@ export class Config<T extends object = {}> {
   id: string;
   nameIndex: keyof T | ''; // theme.name
 
-  constructor(
-    source: Source,
-    values: T[],
-    nameIndex: keyof T | '',
-    id?: string
-  ) {
+  constructor(source: Source, values: T[], nameIndex: keyof T | '', id?: string) {
     this.source = source;
     if (id) {
       this.id = id;
@@ -64,10 +59,7 @@ export const PackageJsonSchema = z.object({
   displayName: z.string(),
   version: z
     .string()
-    .regex(
-      /^\d+\.\d+\.\d+$/,
-      'Version must follow the format number.number.number'
-    ),
+    .regex(/^\d+\.\d+\.\d+$/, 'Version must follow the format number.number.number'),
   private: z.boolean(),
   description: z.string(),
   icon: z.string(),

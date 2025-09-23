@@ -22,6 +22,4 @@ export const KeyboardShortcutConfigSchema = z.object({
   title: z.string(),
 });
 
-export const KeyboardShortcutConfigArraySchema = z.array(
-  KeyboardShortcutConfigSchema
-);
+export const KeyboardShortcutConfigArraySchema = z.array(KeyboardShortcutConfigSchema);

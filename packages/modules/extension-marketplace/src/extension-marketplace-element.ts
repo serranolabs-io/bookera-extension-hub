@@ -2,16 +2,10 @@ import { customElement, state } from 'lit/decorators.js';
 import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import extensionMarketplaceStyles from './extension-marketplace-element.styles';
 import baseCss from '@serranolabs.io/shared/base';
-import {
-  BookeraModuleElement,
-  moduleElementStyles,
-} from '@serranolabs.io/shared/module-element';
+import { BookeraModuleElement, moduleElementStyles } from '@serranolabs.io/shared/module-element';
 import { BookeraModuleConfig } from '@serranolabs.io/shared/module';
 import { html, TemplateResult } from 'lit';
-import {
-  MANAGE_CONFIG_CONSTRUCTED_EVENT,
-  ManageConfigElement,
-} from './manage-config-element';
+import { MANAGE_CONFIG_CONSTRUCTED_EVENT, ManageConfigElement } from './manage-config-element';
 import {
   Config,
   ExtensionConfig,
@@ -31,11 +25,7 @@ import {
   TabGroup,
   TabOption,
 } from './side-panel';
-import {
-  apiConfig,
-  ExtensionMarketplaceModuleInstanceType,
-  upsertConfigPanel,
-} from './api';
+import { apiConfig, ExtensionMarketplaceModuleInstanceType, upsertConfigPanel } from './api';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { DefaultApi, Extension } from './backend';
 import { Task } from '@lit/task';
@@ -49,26 +39,19 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
 
   protected _backendApi = new DefaultApi(apiConfig);
 
-  constructor(
-    config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>
-  ) {
+  constructor(config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>) {
     super(config);
 
     if (this.renderMode === 'renderInSidePanel') {
       setupSidePanel.bind(this)();
-      this._config.supabase?.auth.onAuthStateChange(
-        this._onAuthStateChange.bind(this)
-      );
+      this._config.supabase?.auth.onAuthStateChange(this._onAuthStateChange.bind(this));
 
       setupExtensionsTask.bind(this)();
     } else if (this.renderMode === 'renderInPanel') {
     }
   }
 
-  _onAuthStateChange(
-    event: AuthChangeEvent,
-    session: Session | null
-  ): void | Promise<void> {
+  _onAuthStateChange(event: AuthChangeEvent, session: Session | null): void | Promise<void> {
     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
       setupExtensionsTask.bind(this)();
     }
@@ -157,10 +140,7 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     } else if (this.renderMode === 'renderInSidePanel') {
     }
 
-    if (
-      this.renderMode === 'renderInDaemon' ||
-      this.renderMode === 'renderInSidePanel'
-    ) {
+    if (this.renderMode === 'renderInDaemon' || this.renderMode === 'renderInSidePanel') {
       this._sendConfigToManageConfigInstanceListener =
         this._sendConfigToManageConfigInstance.bind(this);
 
@@ -175,18 +155,12 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     // @ts-expect-error
     this._listenToConfigEventsListener = this._listenToConfigEvents.bind(this);
 
-    document.addEventListener(
-      SEND_CONFIG_EVENT,
-      this._listenToConfigEventsListener
-    );
+    document.addEventListener(SEND_CONFIG_EVENT, this._listenToConfigEventsListener);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener(
-      SEND_CONFIG_EVENT,
-      this._listenToConfigEventsListener
-    );
+    document.removeEventListener(SEND_CONFIG_EVENT, this._listenToConfigEventsListener);
     document.removeEventListener(
       MANAGE_CONFIG_CONSTRUCTED_EVENT,
       this._sendConfigToManageConfigInstanceListener
@@ -215,16 +189,12 @@ export class ExtensionMarketplaceElement extends BookeraModuleElement {
     return html`${this.renderTitleSection()} `;
   }
   protected renderInSidePanel(): TemplateResult {
-    return html`
-      ${this.renderSidePanelTitleSection()} ${renderInSidePanel.bind(this)()}
-    `;
+    return html` ${this.renderSidePanelTitleSection()} ${renderInSidePanel.bind(this)()} `;
   }
   protected renderInPanel(): TemplateResult {
     // if this instance includes render-config, render in panel
 
-    switch (
-      this._config.instanceType as ExtensionMarketplaceModuleInstanceType
-    ) {
+    switch (this._config.instanceType as ExtensionMarketplaceModuleInstanceType) {
       case 'render-config':
       case 'published-config':
       case 'my-draft':

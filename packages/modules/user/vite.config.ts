@@ -10,12 +10,7 @@ export default defineConfig({
       babelConfig: {
         babelrc: false,
         configFile: false,
-        plugins: [
-          [
-            '@babel/plugin-proposal-decorators',
-            { loose: true, version: '2022-03' },
-          ],
-        ],
+        plugins: [['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }]],
       },
     }),
   ],
@@ -23,7 +18,7 @@ export default defineConfig({
     minify: 'terser',
     lib: {
       entry: {
-        'user': resolve(__dirname, 'src/main.ts'),
+        user: resolve(__dirname, 'src/main.ts'),
         shortcuts: resolve(__dirname, 'src/shortcuts.json'),
       },
       name: 'bookera-user',

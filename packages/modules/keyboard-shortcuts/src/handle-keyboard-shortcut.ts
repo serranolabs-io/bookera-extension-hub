@@ -71,11 +71,9 @@ export function insertBooleansInCondition(
     if (operators.includes(condition as Operator)) {
       return condition;
     } else {
-      const foundCondition = webComponentTree.find(
-        (webComponentTreeCondition: When) => {
-          return webComponentTreeCondition === condition;
-        }
-      );
+      const foundCondition = webComponentTree.find((webComponentTreeCondition: When) => {
+        return webComponentTreeCondition === condition;
+      });
 
       if (foundCondition) {
         return true;
@@ -94,8 +92,7 @@ function matchCondition(
   webComponentTree: HTMLElement[];
   activeElement: HTMLElement;
 } {
-  const { webComponentTree, activeElement } =
-    traversewebComponentTree.bind(this)(true);
+  const { webComponentTree, activeElement } = traversewebComponentTree.bind(this)(true);
 
   this._context = webComponentTree.flatMap((element: HTMLElement) => {
     return element.getWhen();
@@ -107,10 +104,7 @@ function matchCondition(
     return { isMatched: true, webComponentTree, activeElement };
   }
 
-  const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(
-    when,
-    this._context
-  );
+  const whenBoolean: WhenBoolean[] = insertBooleansInCondition.bind(this)(when, this._context);
   const isMatched = evaluateWhenExpressionEval.bind(this)(whenBoolean);
 
   console.log(this._context, whenBoolean, isMatched);
@@ -126,24 +120,20 @@ export function matchCommand(
 ): { match: boolean; hasPotentialMatch: boolean } {
   let match = currentShortcut.length === shortcutKeys.length ? true : false;
 
-  const hasPotentialMatch = currentShortcut.every(
-    (set: KeyboardEventKey[], setIndex: number) => {
-      const matchedCharacter = set.every(
-        (key: KeyboardEventKey, arrayIndex: number) => {
-          return key === shortcutKeys[setIndex]?.[arrayIndex];
-        }
-      );
-      if (
-        !shortcutKeys[setIndex] ||
-        set.length !== shortcutKeys[setIndex].length ||
-        !matchedCharacter
-      ) {
-        match = false;
-      }
-
-      return matchedCharacter;
+  const hasPotentialMatch = currentShortcut.every((set: KeyboardEventKey[], setIndex: number) => {
+    const matchedCharacter = set.every((key: KeyboardEventKey, arrayIndex: number) => {
+      return key === shortcutKeys[setIndex]?.[arrayIndex];
+    });
+    if (
+      !shortcutKeys[setIndex] ||
+      set.length !== shortcutKeys[setIndex].length ||
+      !matchedCharacter
+    ) {
+      match = false;
     }
-  );
+
+    return matchedCharacter;
+  });
 
   return { match, hasPotentialMatch };
 }
@@ -164,18 +154,16 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
 
   let shouldRequestUpdate = false;
   this._keyboardShortcuts.forEach((shortcut: KeyboardShortcut) => {
-    const { match, hasPotentialMatch } = matchCommand(
-      this._allKeyPressSets,
-      shortcut.keys
-    );
+    const { match, hasPotentialMatch } = matchCommand(this._allKeyPressSets, shortcut.keys);
 
     if (hasPotentialMatch) {
       hasPotentialMatches = hasPotentialMatch;
     }
 
     if (match) {
-      const { isMatched, webComponentTree, activeElement } =
-        matchCondition.bind(this)(shortcut.when as When[]);
+      const { isMatched, webComponentTree, activeElement } = matchCondition.bind(this)(
+        shortcut.when as When[]
+      );
 
       // TODO, fix this. This is a weird one. I'm going to have to think this one through
       if (activeElement.nodeName === 'INPUT') {
@@ -185,19 +173,12 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
       }
 
       if (isMatched) {
-        console.log(
-          'key is matched -> ',
-          isMatched,
-          webComponentTree[0],
-          shortcut
-        );
+        console.log('key is matched -> ', isMatched, webComponentTree[0], shortcut);
         // @ts-ignore
 
         if (webComponentTree.length > 0) {
           // assuming that there is only one keyboardRouter
-          webComponentTree
-            .find((el) => el.isKeyboardRouter)
-            .applyCommand(shortcut.command);
+          webComponentTree.find(el => el.isKeyboardRouter).applyCommand(shortcut.command);
         } else {
           sendEvent<string>(this, shortcut.command);
         }
@@ -225,10 +206,7 @@ function detectShortcut(this: KeyboardShortcutsElement, e: KeyboardEvent) {
   }
 }
 
-function registerKeydownListener(
-  this: KeyboardShortcutsElement,
-  e: KeyboardEvent
-) {
+function registerKeydownListener(this: KeyboardShortcutsElement, e: KeyboardEvent) {
   const { allKeyPressSets, modifiers } = handleKeyDownAndSubmit(
     e,
     this._allKeyPressSets,
@@ -257,8 +235,5 @@ export function createHandleInDaemonListeners(this: KeyboardShortcutsElement) {
   this._openCommandPaletteListener = openCommandPalette.bind(this);
 
   // @ts-ignore
-  document.addEventListener(
-    studio.settings.openCommandPalette,
-    this._openCommandPaletteListener
-  );
+  document.addEventListener(studio.settings.openCommandPalette, this._openCommandPaletteListener);
 }

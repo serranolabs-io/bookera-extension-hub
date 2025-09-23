@@ -1,14 +1,7 @@
 import { html, PropertyValues, type TemplateResult } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import {
-  BookeraModuleElement,
-  moduleElementStyles,
-} from '@serranolabs.io/shared/module-element';
-import {
-  BookeraModule,
-  BookeraModuleConfig,
-  type RenderMode,
-} from '@serranolabs.io/shared/module';
+import { BookeraModuleElement, moduleElementStyles } from '@serranolabs.io/shared/module-element';
+import { BookeraModule, BookeraModuleConfig, type RenderMode } from '@serranolabs.io/shared/module';
 import './formwrapper';
 import keyboardShortcutsStyle from './keyboard-shortcuts.style';
 import baseCss from '@serranolabs.io/shared/base';
@@ -20,11 +13,7 @@ import {
   studio,
 } from '@serranolabs.io/shared/keyboard-shortcuts';
 
-import {
-  doesClickContainElement,
-  sendEvent,
-  sendGlobalEvent,
-} from '@serranolabs.io/shared/util';
+import { doesClickContainElement, sendEvent, sendGlobalEvent } from '@serranolabs.io/shared/util';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon/icon.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/icon-button/icon-button.js';
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/menu/menu.js';
@@ -36,11 +25,7 @@ import './context-menu';
 
 import { KeyboardShortcutsState } from './state';
 import type { Bag } from '@pb33f/saddlebag';
-import {
-  NEW_PANEL_EVENT,
-  NewPanelEventType,
-  PanelTab,
-} from '@serranolabs.io/shared/panel';
+import { NEW_PANEL_EVENT, NewPanelEventType, PanelTab } from '@serranolabs.io/shared/panel';
 import { calculateValue } from './formwrapper';
 import { createHandleInDaemonListeners } from './handle-keyboard-shortcut';
 import { SlDialog } from '@shoelace-style/shoelace';
@@ -98,8 +83,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected _keyboardShortcuts: KeyboardShortcut[] = [];
 
   @state()
-  assignKeybindingDialogState: AssignKeybindingDialog =
-    ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
+  assignKeybindingDialogState: AssignKeybindingDialog = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
 
   protected _contextMenuState: ContextMenuState = CONTEXT_MENU_STATE_DEFAULTS;
 
@@ -139,24 +123,15 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    if (
-      this.renderMode === 'renderInPanel' ||
-      this.renderMode === 'renderInSidePanel'
-    ) {
-      document.addEventListener('sl-hide', (e) => {
+    if (this.renderMode === 'renderInPanel' || this.renderMode === 'renderInSidePanel') {
+      document.addEventListener('sl-hide', e => {
         this.assignKeybindingDialogState = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
       });
 
       // @ts-expect-error fuck it
-      document.addEventListener(
-        SUBMIT_FORM_EVENT,
-        this._listToAssignNewKeysEvent.bind(this)
-      );
+      document.addEventListener(SUBMIT_FORM_EVENT, this._listToAssignNewKeysEvent.bind(this));
 
-      document.addEventListener(
-        CONTEXT_MENU_EVENT,
-        this._listenToContextMenuEvent.bind(this)
-      );
+      document.addEventListener(CONTEXT_MENU_EVENT, this._listenToContextMenuEvent.bind(this));
     }
   }
 
@@ -184,21 +159,17 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       return;
     }
 
-    this._shortcutsBag = await KeyboardShortcutsState.initializeShortcutsInBag(
-      this._bagManager
-    );
+    this._shortcutsBag = await KeyboardShortcutsState.initializeShortcutsInBag(this._bagManager);
 
-    this._keyboardShortcuts = Array.from(
-      this._shortcutsBag.export().values()
-    ).map((shortcut: KeyboardShortcut) => KeyboardShortcut.fromJson(shortcut));
+    this._keyboardShortcuts = Array.from(this._shortcutsBag.export().values()).map(
+      (shortcut: KeyboardShortcut) => KeyboardShortcut.fromJson(shortcut)
+    );
 
     this._shortcutsBag.onAllChanges(this._listenToAllChanges.bind(this));
   }
 
   private _listenToAllChanges(changed: string) {
-    const changedCommand = KeyboardShortcut.fromJson(
-      this._shortcutsBag.get(changed)!
-    );
+    const changedCommand = KeyboardShortcut.fromJson(this._shortcutsBag.get(changed)!);
 
     for (let i = 0; i < this._keyboardShortcuts.length; i++) {
       if (this._keyboardShortcuts[i].id === changedCommand.id) {
@@ -214,8 +185,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       return;
     }
 
-    const updatedShortcut =
-      this._keyboardShortcuts[this.assignKeybindingDialogState.index];
+    const updatedShortcut = this._keyboardShortcuts[this.assignKeybindingDialogState.index];
 
     updatedShortcut.keys = e.detail;
 
@@ -234,9 +204,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
       <div class="context">
         <small class="label">context</small>
         ${this._context.map((when: When, i: number) => {
-          return html`<small>${when}</small> ${i !== this._context.length - 1
-              ? '&'
-              : ''} `;
+          return html`<small>${when}</small> ${i !== this._context.length - 1 ? '&' : ''} `;
         })}
       </div>
     `;
@@ -262,9 +230,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   private _renderMatches(
     applyShouldAppearInCommandPalette: boolean
   ): FuseResult<KeyboardShortcut>[] | KeyboardShortcut[] {
-    const keyboardShortcuts = this._filterCommandPalette(
-      applyShouldAppearInCommandPalette
-    );
+    const keyboardShortcuts = this._filterCommandPalette(applyShouldAppearInCommandPalette);
 
     const matches = renderMatches(
       keyboardShortcuts,
@@ -282,11 +248,9 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   private _selectCommand(e: CustomEvent) {
     const value: string = e.detail.item.value;
 
-    const shortcut = this._keyboardShortcuts.find(
-      (shortcut: KeyboardShortcut) => {
-        return shortcut.id === value;
-      }
-    )!;
+    const shortcut = this._keyboardShortcuts.find((shortcut: KeyboardShortcut) => {
+      return shortcut.id === value;
+    })!;
 
     sendEvent(this, shortcut?.command);
   }
@@ -305,9 +269,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
     }
   }
 
-  private _filterCommandPalette(
-    applyShouldAppearInCommandPalette: boolean
-  ): KeyboardShortcut[] {
+  private _filterCommandPalette(applyShouldAppearInCommandPalette: boolean): KeyboardShortcut[] {
     return this._keyboardShortcuts.filter((shortcut: KeyboardShortcut) => {
       if (applyShouldAppearInCommandPalette) {
         return shortcut.shouldAppearInCommandPalette === 'true';
@@ -319,9 +281,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
 
   private _renderDialog() {
     return html`
-      <sl-dialog id=${COMMAND_PALETTE_DIALOG}>
-        ${this._renderCommandPalette(true)}
-      </sl-dialog>
+      <sl-dialog id=${COMMAND_PALETTE_DIALOG}> ${this._renderCommandPalette(true)} </sl-dialog>
     `;
   }
 
@@ -340,10 +300,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
             ></sl-input>
           `
         : html``}
-      <sl-menu
-        class="command-palette-menu"
-        @sl-select=${this._selectCommand.bind(this)}
-      >
+      <sl-menu class="command-palette-menu" @sl-select=${this._selectCommand.bind(this)}>
         ${this._renderMatches(true).map(
           (match: FuseResult<KeyboardShortcut> | KeyboardShortcut) => {
             if ('item' in match) {
@@ -386,10 +343,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   protected renderInModuleDaemon(): TemplateResult {
     return html`
       ${this._renderDialog()} ${this._renderContextInModuleDaemon()}
-      ${this._renderKeyPressesInModuleDaemon(
-        this._allKeyPressSets,
-        this._modifiers
-      )}
+      ${this._renderKeyPressesInModuleDaemon(this._allKeyPressSets, this._modifiers)}
       ${this._renderCommandsInModuleDaemon()}
     `;
   }
@@ -409,9 +363,7 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
   }
 
   protected renderInSettings(): TemplateResult {
-    return html`
-      ${this.renderTitleSection()} ${this._openKeyboardShortcutsPanel()}
-    `;
+    return html` ${this.renderTitleSection()} ${this._openKeyboardShortcutsPanel()} `;
   }
 
   protected renderInSidePanel(): TemplateResult {
@@ -481,28 +433,20 @@ export class KeyboardShortcutsElement extends BookeraModuleElement {
               coords: { x: e.x, y: e.y },
             };
 
-            this._closeContextMenuListener =
-              this._handleCloseContextMenu.bind(this);
+            this._closeContextMenuListener = this._handleCloseContextMenu.bind(this);
             document.addEventListener('click', this._closeContextMenuListener);
 
             this.requestUpdate();
           }}
         >
           ${this._renderMatches(false)?.map(
-            (
-              shortcut: FuseResult<KeyboardShortcut> | KeyboardShortcut,
-              index: number
-            ) => {
+            (shortcut: FuseResult<KeyboardShortcut> | KeyboardShortcut, index: number) => {
               if ('item' in shortcut) {
                 shortcut = shortcut.item;
               }
 
               return html`
-                <tr
-                  data-index=${index}
-                  data-command="${shortcut.id}"
-                  tabindex="0"
-                >
+                <tr data-index=${index} data-command="${shortcut.id}" tabindex="0">
                   <td>
                     <div class="flex command-title">
                       <sl-icon class="edit-icon" name="pencil"></sl-icon>

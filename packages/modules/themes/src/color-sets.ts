@@ -1,8 +1,6 @@
 import { ColorMode } from './theme-switcher-element';
 
-export const shadePercents = [
-  50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
-];
+export const shadePercents = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
 
 export const primaryColorName = [
   '',
@@ -51,19 +49,13 @@ export class ColorSet {
 
   applyColorWithMode(colorMode: ColorMode) {
     for (let i = 0; i < this.colors.length; i++) {
-      const value =
-        colorMode === 'Dark'
-          ? this.colors[this.colors.length - 1 - i]
-          : this.colors[i];
+      const value = colorMode === 'Dark' ? this.colors[this.colors.length - 1 - i] : this.colors[i];
 
       if (i === 0) {
         ColorSet.SetMetaThemeColor(value);
       }
 
-      document.documentElement.style.setProperty(
-        `--slate-${shadePercents[i]}`,
-        value
-      );
+      document.documentElement.style.setProperty(`--slate-${shadePercents[i]}`, value);
     }
   }
 
@@ -147,7 +139,7 @@ export class ColorSet {
       g = hue2rgb(p, q, h);
       b = hue2rgb(p, q, h - 1 / 3);
     }
-    const toHex = (x) =>
+    const toHex = x =>
       Math.round(x * 255)
         .toString(16)
         .padStart(2, '0');
@@ -158,47 +150,17 @@ export class ColorSet {
   static SetPrimaryColor(newColor: string) {
     const colors = this.GenerateFullShades(newColor);
 
-    document.documentElement.style.setProperty(
-      '--primary-950',
-      colors.darker['50']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-900',
-      colors.darker['40']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-800',
-      colors.darker['30']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-700',
-      colors.darker['20']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-600',
-      colors.darker['10']
-    );
+    document.documentElement.style.setProperty('--primary-950', colors.darker['50']);
+    document.documentElement.style.setProperty('--primary-900', colors.darker['40']);
+    document.documentElement.style.setProperty('--primary-800', colors.darker['30']);
+    document.documentElement.style.setProperty('--primary-700', colors.darker['20']);
+    document.documentElement.style.setProperty('--primary-600', colors.darker['10']);
     document.documentElement.style.setProperty('--primary-500', newColor);
-    document.documentElement.style.setProperty(
-      '--primary-400',
-      colors.lighter['10']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-300',
-      colors.lighter['20']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-200',
-      colors.lighter['30']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-100',
-      colors.lighter['40']
-    );
-    document.documentElement.style.setProperty(
-      '--primary-50',
-      colors.lighter['50']
-    );
+    document.documentElement.style.setProperty('--primary-400', colors.lighter['10']);
+    document.documentElement.style.setProperty('--primary-300', colors.lighter['20']);
+    document.documentElement.style.setProperty('--primary-200', colors.lighter['30']);
+    document.documentElement.style.setProperty('--primary-100', colors.lighter['40']);
+    document.documentElement.style.setProperty('--primary-50', colors.lighter['50']);
 
     document.documentElement.style.setProperty('--primary', newColor);
   }
@@ -210,9 +172,7 @@ export class ColorSet {
   }
 
   static SetMetaThemeColor(value: string) {
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', value);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', value);
   }
 
   static SetStyle(name: string, shade: number, value: string) {

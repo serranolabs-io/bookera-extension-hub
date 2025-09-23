@@ -364,9 +364,7 @@ export type MediaControllerKeys =
   | 'VideoModeNext'
   | 'Wink'
   | 'ZoomToggle';
-export type SpeechRecognitionKeys =
-  | 'SpeechCorrectionList'
-  | 'SpeechInputToggle';
+export type SpeechRecognitionKeys = 'SpeechCorrectionList' | 'SpeechInputToggle';
 export type DocumentKeys =
   | 'Close'
   | 'New'

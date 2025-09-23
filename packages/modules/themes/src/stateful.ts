@@ -27,26 +27,15 @@ export class ColorPalette {
     }
   }
 
-  static ApplyMode(
-    colorPalette: ColorPalette,
-    colorMode: ColorMode,
-    onStart?: boolean
-  ) {
+  static ApplyMode(colorPalette: ColorPalette, colorMode: ColorMode, onStart?: boolean) {
     const cp = ColorPalette.WhichColorPalette(colorPalette);
     cp.applyMode(colorMode, onStart);
   }
 
-  static WhichColorPalette(
-    colorPalette: ColorPalette
-  ): SystemColorPalette | CustomColorPalette {
+  static WhichColorPalette(colorPalette: ColorPalette): SystemColorPalette | CustomColorPalette {
     if (SystemColorPalette.IsSystemColorPalette(colorPalette)) {
       const cp: SystemColorPalette = colorPalette as SystemColorPalette;
-      return new SystemColorPalette(
-        cp.background,
-        cp.primaryColor,
-        cp.name,
-        cp.id
-      );
+      return new SystemColorPalette(cp.background, cp.primaryColor, cp.name, cp.id);
     }
 
     const cp: CustomColorPalette = colorPalette as CustomColorPalette;
@@ -54,9 +43,7 @@ export class ColorPalette {
   }
 
   static SelectColorPalette(colorPalette: ColorPalette, colorMode: ColorMode) {
-    if (
-      ColorPalette.WhichColorPalette(colorPalette) instanceof SystemColorPalette
-    ) {
+    if (ColorPalette.WhichColorPalette(colorPalette) instanceof SystemColorPalette) {
       SystemColorPalette.SelectColorPalette(colorPalette, colorMode);
     } else {
       CustomColorPalette.SelectColorPalette(colorPalette, colorMode);
@@ -67,12 +54,7 @@ export class ColorPalette {
 export class SystemColorPalette extends ColorPalette {
   background?: SystemColorSets;
   primaryColor?: string;
-  constructor(
-    background?: SystemColorSets,
-    primaryColor?: string,
-    name?: string,
-    id?: string
-  ) {
+  constructor(background?: SystemColorSets, primaryColor?: string, name?: string, id?: string) {
     super(name, id);
     this.background = background;
     this.primaryColor = primaryColor;
@@ -103,11 +85,7 @@ export class Mode {
   mode?: ColorMode;
   primaryColors?: string[];
   baseColors?: string[];
-  constructor(
-    mode?: ColorMode,
-    primaryColors?: string[],
-    baseColors?: string[]
-  ) {
+  constructor(mode?: ColorMode, primaryColors?: string[], baseColors?: string[]) {
     this.mode = mode;
     this.primaryColors = primaryColors;
     this.baseColors = baseColors;
@@ -116,12 +94,8 @@ export class Mode {
   areModesEqual(otherMode: Mode) {
     if (
       this.mode === otherMode.mode &&
-      this.primaryColors?.every(
-        (color, index) => color === otherMode.primaryColors![index]
-      ) &&
-      this.baseColors?.every(
-        (color, index) => color === otherMode.baseColors![index]
-      )
+      this.primaryColors?.every((color, index) => color === otherMode.primaryColors![index]) &&
+      this.baseColors?.every((color, index) => color === otherMode.baseColors![index])
     ) {
       return true;
     }
@@ -230,17 +204,12 @@ export class ColorPalettesSingleton {
   }
 
   static GetSelectedColorPalette(bagManager: BagManager): ColorPalette {
-    const cp = bagManager
-      .getBag(ColorPalettesKey)
-      ?.get(SelectedColorPaletteKey)!;
+    const cp = bagManager.getBag(ColorPalettesKey)?.get(SelectedColorPaletteKey)!;
 
     return Object.assign(new ColorPalette(), cp);
   }
 
-  static SetSelectedColorPalette(
-    bagManager: BagManager,
-    colorPalette: ColorPalette
-  ) {
+  static SetSelectedColorPalette(bagManager: BagManager, colorPalette: ColorPalette) {
     const colorPalettes = bagManager.getBag(ColorPalettesKey)!;
 
     colorPalettes.set(SelectedColorPaletteKey, colorPalette)!;
@@ -264,23 +233,18 @@ export class ColorPalettesSingleton {
     localforage.setItem(ColorPalettesKey, map);
   }
 
-  static async InitializeColorPalettesInBag(
-    bagManager: BagManager
-  ): Promise<Bag | undefined> {
-    const colorPalettesBag =
-      bagManager.createBag<ColorPalette>(ColorPalettesKey)!;
+  static async InitializeColorPalettesInBag(bagManager: BagManager): Promise<Bag | undefined> {
+    const colorPalettesBag = bagManager.createBag<ColorPalette>(ColorPalettesKey)!;
 
-    const savedTabsContent =
-      await localforage.getItem<Map<string, ColorPalette>>(ColorPalettesKey);
+    const savedTabsContent = await localforage.getItem<Map<string, ColorPalette>>(ColorPalettesKey);
 
     // if there is nothing saved
     if (!savedTabsContent) {
       // selected is default
-      ColorPalettesSingleton.selectedColorPalette =
-        ColorPalettesSingleton.defaultColorPalette;
+      ColorPalettesSingleton.selectedColorPalette = ColorPalettesSingleton.defaultColorPalette;
 
       // putting default in the main bag
-      ColorPalettesSingleton.defaultColorPalettes.forEach((cp) => {
+      ColorPalettesSingleton.defaultColorPalettes.forEach(cp => {
         ColorPalettesSingleton.NewColorPaletteAndSelect(bagManager, cp);
       });
       ColorPalettesSingleton.NewColorPaletteAndSelect(

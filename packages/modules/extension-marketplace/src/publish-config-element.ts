@@ -26,8 +26,7 @@ import { schemaActions, schemaSendActions } from './config-schemas';
 import { notify } from '@serranolabs.io/shared/lit';
 import { Extension } from './backend';
 
-export const PUBLISH_CONFIG_CONSTRUCTED_EVENT =
-  'publish-config-constructed-event';
+export const PUBLISH_CONFIG_CONSTRUCTED_EVENT = 'publish-config-constructed-event';
 
 export const LISTEN_TO_PUBLISH_CONFIG_EVENT = 'listen-to-publish-config-event';
 
@@ -78,8 +77,7 @@ export class PublishConfigElement extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
 
-    this._listenToPublishConfigEventListener =
-      this._listenToConfigEvents.bind(this);
+    this._listenToPublishConfigEventListener = this._listenToConfigEvents.bind(this);
 
     document.addEventListener(
       SEND_DOWNLAODED_CONFIG_TO_PANEL_EVENT,
@@ -127,7 +125,7 @@ export class PublishConfigElement extends LitElement {
 
     if (!this._bag) return;
 
-    this._bag.onAllChanges((key) => {
+    this._bag.onAllChanges(key => {
       console.log(key);
     });
 

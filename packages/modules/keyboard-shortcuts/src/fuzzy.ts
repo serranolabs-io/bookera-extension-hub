@@ -1,9 +1,4 @@
-import Fuse, {
-  FuseOptionKey,
-  FuseResult,
-  FuseResultMatch,
-  RangeTuple,
-} from 'fuse.js';
+import Fuse, { FuseOptionKey, FuseResult, FuseResultMatch, RangeTuple } from 'fuse.js';
 import { html, TemplateResult } from 'lit';
 import { TemplateLiteral } from 'typescript';
 

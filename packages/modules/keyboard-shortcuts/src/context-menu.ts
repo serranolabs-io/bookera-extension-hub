@@ -6,10 +6,7 @@ import {
   ContextMenuState,
 } from './keyboard-shortcuts';
 import { styleMap } from 'lit/directives/style-map.js';
-import {
-  KeyboardShortcut,
-  Source,
-} from '@serranolabs.io/shared/keyboard-shortcuts';
+import { KeyboardShortcut, Source } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { SlSelect } from '@shoelace-style/shoelace';
 import { sendEvent } from '@serranolabs.io/shared/util';
 import { KeyboardShortcutsState } from './state';
@@ -84,10 +81,7 @@ export class ContextMenu extends LitElement {
     this.rect = this.getBoundingClientRect();
   }
 
-  private _extractKeys(
-    keys: (keyof KeyboardShortcut)[],
-    indexValue: boolean
-  ): string {
+  private _extractKeys(keys: (keyof KeyboardShortcut)[], indexValue: boolean): string {
     const ks = this.contextMenuState.keyboardShortcut;
 
     if (!ks) {
@@ -100,7 +94,7 @@ export class ContextMenu extends LitElement {
 
     const extracted: Partial<keyof KeyboardShortcut> = {};
 
-    keys.forEach((key) => {
+    keys.forEach(key => {
       if (key in ks) {
         extracted[key] = ks[key];
       }
@@ -109,13 +103,10 @@ export class ContextMenu extends LitElement {
     return JSON.stringify(extracted);
   }
 
-  private _handleCopyKeys(
-    keys: (keyof KeyboardShortcut)[],
-    indexValue = false
-  ) {
+  private _handleCopyKeys(keys: (keyof KeyboardShortcut)[], indexValue = false) {
     const newShortcut = this._extractKeys(keys, indexValue);
 
-    navigator.clipboard.writeText(newShortcut).catch((err) => {
+    navigator.clipboard.writeText(newShortcut).catch(err => {
       console.error('Failed to copy to clipboard: ', err);
     });
   }
@@ -126,10 +117,7 @@ export class ContextMenu extends LitElement {
     }
     this.contextMenuState.keyboardShortcut.keys = [];
 
-    KeyboardShortcutsState.updateShortcut(
-      this.bagManager,
-      this.contextMenuState.keyboardShortcut
-    );
+    KeyboardShortcutsState.updateShortcut(this.bagManager, this.contextMenuState.keyboardShortcut);
   }
 
   private _handleResetKeybinding() {
@@ -143,29 +131,18 @@ export class ContextMenu extends LitElement {
     }
 
     this.contextMenuState.keyboardShortcut.keys = defaultShortcut.keys;
-    KeyboardShortcutsState.updateShortcut(
-      this.bagManager,
-      this.contextMenuState.keyboardShortcut
-    );
+    KeyboardShortcutsState.updateShortcut(this.bagManager, this.contextMenuState.keyboardShortcut);
     sendEvent(this, CONTEXT_MENU_EVENT);
   }
 
   private _shareKeybinding(command: string) {
     let c: Partial<KeyboardShortcut> = JSON.parse(command);
 
-    const payload: Config<Partial<KeyboardShortcut>> = new Config(
-      this.source,
-      [c],
-      'command'
-    );
+    const payload: Config<Partial<KeyboardShortcut>> = new Config(this.source, [c], 'command');
 
-    sendEvent<SEND_CONFIG_EVENT_TYPE<Partial<KeyboardShortcut>>>(
-      this,
-      SEND_CONFIG_EVENT,
-      {
-        config: payload,
-      }
-    );
+    sendEvent<SEND_CONFIG_EVENT_TYPE<Partial<KeyboardShortcut>>>(this, SEND_CONFIG_EVENT, {
+      config: payload,
+    });
   }
 
   private _handleSelectMenuItem(e: SlSelect) {
@@ -181,9 +158,7 @@ export class ContextMenu extends LitElement {
     } else if (menuOptionType === 'reset-keybinding') {
       this._handleResetKeybinding();
     } else if (menuOptionType === 'share-keybinding') {
-      this._shareKeybinding(
-        this._extractKeys(['title', 'command', 'when', 'keys', 'id'], false)
-      );
+      this._shareKeybinding(this._extractKeys(['title', 'command', 'when', 'keys', 'id'], false));
     }
 
     this.contextMenuState.isOpened = false;
@@ -216,12 +191,8 @@ export class ContextMenu extends LitElement {
       >
         ${menuItems.map((menuItem: MenuItem) => {
           return html`
-            ${menuItem.value === 'remove-keybinding'
-              ? html`<sl-divider></sl-divider>`
-              : ''}
-            <sl-menu-item value=${menuItem.value}>
-              ${menuItem.name}
-            </sl-menu-item>
+            ${menuItem.value === 'remove-keybinding' ? html`<sl-divider></sl-divider>` : ''}
+            <sl-menu-item value=${menuItem.value}> ${menuItem.name} </sl-menu-item>
           `;
         })}
       </sl-menu>

@@ -2,11 +2,7 @@ import { ExtensionConfig } from '@serranolabs.io/shared/extension-marketplace';
 import { html, TemplateResult } from 'lit';
 import { Extension } from './backend';
 
-export const getExtensionIcon = (
-  userId: string,
-  configId: string,
-  iconSize = '96x96.png'
-) => {
+export const getExtensionIcon = (userId: string, configId: string, iconSize = '96x96.png') => {
   return `https://raw.githubusercontent.com/serranolabs-io/bookera-extension-hub/main/packages/extensions/configs/${userId}/${configId}/icons/${iconSize}`;
 };
 

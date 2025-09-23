@@ -7,13 +7,7 @@ import { z } from 'zod';
 export * from './keyboard-event-key-type';
 export type Operator = '&&' | '||' | '!' | '(' | ')';
 
-export const operators: readonly Operator[] = [
-  '&&',
-  '||',
-  '!',
-  '(',
-  ')',
-] as const;
+export const operators: readonly Operator[] = ['&&', '||', '!', '(', ')'] as const;
 
 export type PanelTabsFocus = 'panelTabsFocus';
 export type PanelFocus = 'panelFocus';
@@ -158,7 +152,7 @@ export class KeyboardShortcut implements KeyboardShortcutJson {
     return html`
       <div class="keybindings">
         ${keys.map((key, i: number) => {
-          let lastText = i !== keys.length - 1 ? 'chord to' : '';
+          const lastText = i !== keys.length - 1 ? 'chord to' : '';
 
           if (key.length === 0) {
             return html``;
@@ -166,7 +160,7 @@ export class KeyboardShortcut implements KeyboardShortcutJson {
 
           return html`<span class="keybinding"
               >${key.map((k: KeyboardEventKey, i: number) => {
-                let value = KeyboardShortcut.PrintKey(k);
+                const value = KeyboardShortcut.PrintKey(k);
 
                 return i !== key.length - 1
                   ? html`<span>${value}+</span>`
@@ -206,8 +200,7 @@ export interface ActiveElement {
 
 export class ActiveElementState {
   static async GetActiveElement(): Promise<ActiveElement | null> {
-    const activeElement =
-      localforage.getItem<ActiveElement>(ACTIVE_ELEMENT_KEY);
+    const activeElement = localforage.getItem<ActiveElement>(ACTIVE_ELEMENT_KEY);
 
     return activeElement;
   }
@@ -215,14 +208,10 @@ export class ActiveElementState {
   static async InitializeActiveElement(
     defaultActiveElement: ActiveElement
   ): Promise<ActiveElement | null> {
-    const savedActiveElement =
-      await localforage.getItem<ActiveElement>(ACTIVE_ELEMENT_KEY);
+    const savedActiveElement = await localforage.getItem<ActiveElement>(ACTIVE_ELEMENT_KEY);
 
     if (!savedActiveElement) {
-      localforage.setItem<ActiveElement>(
-        ACTIVE_ELEMENT_KEY,
-        defaultActiveElement
-      );
+      localforage.setItem<ActiveElement>(ACTIVE_ELEMENT_KEY, defaultActiveElement);
       return defaultActiveElement;
     }
 
@@ -234,5 +223,4 @@ export class ActiveElementState {
   }
 }
 
-export const KEYBOARD_SHORTCUTS_BOTTOM_DRAWER_KEY =
-  'keyboard-shortcuts-bottom-drawer-key';
+export const KEYBOARD_SHORTCUTS_BOTTOM_DRAWER_KEY = 'keyboard-shortcuts-bottom-drawer-key';

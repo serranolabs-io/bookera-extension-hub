@@ -38,9 +38,7 @@ import { PUBLISH_CONFIG_CONSTRUCTED_EVENT } from './publish-config-element';
 import { renderImageBox } from './utils';
 import { Extension } from './backend';
 
-const randomConfigs: Config[] = [
-  new Config({ name: 'Themes', link: 'https://' }, {}, 'name', '1'),
-];
+const randomConfigs: Config[] = [new Config({ name: 'Themes', link: 'https://' }, {}, 'name', '1')];
 
 const mockData: ExtensionConfig & Extension = {
   version: '0.0.0',
@@ -56,8 +54,7 @@ type SubmitType = 'publish' | 'save-as-draft';
 
 export const SendConfig = 'send-config';
 
-export const MANAGE_CONFIG_CONSTRUCTED_EVENT =
-  'manage-config-constructed-event';
+export const MANAGE_CONFIG_CONSTRUCTED_EVENT = 'manage-config-constructed-event';
 
 export const ARE_YOU_SURE_DIALOG = 'are-you-sure-dialog';
 
@@ -126,10 +123,7 @@ export class ManageConfigElement extends LitElement {
               config: JSON.stringify(configs),
               userId: getUserId(this._user),
               userName: getUsername(this._user),
-              packageJson: createPackageJsonJson(
-                value.extensionConfig,
-                this._user
-              ),
+              packageJson: createPackageJsonJson(value.extensionConfig, this._user),
             },
           });
         } catch (e) {
@@ -219,10 +213,7 @@ export class ManageConfigElement extends LitElement {
     config: BookeraModuleConfig<ExtensionMarketplaceModuleInstanceType>,
     manageConfigBag: Bag<ExtensionConfig>,
     bagManager: BagManager,
-    runLocalFlow: (
-      defaultsFunction: () => void,
-      key: string
-    ) => Promise<Bag<ExtensionConfig>>,
+    runLocalFlow: (defaultsFunction: () => void, key: string) => Promise<Bag<ExtensionConfig>>,
     saveSyncedLocalForage: any,
     user: SupabaseUser
   ) {
@@ -262,20 +253,13 @@ export class ManageConfigElement extends LitElement {
 
     this._listenToConfigEventListener = this._listenToConfigEvents.bind(this);
 
-    this._listenToConfigFromApiEventListener =
-      this._listenToConfigEvents.bind(this);
+    this._listenToConfigFromApiEventListener = this._listenToConfigEvents.bind(this);
 
     // @ts-ignore
-    document.addEventListener(
-      SEND_CONFIG_EVENT_FROM_API,
-      this._listenToConfigFromApiEventListener
-    );
+    document.addEventListener(SEND_CONFIG_EVENT_FROM_API, this._listenToConfigFromApiEventListener);
 
     // @ts-ignore
-    document.addEventListener(
-      SEND_CONFIG_EVENT,
-      this._listenToConfigEventListener
-    );
+    document.addEventListener(SEND_CONFIG_EVENT, this._listenToConfigEventListener);
   }
 
   disconnectedCallback(): void {
@@ -291,23 +275,15 @@ export class ManageConfigElement extends LitElement {
       this._listenToConfigFromApiEventListener
     );
     // @ts-ignore
-    document.removeEventListener(
-      SEND_CONFIG_EVENT,
-      this._listenToConfigEventListener
-    );
+    document.removeEventListener(SEND_CONFIG_EVENT, this._listenToConfigEventListener);
   }
 
-  async _setupState(
-    runLocalFlow: (
-      defaultsFunction: () => void
-    ) => Promise<Bag<ExtensionConfig>>
-  ) {
+  async _setupState(runLocalFlow: (defaultsFunction: () => void) => Promise<Bag<ExtensionConfig>>) {
     await runLocalFlow(this._setupDefaults.bind(this));
   }
 
   _setupDefaults() {
-    if (this._getViewState() || this._config.instanceType === 'render-config')
-      return;
+    if (this._getViewState() || this._config.instanceType === 'render-config') return;
 
     this._manageConfigBag.set(MANAGE_CONFIG_BAG_KEY, defaultExtensionConfig);
 
@@ -319,7 +295,7 @@ export class ManageConfigElement extends LitElement {
   private _addToPreviousConfig(configs: Config[], newValue: any[]): boolean {
     return configs.find((config: Config) => {
       // find schema
-      const schema = schemas.find((schema) => {
+      const schema = schemas.find(schema => {
         const { success } = schema.safeParse(config.values);
         return success;
       });
@@ -344,9 +320,7 @@ export class ManageConfigElement extends LitElement {
       : false;
   }
 
-  private _startViewFlow(
-    config: (ExtensionConfig & Extension) | Config
-  ): boolean {
+  private _startViewFlow(config: (ExtensionConfig & Extension) | Config): boolean {
     if (!('configs' in config)) {
       return false;
     }
@@ -365,9 +339,7 @@ export class ManageConfigElement extends LitElement {
   private _startEditFlow(config: ExtensionConfig & Extension) {
     let configs = this.form.api.getFieldValue('extensionConfig.configs');
     if (
-      configs
-        .flatMap((config: Config) => config.values.map((value) => value.id))
-        .includes(config.id)
+      configs.flatMap((config: Config) => config.values.map(value => value.id)).includes(config.id)
     ) {
       notify(
         'Hey 👋! You already have this config as part of your extension!',
@@ -415,7 +387,7 @@ export class ManageConfigElement extends LitElement {
     const configs = this.form.api.getFieldValue('extensionConfig.configs');
 
     if (configs.length === 1) {
-      const newConfigs = configs[0].values.filter((oldConfig) => {
+      const newConfigs = configs[0].values.filter(oldConfig => {
         return oldConfig.id !== target.id;
       });
 
@@ -444,16 +416,11 @@ export class ManageConfigElement extends LitElement {
   }
 
   private _renderVersionField() {
-    return html`${this.form.field(
-      { name: 'extensionConfig.version' },
-      (titleField) => {
-        return html`
-          <span class="version-field"
-            >${titleField.state.value === '' ? '0.0.0' : ''}</span
-          >
-        `;
-      }
-    )}`;
+    return html`${this.form.field({ name: 'extensionConfig.version' }, titleField => {
+      return html`
+        <span class="version-field">${titleField.state.value === '' ? '0.0.0' : ''}</span>
+      `;
+    })}`;
   }
 
   _getViewState() {
@@ -477,11 +444,7 @@ export class ManageConfigElement extends LitElement {
     ) {
       return html`
         <sl-tooltip content="Can't edit :(. im a one man team">
-          ${renderImageBox(
-            this.form.api.getFieldValue('extensionConfig'),
-            '96',
-            this._hasIcon
-          )}
+          ${renderImageBox(this.form.api.getFieldValue('extensionConfig'), '96', this._hasIcon)}
           <sl-tooltip> </sl-tooltip
         ></sl-tooltip>
       `;
@@ -489,14 +452,10 @@ export class ManageConfigElement extends LitElement {
 
     return html`
       <div class="icon-box">
-        ${this.form.field({ name: 'extensionConfig.icon' }, (iconField) => {
+        ${this.form.field({ name: 'extensionConfig.icon' }, iconField => {
           if (this._getViewState()) {
             return html`
-              ${renderImageBox(
-                this.form.api.getFieldValue('extensionConfig'),
-                '96',
-                this._hasIcon
-              )}
+              ${renderImageBox(this.form.api.getFieldValue('extensionConfig'), '96', this._hasIcon)}
             `;
           }
 
@@ -558,7 +517,7 @@ export class ManageConfigElement extends LitElement {
                   },
                 },
               },
-              (titleField) => {
+              titleField => {
                 if (this._getViewState()) {
                   return html`
                     <div class="title-version">
@@ -574,7 +533,7 @@ export class ManageConfigElement extends LitElement {
                   inputField = html`${repeat(
                     titleField.state.meta.errors,
                     (__, idx) => idx,
-                    (error) => {
+                    error => {
                       return html`<div class="container red">${error}</div>`;
                     }
                   )}`;
@@ -617,7 +576,7 @@ export class ManageConfigElement extends LitElement {
                   },
                 },
               },
-              (titleField) => {
+              titleField => {
                 if (this._getViewState()) {
                   return html`<div><p>${titleField.state.value}</p></div>`;
                 }
@@ -628,7 +587,7 @@ export class ManageConfigElement extends LitElement {
                   inputField = html`${repeat(
                     titleField.state.meta.errors,
                     (__, idx) => idx,
-                    (error) => {
+                    error => {
                       return html`<div class="container red">${error}</div>`;
                     }
                   )}`;
@@ -653,90 +612,77 @@ export class ManageConfigElement extends LitElement {
             )}
           </div>
         </div>
-        ${this.form.field(
-          { name: 'extensionConfig.configs' },
-          (configsField) => {
-            const getConfigsState = () => {
-              if (this._getViewState()) {
-                return 'publish';
-              }
+        ${this.form.field({ name: 'extensionConfig.configs' }, configsField => {
+          const getConfigsState = () => {
+            if (this._getViewState()) {
+              return 'publish';
+            }
 
-              return 'manage';
-            };
-            return renderConfigs.bind(this)(
-              configsField.state.value,
-              getConfigsState()
-            );
-          }
-        )}
+            return 'manage';
+          };
+          return renderConfigs.bind(this)(configsField.state.value, getConfigsState());
+        })}
         <i class="red">TODO: make markdown editor after you make WYSIWYG</i>
 
-        ${this.form.field(
-          { name: 'extensionConfig.isPublished' },
-          (isPublishedField) => {
-            if (this._getViewState()) {
-              if (this._config.instanceType === 'my-extension') {
-                return html`<i>No actions available yet</i>`;
-                // return html`
-                //   <sl-button
-                //     size="small"
-                //     variant="primary"
-                //     class="install-button"
-                //     @click=${this._downloadExtension.bind(this)}
-                //     >Edit</sl-button
-                //   >
-                // `;
-              }
-
-              return html`
-                <sl-button
-                  size="small"
-                  variant="primary"
-                  class="install-button"
-                  ?loading=${this._isDownloading}
-                  @click=${this._downloadExtension.bind(this)}
-                  >download</sl-button
-                >
-              `;
+        ${this.form.field({ name: 'extensionConfig.isPublished' }, isPublishedField => {
+          if (this._getViewState()) {
+            if (this._config.instanceType === 'my-extension') {
+              return html`<i>No actions available yet</i>`;
+              // return html`
+              //   <sl-button
+              //     size="small"
+              //     variant="primary"
+              //     class="install-button"
+              //     @click=${this._downloadExtension.bind(this)}
+              //     >Edit</sl-button
+              //   >
+              // `;
             }
 
-            if (this._user) {
-              return html`
-                <div class="horizontal">
-                  <sl-tooltip
-                    content="Add a config to publish!"
-                    ?disabled=${!this._disablePublishButton()}
-                  >
-                    <sl-button
-                      variant="primary"
-                      type="submit"
-                      ?loading=${this._isSubmitting}
-                      ?disabled=${this._disablePublishButton()}
-                      @click=${() => {
-                        isPublishedField.form.handleSubmit(
-                          'publish' as SubmitType
-                        );
-                      }}
-                      >Publish</sl-button
-                    >
-                  </sl-tooltip>
+            return html`
+              <sl-button
+                size="small"
+                variant="primary"
+                class="install-button"
+                ?loading=${this._isDownloading}
+                @click=${this._downloadExtension.bind(this)}
+                >download</sl-button
+              >
+            `;
+          }
+
+          if (this._user) {
+            return html`
+              <div class="horizontal">
+                <sl-tooltip
+                  content="Add a config to publish!"
+                  ?disabled=${!this._disablePublishButton()}
+                >
                   <sl-button
+                    variant="primary"
                     type="submit"
                     ?loading=${this._isSubmitting}
+                    ?disabled=${this._disablePublishButton()}
                     @click=${() => {
-                      isPublishedField.form.handleSubmit(
-                        'save-as-draft' as SubmitType
-                      );
+                      isPublishedField.form.handleSubmit('publish' as SubmitType);
                     }}
-                    >Save</sl-button
+                    >Publish</sl-button
                   >
-                </div>
-              `;
-            }
-
-            return html` <p>Must be signed in to create an extension!</p> `;
+                </sl-tooltip>
+                <sl-button
+                  type="submit"
+                  ?loading=${this._isSubmitting}
+                  @click=${() => {
+                    isPublishedField.form.handleSubmit('save-as-draft' as SubmitType);
+                  }}
+                  >Save</sl-button
+                >
+              </div>
+            `;
           }
-        )}
+
+          return html` <p>Must be signed in to create an extension!</p> `;
+        })}
       </form>
     `;
   }
@@ -750,25 +696,19 @@ export class ManageConfigElement extends LitElement {
     return html`
       <sl-dialog id=${ARE_YOU_SURE_DIALOG}>
         <p style="text-align: center">
-          Are you sure you want to remove all configs from
-          ${this._selectedConfig?.source.name}?
+          Are you sure you want to remove all configs from ${this._selectedConfig?.source.name}?
         </p>
         <div class="button-box" slot="footer">
           <sl-button
             variant="danger"
             @click=${() => {
-              const configs = this.form.api.getFieldValue(
-                'extensionConfig.configs'
-              );
+              const configs = this.form.api.getFieldValue('extensionConfig.configs');
 
-              const newConfigs = configs.filter((oldConfig) => {
+              const newConfigs = configs.filter(oldConfig => {
                 return oldConfig.id !== this._selectedConfig?.id;
               });
 
-              this.form.api.setFieldValue(
-                'extensionConfig.configs',
-                newConfigs
-              );
+              this.form.api.setFieldValue('extensionConfig.configs', newConfigs);
 
               this._areYouSureDialog.hide();
 
@@ -797,7 +737,7 @@ export class ManageConfigElement extends LitElement {
       .insert([{ extensionId: extension.id }]);
 
     extension.configs.forEach((config: Config) => {
-      const sendAction = schemaSendActions.find((sa) => {
+      const sendAction = schemaSendActions.find(sa => {
         const { success } = sa.schema.safeParse(config.values[0]);
         return success;
       });
@@ -822,9 +762,7 @@ export class ManageConfigElement extends LitElement {
   }
 
   render() {
-    switch (
-      this._config.instanceType as ExtensionMarketplaceModuleInstanceType
-    ) {
+    switch (this._config.instanceType as ExtensionMarketplaceModuleInstanceType) {
       case 'render-config':
       case 'published-config':
       case 'my-extension':

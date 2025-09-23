@@ -74,7 +74,7 @@ export const calculateValue = (
   modifiers: KeyboardEventKey[]
 ): KeyboardEventKey => {
   const value = (allKeyPressSets
-    .flatMap((keyPressSet) => {
+    .flatMap(keyPressSet => {
       return keyPressSet.join('');
     })
     .join('') + modifiers.join('')) as KeyboardEventKey;
@@ -126,8 +126,7 @@ export class Formwrapper extends LitElement {
   keybindingsInput!: HTMLInputElement;
 
   @state()
-  assignKeybindingDialogState: AssignKeybindingDialog =
-    ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
+  assignKeybindingDialogState: AssignKeybindingDialog = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
 
   private _modifiers: KeyboardEventKey[] = [];
 
@@ -140,18 +139,14 @@ export class Formwrapper extends LitElement {
   });
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this.keybindingsInput = this.shadowRoot?.querySelector(
-      `#${KEYBINDINGS_INPUT_ID}`
-    )!;
+    this.keybindingsInput = this.shadowRoot?.querySelector(`#${KEYBINDINGS_INPUT_ID}`)!;
   }
 
   private _renderKeysStatic() {
     return KeyboardShortcut.renderKeysStatic(
-      [...this._allKeyPressSets, this._modifiers].filter(
-        (kek: KeyboardEventKey[]) => {
-          return kek.length > 0;
-        }
-      )
+      [...this._allKeyPressSets, this._modifiers].filter((kek: KeyboardEventKey[]) => {
+        return kek.length > 0;
+      })
     );
   }
 
@@ -161,7 +156,7 @@ export class Formwrapper extends LitElement {
       {
         name: `keybindings`,
       },
-      (field) => {
+      field => {
         return html` <div>
           <sl-input
             type="text"
@@ -170,12 +165,11 @@ export class Formwrapper extends LitElement {
             .value="${calculateValue(this._allKeyPressSets, this._modifiers)}"
             @blur="${() => field.handleBlur()}"
             @keydown="${(e: KeyboardEvent) => {
-              const { shouldSubmit, allKeyPressSets, modifiers } =
-                handleKeyDownAndSubmit(
-                  e,
-                  this._allKeyPressSets,
-                  this._modifiers
-                );
+              const { shouldSubmit, allKeyPressSets, modifiers } = handleKeyDownAndSubmit(
+                e,
+                this._allKeyPressSets,
+                this._modifiers
+              );
               this._allKeyPressSets = allKeyPressSets;
 
               if (shouldSubmit) {
@@ -184,18 +178,11 @@ export class Formwrapper extends LitElement {
               }
               this._modifiers = modifiers;
 
-              field.handleChange(
-                calculateValue(this._allKeyPressSets, this._modifiers)
-              );
+              field.handleChange(calculateValue(this._allKeyPressSets, this._modifiers));
 
               console.log(this._allKeyPressSets);
               if (this._allKeyPressSets.length === 6) {
-                notify(
-                  'LMAO y r u making a longa$$ keycombo?',
-                  'warning',
-                  'wow',
-                  2000
-                );
+                notify('LMAO y r u making a longa$$ keycombo?', 'warning', 'wow', 2000);
               }
 
               e.preventDefault();
@@ -213,11 +200,7 @@ export class Formwrapper extends LitElement {
   }
 
   private async _submitForm(): Promise<void> {
-    sendEvent<KeyboardEventKey[][]>(
-      this,
-      SUBMIT_FORM_EVENT,
-      this._allKeyPressSets
-    );
+    sendEvent<KeyboardEventKey[][]>(this, SUBMIT_FORM_EVENT, this._allKeyPressSets);
     this.assignKeybindingDialogState = ASSIGN_KEYBINDING_DIALOG_DEFAULTS;
     this.keybindingsInput.value = '';
     this._allKeyPressSets = [];
@@ -238,9 +221,7 @@ export class Formwrapper extends LitElement {
         }}
         ?open="${this.assignKeybindingDialogState.isOpened}"
       >
-        <h2 class="lead" slot="label">
-          Press desired keybinding combination and press ENTER
-        </h2>
+        <h2 class="lead" slot="label">Press desired keybinding combination and press ENTER</h2>
         <form
           @submit=${(e: SubmitEvent) => {
             e.preventDefault();

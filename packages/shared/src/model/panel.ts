@@ -1,9 +1,5 @@
 import { html, type TemplateResult } from 'lit';
-import {
-  BookeraModule,
-  ModuleInstanceType,
-  type BookeraModuleClass,
-} from '../module/module';
+import { BookeraModule, ModuleInstanceType, type BookeraModuleClass } from '../module/module';
 import type { TabPosition } from '../module/tab';
 import { genShortID } from './util';
 
