@@ -13,6 +13,7 @@
     "clean": "turbo run clean",
     "test-existing": "turbo run test --filter=@serranolabs.io/editor",
     "check-all": "turbo run build lint type-check",
+    "lint-format": "bun run format && bun run lint",
     "check-all-with-tests": "bun run check-all && bun run test-existing"
   },
   "devDependencies": {
