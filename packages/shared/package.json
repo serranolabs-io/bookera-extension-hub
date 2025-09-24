@@ -52,7 +52,7 @@
     "localforage": "^1.01.0",
     "shoelace": "^0.1.1",
     "vite-plugin-dts": "^4.5.3",
-    "zod": "^3.25.46"
+    "zod": "^4.0.15"
   },
   "publishConfig": {
     "access": "public"

@@ -1,0 +1,25 @@
+{
+  "name": "@serranolabs.io/bookera-scratchpad",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "main": "./src/module.ts",
+  "scripts": {
+    "dev": "vite --port 5008",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@serranolabs.io/shared": "workspace:*",
+    "@serranolabs.io/editor": "workspace:*",
+    "lit": "^3.1.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.22.0",
+    "@serranolabs.io/typescript-config": "workspace:*",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-babel": "^1.2.0",
+    "vite-plugin-dts": "^3.0.0"
+  }
+}

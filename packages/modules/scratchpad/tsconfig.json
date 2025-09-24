@@ -1,0 +1,11 @@
+{
+  "extends": "@serranolabs.io/typescript-config/base",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -40,18 +40,19 @@ import {
 import './dark-mode';
 import { DarkMode } from './dark-mode';
 import { DarkModeKey } from './dark-mode-state';
-import { BookeraModuleElement, moduleElementStyles } from '@serranolabs.io/shared/module-element';
+import {
+  BookeraModuleElement,
+  moduleElementStyles,
+} from '@serranolabs.io/shared/module-element';
 import baseCss from '@serranolabs.io/shared/base';
-import { BookeraModule, ModuleConfig, RenderMode } from '@serranolabs.io/shared/module';
+import { ModuleConfig } from '@serranolabs.io/shared/module';
 
 import { genShortID, sendEvent } from '@serranolabs.io/shared/util';
 import {
   Config,
-  ExtensionConfig,
   SEND_CONFIG_EVENT,
   SEND_CONFIG_EVENT_TYPE,
 } from '@serranolabs.io/shared/extension-marketplace';
-import { Source } from '@serranolabs.io/shared/keyboard-shortcuts';
 import { ExtensionDownloadEndpoints } from '@serranolabs.io/shared/extension-marketplace';
 
 export type ColorMode = 'Light' | 'Dark';
@@ -76,7 +77,11 @@ export const customKeys = {
     fillShadeStyle(PrimaryColor, false),
     fillShadeStyle(BaseColor, false)
   ),
-  darkMode: new Mode('Dark', fillShadeStyle(PrimaryColor, false), fillShadeStyle(BaseColor, false)),
+  darkMode: new Mode(
+    'Dark',
+    fillShadeStyle(PrimaryColor, false),
+    fillShadeStyle(BaseColor, false)
+  ),
   createColorPaletteMode: false,
 };
 
@@ -185,23 +190,36 @@ export class ThemesElement extends BookeraModuleElement {
     console.log('connected', this.renderMode);
 
     if (this.renderMode === 'renderInDaemon') {
-      document.addEventListener(ExtensionDownloadEndpoints.themes, (e: CustomEvent<Config>) => {
-        const configs = e.detail.values;
-        configs.forEach((config: Config) => {
-          ColorPalettesSingleton.NewColorPaletteAndSelect(this.bagManager, config, false);
-        });
-      });
+      document.addEventListener(
+        ExtensionDownloadEndpoints.themes,
+        (e: CustomEvent<Config>) => {
+          const configs = e.detail.values;
+          configs.forEach((config: Config) => {
+            ColorPalettesSingleton.NewColorPaletteAndSelect(
+              this.bagManager,
+              config,
+              false
+            );
+          });
+        }
+      );
 
       console.log('registered');
-      this._switchColorModeEventListener = this._darkModeElement.switchColorMode.bind(this);
-      document.addEventListener(shortcuts[0].command, this._switchColorModeEventListener);
+      this._switchColorModeEventListener =
+        this._darkModeElement.switchColorMode.bind(this);
+      document.addEventListener(
+        shortcuts[0].command,
+        this._switchColorModeEventListener
+      );
     }
   }
 
   constructor(config: ModuleConfig) {
     super(config);
 
-    savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue('--primary');
+    savingKeys.primaryColor = getComputedStyle(document.body).getPropertyValue(
+      '--primary'
+    );
 
     if (this.renderMode === 'renderInSettings') {
       this._kickOffLocalFlow();
@@ -213,20 +231,42 @@ export class ThemesElement extends BookeraModuleElement {
   disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    document.removeEventListener(shortcuts[0].command, this._switchColorModeEventListener);
+    document.removeEventListener(
+      shortcuts[0].command,
+      this._switchColorModeEventListener
+    );
   }
 
-  private _runDirtyValidation(key: string, newValue: any, isOnChanges: boolean) {
-    if (key === savingProperties.lightMode || key === savingProperties.darkMode) {
-      this[key] = new Mode(this[key].mode, this[key].primaryColors, this[key].baseColors);
-      newValue = new Mode(newValue.mode, newValue.primaryColors, newValue.baseColors);
+  private _runDirtyValidation(
+    key: string,
+    newValue: any,
+    isOnChanges: boolean
+  ) {
+    if (
+      key === savingProperties.lightMode ||
+      key === savingProperties.darkMode
+    ) {
+      this[key] = new Mode(
+        this[key].mode,
+        this[key].primaryColors,
+        this[key].baseColors
+      );
+      newValue = new Mode(
+        newValue.mode,
+        newValue.primaryColors,
+        newValue.baseColors
+      );
     }
 
     if (
-      ((key === savingProperties.lightMode || key === savingProperties.darkMode) &&
+      ((key === savingProperties.lightMode ||
+        key === savingProperties.darkMode) &&
         !this[key].areModesEqual(newValue)) ||
       (this[key] !== newValue &&
-        !(key === savingProperties.lightMode || key === savingProperties.darkMode))
+        !(
+          key === savingProperties.lightMode ||
+          key === savingProperties.darkMode
+        ))
     ) {
       if (Object.keys(systemProperties).includes(key)) {
         this._isSystemDirty = true;
@@ -295,7 +335,9 @@ export class ThemesElement extends BookeraModuleElement {
   private onChange(key: string) {
     const newCP = this.colorPalettesBag.get(key)!;
 
-    if (!this.colorPalettes.map((cp: ColorPalette) => cp.id).includes(newCP.id)) {
+    if (
+      !this.colorPalettes.map((cp: ColorPalette) => cp.id).includes(newCP.id)
+    ) {
       this.colorPalettes.push(this.colorPalettesBag.get(key)!);
     }
     if (key === SelectedColorPaletteKey) {
@@ -325,13 +367,24 @@ export class ThemesElement extends BookeraModuleElement {
     return html``;
   }
 
-  private renderShades(name: string, shade: number, index: number, colorMode: ColorMode) {
+  private renderShades(
+    name: string,
+    shade: number,
+    index: number,
+    colorMode: ColorMode
+  ) {
     // create name
     let newName = '';
     if (ColorSet.FixProperty(name) === 'slate') {
-      newName = baseColorNames[index] !== '' ? baseColorNames[index] : `Shade ${name}-${shade}`;
+      newName =
+        baseColorNames[index] !== ''
+          ? baseColorNames[index]
+          : `Shade ${name}-${shade}`;
     } else {
-      newName = primaryColorName[index] !== '' ? primaryColorName[index] : `Shade ${name}-${shade}`;
+      newName =
+        primaryColorName[index] !== ''
+          ? primaryColorName[index]
+          : `Shade ${name}-${shade}`;
     }
 
     const indexes = getIndexes.bind(this)(name, index, colorMode);
@@ -348,9 +401,13 @@ export class ThemesElement extends BookeraModuleElement {
             const value = e.target!.value;
 
             ColorSet.SetStyle(name, shade, value);
-            this[indexes.modeIndex][indexes.propertyIndex][indexes.index] = value;
+            this[indexes.modeIndex][indexes.propertyIndex][indexes.index] =
+              value;
 
-            this._savePanelTabState(savingProperties[indexes.modeIndex], this[indexes.modeIndex]);
+            this._savePanelTabState(
+              savingProperties[indexes.modeIndex],
+              this[indexes.modeIndex]
+            );
           }}
         ></sl-color-picker>
       </div>
@@ -375,7 +432,9 @@ export class ThemesElement extends BookeraModuleElement {
 
     return html`
       <div class="button-container space-between vertical">
-        <sl-button @click=${switchCustomPaletteStep.bind(this)}>${button}</sl-button>
+        <sl-button @click=${switchCustomPaletteStep.bind(this)}
+          >${button}</sl-button
+        >
         <sl-button class="button-hundred" type="submit">Save</sl-button>
       </div>
     `;
@@ -401,38 +460,78 @@ export class ThemesElement extends BookeraModuleElement {
               const newValue: string = e.target.value;
               this.customName = newValue;
 
-              this._savePanelTabState(savingProperties.customName, this.customName);
+              this._savePanelTabState(
+                savingProperties.customName,
+                this.customName
+              );
             }}
           ></sl-input>
-          <p>${this.customPaletteStep === 'LightMode' ? 'Light Mode' : 'Dark Mode'} colors</p>
+          <p>
+            ${this.customPaletteStep === 'LightMode'
+              ? 'Light Mode'
+              : 'Dark Mode'}
+            colors
+          </p>
         </div>
         <div class="colors-box">
-          <div class="colors space-between light ${this._configureModeForCustomPalette('Light')}">
+          <div
+            class="colors space-between light ${this._configureModeForCustomPalette(
+              'Light'
+            )}"
+          >
             <div class="color-column">
               <h6>Primary</h6>
-              ${this.lightMode.primaryColors?.map((style: string, i: number) => {
-                return this.renderShades(PrimaryColor, shadePercents[i]!, i, 'Light');
-              })}
+              ${this.lightMode.primaryColors?.map(
+                (style: string, i: number) => {
+                  return this.renderShades(
+                    PrimaryColor,
+                    shadePercents[i]!,
+                    i,
+                    'Light'
+                  );
+                }
+              )}
             </div>
             <div class="color-column">
               <h6>${BaseColor}</h6>
               ${this.lightMode.baseColors?.map((style: string, i: number) => {
-                return this.renderShades(BaseColor, shadePercents[i]!, i, 'Light');
+                return this.renderShades(
+                  BaseColor,
+                  shadePercents[i]!,
+                  i,
+                  'Light'
+                );
               })}
             </div>
           </div>
-          <div class="colors space-between dark ${this._configureModeForCustomPalette('Dark')}">
+          <div
+            class="colors space-between dark ${this._configureModeForCustomPalette(
+              'Dark'
+            )}"
+          >
             <div class="color-column">
               <h6>Primary</h6>
-              ${this.lightMode.primaryColors?.map((style: string, i: number) => {
-                return this.renderShades(PrimaryColor, shadePercents[i]!, i, 'Dark');
-              })}
+              ${this.lightMode.primaryColors?.map(
+                (style: string, i: number) => {
+                  return this.renderShades(
+                    PrimaryColor,
+                    shadePercents[i]!,
+                    i,
+                    'Dark'
+                  );
+                }
+              )}
             </div>
 
             <div class="color-column">
               <h6>${BaseColor}</h6>
               ${this.lightMode.baseColors?.map((style: string, i: number) => {
-                return this.renderShades(BaseColor, shadePercents[i]!, i, 'Dark');
+                return this.renderShades(
+                  BaseColor,
+                  shadePercents[i]!,
+                  i,
+                  'Dark'
+                );
               })}
             </div>
           </div>
@@ -457,7 +556,10 @@ export class ThemesElement extends BookeraModuleElement {
 
   private renderAllColorPalettes(isSettings: boolean) {
     const renderSendButton = (colorPalette: ColorPalette) => {
-      if (isSettings && !SystemColorPalette.IsSystemColorPalette(colorPalette)) {
+      if (
+        isSettings &&
+        !SystemColorPalette.IsSystemColorPalette(colorPalette)
+      ) {
         return html`
           <div slot="suffix" class="share-config">
             <sl-tooltip content="Share your palette!">
@@ -481,7 +583,10 @@ export class ThemesElement extends BookeraModuleElement {
 
     return html`
       <!-- I SHOULD BE USING THE FUCKING MENU. Wtf -->
-      <div class="color-palettes flex" @click=${handleSelectColorPalette.bind(this)}>
+      <div
+        class="color-palettes flex"
+        @click=${handleSelectColorPalette.bind(this)}
+      >
         ${this.colorPalettes.map((colorPalette: ColorPalette) => {
           return html`<sl-menu-item
           class="${
@@ -514,7 +619,9 @@ export class ThemesElement extends BookeraModuleElement {
               value=${this.backgroundColor}
             >
               ${Array.from(ColorSets.values()).map((colorSet: ColorSet) => {
-                return html`<sl-option value="${colorSet.name}">${colorSet.name}</sl-option>`;
+                return html`<sl-option value="${colorSet.name}"
+                  >${colorSet.name}</sl-option
+                >`;
               })}
             </sl-select>
           </div>
@@ -544,7 +651,10 @@ export class ThemesElement extends BookeraModuleElement {
                     const newValue: string = e.target.value;
                     this.systemName = newValue;
 
-                    this._savePanelTabState(savingProperties.systemName, this.systemName);
+                    this._savePanelTabState(
+                      savingProperties.systemName,
+                      this.systemName
+                    );
                   }}
                 ></sl-input>
               </div>
@@ -572,7 +682,11 @@ export class ThemesElement extends BookeraModuleElement {
           CustomColorPalette.SetColorMode(np, this._currentColorMode);
         }
         if (this._isSystemDirty) {
-          const np = new SystemColorPalette(this.backgroundColor, this.primaryColor, genShortID(6));
+          const np = new SystemColorPalette(
+            this.backgroundColor,
+            this.primaryColor,
+            genShortID(6)
+          );
 
           SystemColorPalette.SelectColorPalette(np, this._currentColorMode);
         }
